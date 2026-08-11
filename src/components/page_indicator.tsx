@@ -211,15 +211,16 @@ export const PageIndicator: React.FC<PageIndicatorProps> = ({ persistent = false
             position={persistent ? 'static' : 'absolute'}
             bottom="20px"
             left="50%"
+            data-inklayer-page-indicator="true"
             style={{
                 transform: persistent ? undefined : 'translateX(-50%)',
                 zIndex: 1000,
-                background: 'rgba(60, 60, 60, 0.85)',
-                color: '#fff',
-                borderRadius: '4px',
+                background: 'var(--inklayer-page-indicator-background, rgba(60, 60, 60, 0.85))',
+                color: 'var(--inklayer-page-indicator-color, #fff)',
+                borderRadius: 'var(--inklayer-page-indicator-border-radius, 4px)',
                 opacity: enabled && (persistent || visible) ? 1 : 0,
                 pointerEvents: enabled && (persistent || visible) ? 'auto' : 'none',
-                transition: 'opacity 0.3s ease'
+                transition: 'var(--inklayer-page-indicator-transition, opacity 0.3s ease)'
             }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -227,15 +228,9 @@ export const PageIndicator: React.FC<PageIndicatorProps> = ({ persistent = false
             <Flex gap="2" align="center" pt="1" pl="1" pr="2" pb="1">
                 <IconButton
                     style={{
-                        color: currentPage <= 1 || isPageChanging ? '#aaa' : '#fff',
-                        transition: 'background-color 0.2s ease',
+                        color: `var(--inklayer-page-indicator-button-color, ${currentPage <= 1 || isPageChanging ? '#aaa' : '#fff'})`,
+                        transition: 'var(--inklayer-page-indicator-button-transition, background-color 0.2s ease)',
                         cursor: 'pointer'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(50, 50, 50, 1)'
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent'
                     }}
                     color="gray"
                     variant="soft"
@@ -259,14 +254,14 @@ export const PageIndicator: React.FC<PageIndicatorProps> = ({ persistent = false
                         disabled={isPageChanging}
                         aria-label={t('viewer:navigation.pageInput')}
                         style={{
-                            width: 30,
+                            width: 'var(--inklayer-page-control-input-width, 30px)',
                             fontWeight: 'bold',
                             textAlign: 'right',
-                            color: '#fff',
+                            color: 'var(--inklayer-page-control-input-color, #fff)',
                             paddingRight: 5,
                             '--text-field-border-width': 0,
-                            backgroundColor: 'transparent',
-                            border: 'none',
+                            backgroundColor: 'var(--inklayer-page-control-input-background, transparent)',
+                            border: 'var(--inklayer-page-control-input-border, none)',
                             borderColor: isInputValid ? undefined : 'red'
                         } as React.CSSProperties & { '--text-field-border-width': number }}
                     />
@@ -282,12 +277,6 @@ export const PageIndicator: React.FC<PageIndicatorProps> = ({ persistent = false
                 </Flex>
 
                 <IconButton
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(50, 50, 50, 1)'
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent'
-                    }}
                     color="gray"
                     variant="ghost"
                     disabled={currentPage >= totalPages || isPageChanging}
@@ -295,8 +284,8 @@ export const PageIndicator: React.FC<PageIndicatorProps> = ({ persistent = false
                     size="1"
                     aria-label={t('viewer:navigation.nextPage')}
                     style={{
-                        color: currentPage >= totalPages || isPageChanging ? '#aaa' : '#fff',
-                        transition: 'background-color 0.2s ease',
+                        color: `var(--inklayer-page-indicator-button-color, ${currentPage >= totalPages || isPageChanging ? '#aaa' : '#fff'})`,
+                        transition: 'var(--inklayer-page-indicator-button-transition, background-color 0.2s ease)',
                         cursor: 'pointer'
                     }}
                 >
