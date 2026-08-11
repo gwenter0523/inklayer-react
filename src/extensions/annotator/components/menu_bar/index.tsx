@@ -133,6 +133,11 @@ const MenuBar = forwardRef<MenuBarRef, MenuBarProps>(function MenuBar(props, ref
     }
 
     const handleOpenComment = (annotation: IAnnotationStore) => {
+        if (painter?.can('annotation.comment', annotation)) {
+            openSidebar('annotator-sidebar-toggle')
+            useAnnotationStore.getState().setSelectedAnnotation(annotation, SelectionSource.CANVAS)
+            return
+        }
         void requestMutation('annotation.comment', annotation).then((latest) => {
             if (!latest) return
             openSidebar('annotator-sidebar-toggle')
