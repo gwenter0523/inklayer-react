@@ -20,6 +20,7 @@ import {
 import { DeleteUndoSnackbar } from './components/delete_undo_snackbar'
 
 const ANNOTATOR_PAGE_MARKER_SOURCE = 'inklayer-annotator'
+const ANNOTATIONS_PANEL_KEY = 'annotator-sidebar-toggle'
 
 interface AnnotatorExtensionProps {
     enableNativeAnnotations: boolean
@@ -46,7 +47,14 @@ export const AnnotatorExtension: React.FC<AnnotatorExtensionProps> = ({
     onAnnotationSelected,
     onAnnotationChanged
 }) => {
-    const { isReady, pdfViewer, eventBus, isSidebarCollapsed } = usePdfViewerContext()
+    const {
+        isReady,
+        pdfViewer,
+        eventBus,
+        isSidebarCollapsed,
+        activeSidebarPanel,
+        openSidebar,
+    } = usePdfViewerContext()
     const { user } = useUserContext()
     const { refreshPainter, setPainter } = usePainter()
     const { defaultOptions, primaryColor } = useOptionsContext()
@@ -78,9 +86,11 @@ export const AnnotatorExtension: React.FC<AnnotatorExtensionProps> = ({
     const painterRef = useRef<Painter | null>(null)
     const latestUserRef = useRef(user)
     const latestPermissionsRef = useRef(annotationPermissions)
+    const sidebarContextRef = useRef({ activeSidebarPanel, openSidebar })
     const defaultShowAnnotationAuthorLabelsRef = useRef(defaultShowAnnotationAuthorLabels)
     latestUserRef.current = user
     latestPermissionsRef.current = annotationPermissions
+    sidebarContextRef.current = { activeSidebarPanel, openSidebar }
 
     const debouncedViewAreaChanged = useRef(
         debounce(
@@ -136,6 +146,10 @@ export const AnnotatorExtension: React.FC<AnnotatorExtensionProps> = ({
             },
 
             onAnnotationSelected: (annotation, isClick, selectorRect) => {
+                const sidebarContext = sidebarContextRef.current
+                if (isClick && annotation && sidebarContext.activeSidebarPanel !== ANNOTATIONS_PANEL_KEY) {
+                    sidebarContext.openSidebar?.(ANNOTATIONS_PANEL_KEY)
+                }
                 if (isClick && annotation) {
                     menuBarRef.current?.open(annotation, selectorRect)
                 }

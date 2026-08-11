@@ -36,6 +36,7 @@ interface SignatureToolProps {
     onAdd: (signatureDataUrl: string) => void
     presentation?: PdfAnnotatorControlPresentation
     label?: React.ReactNode
+    selected?: boolean
 }
 
 type FieldType = {
@@ -94,7 +95,7 @@ const DATE_FORMAT_OPTIONS = [
     }
 ]
 
-const StampTool: React.FC<SignatureToolProps> = ({ annotation, disabled = false, default_stamps, onAdd, presentation = 'toolbar-icon', label }) => {
+const StampTool: React.FC<SignatureToolProps> = ({ annotation, disabled = false, default_stamps, onAdd, presentation = 'toolbar-icon', label, selected }) => {
     const { defaultOptions } = useOptionsContext()
 
     const maxSize = defaultOptions.stamp!.maxSize!
@@ -412,6 +413,8 @@ const StampTool: React.FC<SignatureToolProps> = ({ annotation, disabled = false,
                 <Popover.Trigger>
                     <ToolbarButton
                         disabled={disabled}
+                        selected={selected}
+                        tooltip={presentation === 'menu-item' ? 'none' : 'auto'}
                         title={t(`annotator:tool.${annotation.name}`)}
                         label={presentation === 'menu-item' ? label : undefined}
                         buttonProps={presentation === 'menu-item'

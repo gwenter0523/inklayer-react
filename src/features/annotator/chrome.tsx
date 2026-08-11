@@ -33,7 +33,6 @@ export const PdfAnnotatorChromeBridge: React.FC<PdfAnnotatorChromeBridgeProps> =
 }) => {
     const { painter } = usePainter()
     const currentAnnotationType = useAnnotationStore((state) => state.currentAnnotationType)
-    const setCurrentAnnotationType = useAnnotationStore((state) => state.setCurrentAnnotationType)
     const {
         activeSidebarPanel,
         closeSidebar,
@@ -47,15 +46,13 @@ export const PdfAnnotatorChromeBridge: React.FC<PdfAnnotatorChromeBridgeProps> =
     useEffect(() => {
         if (canCreate) return
         if (currentAnnotationType && currentAnnotationType.type !== AnnotationType.SELECT) {
-            setCurrentAnnotationType(null)
             painter?.activate(null, null)
         }
-    }, [canCreate, currentAnnotationType, painter, setCurrentAnnotationType])
+    }, [canCreate, currentAnnotationType, painter])
 
     useEffect(() => () => {
-        setCurrentAnnotationType(null)
         painter?.activate(null, null)
-    }, [painter, setCurrentAnnotationType])
+    }, [painter])
 
     const togglePanel = (key: string) => {
         if (activeSidebarPanel === key) closeSidebar()
@@ -83,6 +80,7 @@ export const PdfAnnotatorChromeBridge: React.FC<PdfAnnotatorChromeBridgeProps> =
             ColorControl={AnnotationColorControl}
             AuthorLabelsControl={AnnotationAuthorLabelsControl}
             PageZoomControl={PageZoomControl}
+            history={painter?.getHistory()}
             panels={{
                 navigation: {
                     open: isNavigationSidebarOpen,

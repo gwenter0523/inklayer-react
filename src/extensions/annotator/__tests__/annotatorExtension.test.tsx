@@ -7,6 +7,8 @@ const mockSetPainter = jest.fn()
 const mockRefreshPainter = jest.fn()
 const mockClearAnnotations = jest.fn()
 const mockMenuBarClose = jest.fn()
+const mockMenuBarOpen = jest.fn()
+const mockOpenSidebar = jest.fn()
 const mockEventBus = {
     on: jest.fn(),
     _on: jest.fn(),
@@ -34,6 +36,7 @@ interface MockPainter {
     initAnnotationsOnce: jest.Mock
     reRenderAnnotations: jest.Mock
     setPermissionContext: jest.Mock
+    onAnnotationSelected?: (annotation: unknown, isClick: boolean, selectorRect: unknown) => void
 }
 
 jest.mock('../../../context/pdf_viewer_context', () => ({
@@ -41,7 +44,9 @@ jest.mock('../../../context/pdf_viewer_context', () => ({
         isReady: true,
         pdfViewer: mockPdfViewer,
         eventBus: mockEventBus,
-        isSidebarCollapsed: false
+        isSidebarCollapsed: false,
+        activeSidebarPanel: null,
+        openSidebar: mockOpenSidebar
     })
 }))
 
@@ -82,8 +87,10 @@ jest.mock('../painter', () => ({
         getKonvaCanvasStore = jest.fn(() => new Map([[1, {}]]))
         reRenderAnnotations = jest.fn()
         setPermissionContext = jest.fn()
+        onAnnotationSelected?: MockPainter['onAnnotationSelected']
 
-        constructor() {
+        constructor(options: { onAnnotationSelected?: MockPainter['onAnnotationSelected'] }) {
+            this.onAnnotationSelected = options.onAnnotationSelected
             mockPainterInstances.push(this)
         }
     }
@@ -98,7 +105,7 @@ jest.mock('../components/menu_bar', () => {
     const React = jest.requireActual('react')
     return {
         MenuBar: React.forwardRef((_props: unknown, ref: React.Ref<unknown>) => {
-            React.useImperativeHandle(ref, () => ({ close: mockMenuBarClose }))
+            React.useImperativeHandle(ref, () => ({ close: mockMenuBarClose, open: mockMenuBarOpen }))
             return null
         })
     }
@@ -188,6 +195,39 @@ describe('AnnotatorExtension lifecycle', () => {
         expect(mockMenuBarClose).toHaveBeenCalledTimes(1)
         expect(painter.setPermissionContext).toHaveBeenLastCalledWith(mockUser, nextPermissions)
         expect(mockRefreshPainter).toHaveBeenCalled()
+    })
+
+    it('opens the annotation sidebar for an existing canvas selection', async () => {
+        mockInitAnnotations = async () => undefined
+        render(<AnnotatorExtension {...requiredProps} />)
+        await act(async () => {
+            await Promise.resolve()
+        })
+
+        mockPainterInstances[0].onAnnotationSelected?.(
+            { id: 'annotation-1' },
+            true,
+            { x: 0, y: 0, width: 10, height: 10 }
+        )
+
+        expect(mockOpenSidebar).toHaveBeenCalledWith('annotator-sidebar-toggle')
+        expect(mockMenuBarOpen).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not open the annotation sidebar for a newly created annotation', async () => {
+        mockInitAnnotations = async () => undefined
+        render(<AnnotatorExtension {...requiredProps} />)
+        await act(async () => {
+            await Promise.resolve()
+        })
+
+        mockPainterInstances[0].onAnnotationSelected?.(
+            { id: 'annotation-1' },
+            false,
+            { x: 0, y: 0, width: 10, height: 10 }
+        )
+
+        expect(mockOpenSidebar).not.toHaveBeenCalled()
     })
 
     it('publishes annotation counts by page and clears them on unmount', () => {

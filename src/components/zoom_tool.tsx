@@ -112,6 +112,8 @@ export const ZoomTool: React.FC = () => {
     return (
         <Flex gap="2" align="center">
             <ToolbarButton
+                title="缩小"
+                tooltipSide="top"
                 buttonProps={{
                     size: '1',
                     disabled: isZoomOutDisabled()
@@ -119,17 +121,11 @@ export const ZoomTool: React.FC = () => {
                 icon={<AiOutlineLine />}
                 onClick={zoomOut}
             />
-            <ToolbarButton
-                buttonProps={{
-                    size: '1',
-                    disabled: isZoomInDisabled()
-                }}
-                icon={<AiOutlinePlus />}
-                onClick={zoomIn}
-            />
-            <DropdownMenu.Root>
+            <DropdownMenu.Root onOpenChange={(open) => {
+                if (open) window.dispatchEvent(new Event('inklayer:close-toolbar-tooltips'))
+            }}>
                 <DropdownMenu.Trigger>
-                    <Button variant="ghost" size="2" color="gray" style={{ width: 80 }}>
+                    <Button aria-label="选择缩放比例" variant="ghost" size="2" color="gray" style={{ width: 80 }}>
                         {currentScaleLabel}
                         <DropdownMenu.TriggerIcon />
                     </Button>
@@ -145,6 +141,16 @@ export const ZoomTool: React.FC = () => {
                     ))}
                 </DropdownMenu.Content>
             </DropdownMenu.Root>
+            <ToolbarButton
+                title="放大"
+                tooltipSide="top"
+                buttonProps={{
+                    size: '1',
+                    disabled: isZoomInDisabled()
+                }}
+                icon={<AiOutlinePlus />}
+                onClick={zoomIn}
+            />
         </Flex>
     )
 }

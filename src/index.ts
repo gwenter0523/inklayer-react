@@ -9,6 +9,7 @@ export type {
   PdfAnnotatorToolName,
   PdfAnnotatorToolControlProps,
   PdfAnnotatorControlPresentation,
+  PdfAnnotatorHistoryControl,
   AnnotationPermissionAction,
   AnnotationPermissionMode,
   AnnotationPermissionRequest,

@@ -69,9 +69,10 @@ function createPainter(editorStore = new Map<string, unknown>()): {
             scrollPageIntoView
         },
         editorStore,
-        selector: { select, activate },
+        konvaCanvasStore: new Map(),
+        selector: { clear: jest.fn(), select, activate },
+        passiveHover: { clear: jest.fn() },
         currentAnnotation: annotationDefinitions[0],
-        setDefaultMode: jest.fn(),
         highlightRequestId: 0,
         highlightRetryTimer: null,
         resolveHighlightRequest: null
@@ -116,6 +117,21 @@ describe('Painter annotation reference navigation', () => {
             allowNegativeOffset: true
         })
         expect(select).toHaveBeenCalledWith('annotation-2')
+        expect(activate).toHaveBeenCalledWith(2)
+    })
+
+    it('activates the selector after leaving a drawing tool for a sidebar highlight', async () => {
+        const editorStore = new Map<string, unknown>([
+            [`2_${AnnotationType.RECTANGLE}`, {}]
+        ])
+        const { painter, activate } = createPainter(editorStore)
+        Object.assign(painter as unknown as Record<string, unknown>, {
+            currentAnnotation: annotationDefinitions.find((item) => item.type === AnnotationType.RECTANGLE)
+        })
+
+        await expect(painter.highlight(makeAnnotation('annotation-after-drawing-tool')))
+            .resolves.toBe(true)
+
         expect(activate).toHaveBeenCalledWith(2)
     })
 

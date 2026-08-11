@@ -376,6 +376,7 @@ export declare interface PdfAnnotatorChromeProps {
         presentation?: PdfAnnotatorControlPresentation;
     }>;
     PageZoomControl: default_2.ComponentType;
+    history?: PdfAnnotatorHistoryControl;
     panels: {
         navigation: {
             open: boolean;
@@ -400,6 +401,14 @@ export declare interface PdfAnnotatorChromeProps {
 }
 
 export declare type PdfAnnotatorControlPresentation = 'toolbar-icon' | 'menu-item';
+
+export declare interface PdfAnnotatorHistoryControl {
+    readonly canUndo: boolean;
+    readonly canRedo: boolean;
+    undo(): boolean;
+    redo(): boolean;
+    subscribe(listener: () => void): () => void;
+}
 
 /**
  * PDF 注解器配置选项 / PDF Annotator Configuration Options

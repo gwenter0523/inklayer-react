@@ -7,6 +7,7 @@ export interface DeletedAnnotationEntry {
     annotation: IAnnotationStore
     storeIndex: number
     konvaIndex: number | null
+    historyId?: number
 }
 
 export interface DeletedCommentEntry {
@@ -16,6 +17,7 @@ export interface DeletedCommentEntry {
     previewAnnotation: IAnnotationStore
     comment: IAnnotationComment
     commentIndex: number
+    historyId?: number
 }
 
 export type DeleteUndoEntry = DeletedAnnotationEntry | DeletedCommentEntry
@@ -71,8 +73,8 @@ export class DeleteUndoController {
         return this.snapshot
     }
 
-    public add(entry: DeleteUndoEntry): void {
-        this.entries.push(entry)
+    public add(entry: DeleteUndoEntry, historyId?: number): void {
+        this.entries.push(historyId === undefined ? entry : { ...entry, historyId })
         this.remainingMs = DELETE_UNDO_DURATION_MS
         this.setSnapshot(Date.now() + this.remainingMs)
         this.clearTimer()

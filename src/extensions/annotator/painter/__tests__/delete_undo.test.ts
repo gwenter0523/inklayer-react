@@ -89,6 +89,29 @@ describe('Painter delete undo', () => {
         expect(painter.getDeleteUndoSnapshot()).toBeNull()
     })
 
+    it('routes update and delete mutations through the per-painter history owner', () => {
+        const events: string[] = []
+        const annotation = makeAnnotation()
+        const painter = createPainter(events)
+        const history = painter.getHistory()
+        useAnnotationStore.getState().addAnnotation(annotation)
+
+        painter.update(annotation.id, { title: 'Edited' })
+        expect(history.canUndo).toBe(true)
+        expect(painter.getData()[0].title).toBe('Edited')
+
+        expect(history.undo()).toBe(true)
+        expect(painter.getData()[0].title).toBe('Alice')
+        expect(history.redo()).toBe(true)
+        expect(painter.getData()[0].title).toBe('Edited')
+
+        expect(painter.delete(annotation.id, true)).toBe(true)
+        expect(history.undo()).toBe(true)
+        expect(painter.getData()[0].title).toBe('Edited')
+        expect(history.redo()).toBe(true)
+        expect(painter.getData()).toEqual([])
+    })
+
     it('restores mixed deletions in reverse order without losing comment changes', () => {
         const events: string[] = []
         const reply: IAnnotationComment = {

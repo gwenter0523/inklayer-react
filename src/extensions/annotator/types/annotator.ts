@@ -56,6 +56,14 @@ export interface PdfAnnotatorToolControlProps {
     label?: React.ReactNode
 }
 
+export interface PdfAnnotatorHistoryControl {
+    readonly canUndo: boolean
+    readonly canRedo: boolean
+    undo(): boolean
+    redo(): boolean
+    subscribe(listener: () => void): () => void
+}
+
 export interface PdfAnnotatorChromeProps {
     activeTool: PdfAnnotatorToolName | null
     canCreate: boolean
@@ -67,6 +75,7 @@ export interface PdfAnnotatorChromeProps {
         presentation?: PdfAnnotatorControlPresentation
     }>
     PageZoomControl: React.ComponentType
+    history?: PdfAnnotatorHistoryControl
     panels: {
         navigation: { open: boolean; toggle(): void }
         search: { open: boolean; available: boolean; toggle(): void }

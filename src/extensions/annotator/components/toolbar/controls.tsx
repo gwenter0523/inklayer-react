@@ -72,7 +72,6 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
     const { t } = useTranslation(['annotator'], { useSuspense: false })
     const { painter } = usePainter()
     const currentAnnotationType = useAnnotationStore((state) => state.currentAnnotationType)
-    const setCurrentAnnotationType = useAnnotationStore((state) => state.setCurrentAnnotationType)
     const annotation = useMemo(() => annotationTypeForTool(tool), [tool])
     const canCreate = painter?.can('annotation.create') ?? false
     const selected = currentAnnotationType?.type === annotation.type
@@ -81,17 +80,17 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
 
     const activate = useCallback((dataTransfer: string | null = null) => {
         const next = selected ? null : annotation
-        setCurrentAnnotationType(next)
         painter?.activate(next, next && [AnnotationType.SIGNATURE, AnnotationType.STAMP].includes(next.type)
             ? dataTransfer
             : null)
-    }, [annotation, painter, selected, setCurrentAnnotationType])
+    }, [annotation, painter, selected])
 
     if (tool === 'signature') {
         return (
             <SignatureTool
                 annotation={annotation}
                 disabled={!canCreate}
+                selected={selected}
                 presentation={presentation}
                 label={title}
                 default_signatures={default_signatures}
@@ -105,6 +104,7 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
             <StampTool
                 annotation={annotation}
                 disabled={!canCreate}
+                selected={selected}
                 presentation={presentation}
                 label={title}
                 default_stamps={default_stamps}
@@ -117,6 +117,7 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
         <ToolbarButton
             disabled={tool !== 'select' && !canCreate}
             selected={selected}
+            tooltip={presentation === 'menu-item' ? 'none' : 'auto'}
             title={String(title)}
             label={presentation === 'menu-item' ? title : undefined}
             icon={annotation.icon}
@@ -132,7 +133,6 @@ export const AnnotationColorControl: React.FC<{
     const { defaultOptions } = useOptionsContext()
     const { painter } = usePainter()
     const currentAnnotationType = useAnnotationStore((state) => state.currentAnnotationType)
-    const setCurrentAnnotationType = useAnnotationStore((state) => state.setCurrentAnnotationType)
     const isColorDisabled = !currentAnnotationType?.styleEditable?.color
     const buttonProps = presentationButtonProps(presentation)
 
@@ -142,7 +142,6 @@ export const AnnotationColorControl: React.FC<{
             ...currentAnnotationType,
             style: { ...currentAnnotationType.style, color },
         }
-        setCurrentAnnotationType(updatedAnnotation)
         painter?.activate(updatedAnnotation, null)
     }
 
@@ -155,6 +154,7 @@ export const AnnotationColorControl: React.FC<{
             trigger={(
                 <ToolbarButton
                     disabled={isColorDisabled || !painter?.can('annotation.create')}
+                    tooltip={presentation === 'menu-item' ? 'none' : 'auto'}
                     title="Color"
                     label={presentation === 'menu-item' ? 'Color' : undefined}
                     buttonProps={buttonProps}
@@ -185,6 +185,7 @@ export const AnnotationAuthorLabelsControl: React.FC<{
         <ToolbarButton
             disabled={!painter}
             selected={visible}
+            tooltip={presentation === 'menu-item' ? 'none' : 'auto'}
             title={visible
                 ? t('annotator:authorLabels.hide')
                 : t('annotator:authorLabels.show', { shortcut: 'Alt' })}
@@ -210,17 +211,14 @@ export const AnnotationToolbarControls: React.FC<{
         ? annotationDefinitions.find((item) => item.name === defaultAnnotationName) ?? null
         : null
     const { painter } = usePainter()
-    const setCurrentAnnotationType = useAnnotationStore((state) => state.setCurrentAnnotationType)
 
     React.useEffect(() => {
         if (!defaultAnnotation) return
-        setCurrentAnnotationType(defaultAnnotation)
         painter?.activate(defaultAnnotation, null)
         return () => {
-            setCurrentAnnotationType(null)
             painter?.activate(null, null)
         }
-    }, [defaultAnnotation, painter, setCurrentAnnotationType])
+    }, [defaultAnnotation, painter])
 
     return (
         <Flex gap="3" align="center">

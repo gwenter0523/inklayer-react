@@ -48,6 +48,20 @@ import {
     type DeletedCommentEntry,
     type DeleteUndoSnapshot
 } from './delete_undo'
+import { AnnotationMutationHistory, type AnnotationHistoryTransaction } from './mutation_history'
+import type { PdfAnnotatorHistoryControl } from '../types/annotator'
+
+function cloneMutationValue<T>(value: T): T {
+    if (value === undefined || value === null) return value
+    if (typeof structuredClone === 'function') return structuredClone(value)
+    return JSON.parse(JSON.stringify(value)) as T
+}
+
+function cloneAnnotationPatch(patch: Partial<IAnnotationStore>): Partial<IAnnotationStore> {
+    return Object.fromEntries(
+        Object.entries(patch).map(([key, value]) => [key, cloneMutationValue(value)])
+    ) as Partial<IAnnotationStore>
+}
 
 // KonvaCanvas 接口定义
 export interface KonvaCanvas {
@@ -79,6 +93,10 @@ export class Painter {
     private passiveHover: AnnotationPassiveHover
     private readonly annotationHover = new AnnotationHoverCoordinator()
     private deleteUndoController?: DeleteUndoController
+    private mutationHistory?: AnnotationMutationHistory
+    private historyControl?: PdfAnnotatorHistoryControl
+    private nextSelectionSource?: SelectionSource
+    private activeHighlightHistoryEntries: DeletedAnnotationEntry[] | null = null
     private readonly unsubscribeAnnotationHover: () => void
     private transform: Transform // 转换器
     private tempDataTransfer: string | null = null // 临时数据传输
@@ -128,6 +146,7 @@ export class Painter {
             getPermissions: () => this.annotationPermissions
         })
         this.deleteUndoController = new DeleteUndoController()
+        this.mutationHistory = new AnnotationMutationHistory()
         this.authorLabels = new AnnotationAuthorLabels({
             primaryColor: this.primaryColor,
             defaultVisible: defaultShowAnnotationAuthorLabels,
@@ -166,11 +185,15 @@ export class Painter {
             onSelected: (id, isClick, transformerRect) => {
                 const annotationStore = useAnnotationStore.getState().getAnnotation(id)
                 if (annotationStore) {
-                    useAnnotationStore.getState().setSelectedAnnotation(annotationStore, isClick ? SelectionSource.CANVAS : SelectionSource.SIDEBAR)
+                    const selectionSource = this.nextSelectionSource
+                        ?? (isClick ? SelectionSource.CANVAS : SelectionSource.SIDEBAR)
+                    this.nextSelectionSource = undefined
+                    useAnnotationStore.getState().setSelectedAnnotation(annotationStore, selectionSource)
                     this.onAnnotationSelected(annotationStore, isClick, transformerRect)
                 }
             },
             onDeselected: () => {
+                this.nextSelectionSource = undefined
                 useAnnotationStore.getState().clearSelectedAnnotation()
                 this.onAnnotationSelected(undefined, false, { x: 0, y: 0, width: 0, height: 0 })
             },
@@ -187,7 +210,7 @@ export class Painter {
             onChanged: async (id, groupString, _rawAnnotationStore, konvaClientRect, transformerRect) => {
                 const editor = this.findEditorForGroupId(id)
                 const updatedAnnotation = editor
-                    ? this.updateStore(id, { konvaString: groupString, konvaClientRect }, false, 'annotation.transform')
+                    ? this.updateStore(id, { konvaString: groupString, konvaClientRect }, false, 'annotation.transform', undefined, true, `transform:${id}`)
                     : undefined
                 if (!updatedAnnotation) return
 
@@ -207,6 +230,8 @@ export class Painter {
             },
             onHighlight: (selection) => {
                 if (!this.can('annotation.create')) return
+                const highlightHistoryEntries: DeletedAnnotationEntry[] = []
+                this.activeHighlightHistoryEntries = highlightHistoryEntries
                 Object.keys(selection).forEach((key) => {
                     const pageNumber = Number(key)
                     const elements = selection[key]
@@ -225,7 +250,7 @@ export class Painter {
                                     pageNumber,
                                     annotation: this.currentAnnotation,
                                     onAdd: (annotationStore) => {
-                                        this.saveToStore(annotationStore)
+                                        this.saveToStore(annotationStore, false, this.activeHighlightHistoryEntries ?? undefined)
                                     },
                                     onChange: (id, updates) => {
                                         this.updateStore(id, updates) // 更新存储
@@ -238,6 +263,28 @@ export class Painter {
                         storeEditor.convertTextSelection(elements as HTMLSpanElement[], wrapper)
                     }
                 })
+                this.activeHighlightHistoryEntries = null
+                if (highlightHistoryEntries.length > 0) {
+                    this.recordHistory({
+                        undo: () => {
+                            let undone = true
+                            highlightHistoryEntries.slice().reverse().forEach((entry) => {
+                                const deleted = this.deleteAnnotation(entry.annotation.id, true, false)
+                                undone = deleted && undone
+                            })
+                            if (undone) this.selector.delete()
+                            return undone
+                        },
+                        redo: () => {
+                            let redone = true
+                            highlightHistoryEntries.forEach((entry) => {
+                                const restored = this.restoreDeletedAnnotation(entry)
+                                redone = restored && redone
+                            })
+                            return redone
+                        }
+                    })
+                }
             }
         })
         this.passiveHover = new AnnotationPassiveHover({
@@ -260,12 +307,12 @@ export class Painter {
     }
 
     public setPermissionContext(currentUser: User, annotationPermissions?: AnnotationPermissions): void {
+        const writerChanged = this.currentUser?.id !== currentUser.id
         this.currentUser = currentUser
         this.annotationPermissions = annotationPermissions
+        if (writerChanged || !this.can('annotation.create')) this.clearHistory()
         this.editorStore.forEach(editor => editor.setCurrentUser(currentUser))
         if (this.currentAnnotation?.type !== AnnotationType.SELECT && !this.can('annotation.create')) {
-            this.currentAnnotation = null
-            this.disablePainting()
             this.setDefaultMode()
         }
         this.selector.refreshCurrentSelection()
@@ -300,8 +347,83 @@ export class Painter {
         return this.annotationHover.getSnapshot()
     }
 
-    private setDefaultMode = () => {
-        useAnnotationStore.getState().setCurrentAnnotationType(annotationDefinitions[0])
+    private setDefaultMode(): void {
+        this.activate(annotationDefinitions[0], null)
+    }
+
+    private syncCurrentAnnotation(annotation: IAnnotationType | null): void {
+        this.currentAnnotation = annotation
+        useAnnotationStore.getState().setCurrentAnnotationType(annotation)
+    }
+
+    private ensureMutationHistory(): AnnotationMutationHistory {
+        if (!this.mutationHistory) this.mutationHistory = new AnnotationMutationHistory()
+        return this.mutationHistory
+    }
+
+    private ensureHistoryControl(): PdfAnnotatorHistoryControl {
+        if (!this.historyControl) {
+            const historyControl = {} as PdfAnnotatorHistoryControl
+            Object.defineProperties(historyControl, {
+                canUndo: {
+                    enumerable: true,
+                    get: () => this.ensureMutationHistory().canUndo
+                },
+                canRedo: {
+                    enumerable: true,
+                    get: () => this.ensureMutationHistory().canRedo
+                }
+            })
+            historyControl.undo = () => this.undoHistory()
+            historyControl.redo = () => this.redoHistory()
+            historyControl.subscribe = (listener) => this.ensureMutationHistory().subscribe(listener)
+            this.historyControl = historyControl
+        }
+        return this.historyControl
+    }
+
+    public getHistory(): PdfAnnotatorHistoryControl {
+        this.ensureMutationHistory()
+        return this.ensureHistoryControl()
+    }
+
+    public undoHistory(): boolean {
+        const undone = this.ensureMutationHistory().undo()
+        if (undone) this.deleteUndoController?.clear()
+        return undone
+    }
+
+    public redoHistory(): boolean {
+        const redone = this.ensureMutationHistory().redo()
+        if (redone) this.deleteUndoController?.clear()
+        return redone
+    }
+
+    private clearHistory(): void {
+        this.mutationHistory?.clear()
+        this.deleteUndoController?.clear()
+    }
+
+    private recordHistory(transaction: AnnotationHistoryTransaction): number | null {
+        if (!this.mutationHistory) return null
+        return this.mutationHistory.record(transaction)
+    }
+
+    private applyAnnotationPatch(id: string, patch: Partial<IAnnotationStore>): boolean {
+        return Boolean(this.updateStore(id, cloneAnnotationPatch(patch), true, null, undefined, false))
+    }
+
+    private recordAnnotationPatchChange(
+        id: string,
+        before: Partial<IAnnotationStore>,
+        after: Partial<IAnnotationStore>,
+        mergeKey?: string
+    ): number | null {
+        return this.recordHistory({
+            mergeKey,
+            undo: () => this.applyAnnotationPatch(id, before),
+            redo: () => this.applyAnnotationPatch(id, after)
+        })
     }
 
     /**
@@ -442,7 +564,11 @@ export class Painter {
     /**
      * 保存到存储
      */
-    private saveToStore(annotationStore: IAnnotationStore, isOriginal: boolean = false) {
+    private saveToStore(
+        annotationStore: IAnnotationStore,
+        isOriginal: boolean = false,
+        groupedHistoryEntries?: DeletedAnnotationEntry[]
+    ) {
         if (!isOriginal && !this.can('annotation.create')) return
         const numberedAnnotation = isOriginal
             ? annotationStore
@@ -458,9 +584,22 @@ export class Painter {
         useAnnotationStore.getState().addAnnotation(numberedAnnotation, isOriginal)
         this.authorLabels.refreshAnnotation(numberedAnnotation.id)
         if (isOriginal) return
+        const historyEntry = this.createDeletedAnnotationEntry(numberedAnnotation)
+        if (groupedHistoryEntries) {
+            groupedHistoryEntries.push(historyEntry)
+        } else {
+            this.recordHistory({
+                undo: () => {
+                    const deleted = this.deleteAnnotation(numberedAnnotation.id, true, false)
+                    if (deleted) this.selector.delete()
+                    return deleted
+                },
+                redo: () => this.restoreDeletedAnnotation(historyEntry)
+            })
+        }
         if (currentAnnotation) {
             if (currentAnnotation.isOnce) {
-                this.selectAnnotation(numberedAnnotation.id, true)
+                this.selectAnnotation(numberedAnnotation.id, false, SelectionSource.CANVAS)
             } else {
                 useAnnotationStore.getState().setSelectedAnnotation(numberedAnnotation, SelectionSource.CANVAS)
             }
@@ -476,15 +615,32 @@ export class Painter {
         updates: Partial<IAnnotationStore>,
         emitChange: boolean = true,
         action: AnnotationPermissionAction | null = 'annotation.edit',
-        comment?: IAnnotationComment
+        comment?: IAnnotationComment,
+        recordHistory: boolean = action !== null,
+        historyMergeKey?: string
     ) {
         const annotationStore = useAnnotationStore.getState().getAnnotation(id)
         if (!annotationStore || (action && !this.can(action, annotationStore, comment))) return
+        const before = recordHistory
+            ? cloneAnnotationPatch(
+                Object.fromEntries(
+                    Object.keys(updates).map((key) => [key, annotationStore[key as keyof IAnnotationStore]])
+                ) as Partial<IAnnotationStore>
+            )
+            : null
         const updatedAnnotationStore = useAnnotationStore.getState().updateAnnotation(id, updates)
         if (updatedAnnotationStore) this.authorLabels.refreshAnnotation(id)
 
         if (updatedAnnotationStore && emitChange) {
             this.onAnnotationChanged(updatedAnnotationStore)
+        }
+        if (updatedAnnotationStore && before) {
+            const after = cloneAnnotationPatch(
+                Object.fromEntries(
+                    Object.keys(updates).map((key) => [key, updatedAnnotationStore[key as keyof IAnnotationStore]])
+                ) as Partial<IAnnotationStore>
+            )
+            this.recordAnnotationPatchChange(id, before, after, historyMergeKey)
         }
         return updatedAnnotationStore
     }
@@ -786,9 +942,9 @@ export class Painter {
      * 删除批注
      * @param id - 批注 ID
      */
-    private deleteAnnotation(id: string, emit: boolean = false): boolean {
+    private deleteAnnotation(id: string, emit: boolean = false, enforcePermission = true): boolean {
         const annotationStore = useAnnotationStore.getState().getAnnotation(id)
-        if (!annotationStore || !this.can('annotation.delete', annotationStore)) return false
+        if (!annotationStore || (enforcePermission && !this.can('annotation.delete', annotationStore))) return false
         this.annotationHover.clearAnnotation(id)
         useAnnotationStore.getState().removeAnnotation(id)
         this.authorLabels.remove(id)
@@ -805,7 +961,7 @@ export class Painter {
 
     private createDeletedAnnotationEntry(annotationStore: IAnnotationStore): DeletedAnnotationEntry {
         const annotationIds = Array.from(useAnnotationStore.getState().annotations.keys())
-        const konvaStage = this.konvaCanvasStore.get(annotationStore.pageNumber)?.konvaStage
+        const konvaStage = this.konvaCanvasStore?.get(annotationStore.pageNumber)?.konvaStage
         const group = konvaStage?.findOne((node: Konva.Node) => (
             node.getType() === 'Group'
             && node.name() === SHAPE_GROUP_NAME
@@ -928,12 +1084,12 @@ export class Painter {
      */
     public activate(annotation: IAnnotationType | null, dataTransfer: string | null): void {
         if (annotation?.type !== AnnotationType.SELECT && annotation && !this.can('annotation.create')) {
-            this.currentAnnotation = null
+            this.syncCurrentAnnotation(null)
             this.disablePainting()
             this.setDefaultMode()
             return
         }
-        this.currentAnnotation = annotation
+        this.syncCurrentAnnotation(annotation)
         this.passiveHover.clear()
         this.disablePainting()
         this.saveTempDataTransfer(dataTransfer || '')
@@ -977,7 +1133,7 @@ export class Painter {
      */
     public highlightRange(range: Range | null, annotation: IAnnotationType) {
         if (!this.can('annotation.create')) return
-        this.currentAnnotation = annotation
+        this.syncCurrentAnnotation(annotation)
         this.webSelection.highlight(range)
     }
 
@@ -985,8 +1141,13 @@ export class Painter {
      * @description 选中对应 ID 批注
      * @param id
      */
-    public selectAnnotation(id: string, isClick: boolean) {
+    public selectAnnotation(
+        id: string,
+        isClick: boolean,
+        selectionSource: SelectionSource = isClick ? SelectionSource.CANVAS : SelectionSource.SIDEBAR
+    ) {
         this.setDefaultMode()
+        this.nextSelectionSource = selectionSource
         this.selector.select(id, isClick)
     }
 
@@ -1058,11 +1219,28 @@ export class Painter {
     public delete(id: string, emit: boolean = false): boolean {
         const annotationStore = useAnnotationStore.getState().getAnnotation(id)
         if (!annotationStore || !this.can('annotation.delete', annotationStore)) return false
-        const undoEntry = emit ? this.createDeletedAnnotationEntry(annotationStore) : null
+        const undoEntry = this.createDeletedAnnotationEntry(annotationStore)
         const deleted = this.deleteAnnotation(id, emit)
         if (deleted) this.selector.delete()
-        if (deleted && undoEntry) this.deleteUndoController?.add(undoEntry)
+        if (!deleted) return false
+
+        const historyId = this.recordHistory({
+            undo: () => this.restoreDeletedAnnotation(undoEntry),
+            redo: () => {
+                const redone = this.deleteAnnotation(id, true, false)
+                if (redone) this.selector.delete()
+                return redone
+            }
+        })
+        if (emit) this.deleteUndoController?.add(undoEntry, historyId ?? undefined)
         return deleted
+    }
+
+    private deleteCommentWithoutHistory(annotationId: string, commentId: string): boolean {
+        const annotation = useAnnotationStore.getState().getAnnotation(annotationId)
+        if (!annotation || !annotation.comments.some((comment) => comment.id === commentId)) return false
+        const comments = annotation.comments.filter((comment) => comment.id !== commentId)
+        return Boolean(this.updateStore(annotationId, { comments }, true, null, undefined, false))
     }
 
     public deleteComment(annotationId: string, commentId: string): boolean {
@@ -1081,9 +1259,13 @@ export class Painter {
             commentIndex
         }
         const comments = annotation.comments.filter((item) => item.id !== commentId)
-        const updated = this.updateStore(annotationId, { comments }, true, 'comment.delete', comment)
+        const updated = this.updateStore(annotationId, { comments }, true, 'comment.delete', comment, false)
         if (!updated) return false
-        this.deleteUndoController?.add(undoEntry)
+        const historyId = this.recordHistory({
+            undo: () => this.restoreDeletedComment(undoEntry),
+            redo: () => this.deleteCommentWithoutHistory(annotationId, commentId)
+        })
+        this.deleteUndoController?.add(undoEntry, historyId ?? undefined)
         return true
     }
 
@@ -1109,9 +1291,11 @@ export class Painter {
         const blockedAnnotationIds = new Set<string>()
         entries.reverse().forEach((entry) => {
             if (entry.kind === 'comment' && blockedAnnotationIds.has(entry.annotationId)) return
-            const restored = entry.kind === 'annotation'
-                ? this.restoreDeletedAnnotation(entry)
-                : this.restoreDeletedComment(entry)
+            const restored = entry.historyId !== undefined && this.mutationHistory
+                ? this.mutationHistory.undoEntry(entry.historyId)
+                : entry.kind === 'annotation'
+                    ? this.restoreDeletedAnnotation(entry)
+                    : this.restoreDeletedComment(entry)
             if (entry.kind === 'annotation' && !restored) {
                 blockedAnnotationIds.add(entry.annotation.id)
             }
@@ -1238,7 +1422,7 @@ export class Painter {
     public destroy(): void {
 
         this.cancelHighlightRequest()
-        this.deleteUndoController?.clear()
+        this.clearHistory()
         this.disablePainting()
         this.webSelection.destroy()
         this.passiveHover.destroy()

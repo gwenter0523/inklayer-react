@@ -22,11 +22,12 @@ interface SignatureToolProps {
     onAdd: (signatureDataUrl: string) => void
     presentation?: PdfAnnotatorControlPresentation
     label?: React.ReactNode
+    selected?: boolean
 }
 
 const BASE_FONT_SIZE = 80
 
-const SignatureTool: React.FC<SignatureToolProps> = ({ annotation, disabled = false, onAdd, default_signatures, presentation = 'toolbar-icon', label }) => {
+const SignatureTool: React.FC<SignatureToolProps> = ({ annotation, disabled = false, onAdd, default_signatures, presentation = 'toolbar-icon', label, selected }) => {
     const { defaultOptions } = useOptionsContext()
 
     const signatureColors = defaultOptions.signature!.colors!
@@ -322,6 +323,8 @@ const SignatureTool: React.FC<SignatureToolProps> = ({ annotation, disabled = fa
                 <Popover.Trigger>
                     <ToolbarButton
                         disabled={disabled}
+                        selected={selected}
+                        tooltip={presentation === 'menu-item' ? 'none' : 'auto'}
                         title={t(`annotator:tool.${annotation.name}`)}
                         label={presentation === 'menu-item' ? label : undefined}
                         buttonProps={presentation === 'menu-item'
