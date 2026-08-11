@@ -368,6 +368,7 @@ export declare const PdfAnnotator: default_2.FC<PdfAnnotatorProps>;
 export declare interface PdfAnnotatorChromeProps {
     activeTool: PdfAnnotatorToolName | null;
     canCreate: boolean;
+    canRequestWrite?: boolean;
     ToolControl: default_2.ComponentType<PdfAnnotatorToolControlProps>;
     ColorControl: default_2.ComponentType<{
         presentation?: PdfAnnotatorControlPresentation;
@@ -395,6 +396,7 @@ export declare interface PdfAnnotatorChromeProps {
     actions: {
         save(): void;
         getAnnotations(): Annotation[];
+        replaceAnnotations?(annotations: Annotation[]): Promise<void>;
         exportToExcel(fileName?: string): void;
         exportToPdf(fileName?: string): void;
     };
@@ -601,6 +603,12 @@ export declare interface PdfAnnotatorProps extends PdfBaseProps {
      */
     annotationPermissions?: AnnotationPermissions;
     /**
+     * Requests the host's durable writer before a real annotation mutation.
+     * Read-only peers keep their annotation controls visible while this seam
+     * performs the serialized writer transfer.
+     */
+    requestWrite?(intent: PdfAnnotatorWriteIntent): Promise<boolean>;
+    /**
      * 是否在批注器初始化时显示全部批注作者标签。
      * 用户仍可通过工具栏按钮切换，或在 macOS 按住 Command、
      * Windows/Linux 按住 Alt 临时显示全部作者标签。
@@ -675,6 +683,13 @@ export declare interface PdfAnnotatorToolControlProps {
 export declare type PdfAnnotatorToolName = 'select' | 'rectangle' | 'circle' | 'note' | 'arrow' | 'cloud' | 'freehand' | 'freeHighlight' | 'freeText' | 'signature' | 'stamp';
 
 declare type PdfAnnotatorUserOptions = DeepPartial<PdfAnnotatorOptions>;
+
+export declare type PdfAnnotatorWriteIntent = Readonly<{
+    kind: 'tool' | 'mutation';
+    tool?: PdfAnnotatorToolName;
+    action?: AnnotationPermissionAction;
+    annotationId?: string;
+}>;
 
 export declare interface PdfBaseProps {
     /**

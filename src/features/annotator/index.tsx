@@ -33,6 +33,7 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
     pdfjsOptions,
     user = { id: 'null', name: 'unknown' },
     annotationPermissions,
+    requestWrite,
     defaultShowAnnotationAuthorLabels = false,
     defaultOptions,
     initialScale,
@@ -169,7 +170,7 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
 
     return (
         <Theme accentColor={theme} appearance={finalAppearance}>
-            <PainterProvider>
+            <PainterProvider requestWrite={requestWrite}>
                 <OptionsContext.Provider
                     value={{
                         defaultOptions: mergedOptions,
@@ -205,11 +206,12 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
                         style={layoutStyle}
                     >
                         {chrome ? (
-                            <PdfAnnotatorChromeBridge
-                                Chrome={chrome}
-                                onSave={onSave}
-                                searchAvailable={searchAvailable}
-                            />
+                                <PdfAnnotatorChromeBridge
+                                    Chrome={chrome}
+                                    onSave={onSave}
+                                    enableNativeAnnotations={enableNativeAnnotations}
+                                    searchAvailable={searchAvailable}
+                                />
                         ) : null}
                         <AnnotatorExtension
                             onLoad={() => {

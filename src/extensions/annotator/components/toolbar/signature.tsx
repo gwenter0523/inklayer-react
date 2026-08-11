@@ -23,11 +23,12 @@ interface SignatureToolProps {
     presentation?: PdfAnnotatorControlPresentation
     label?: React.ReactNode
     selected?: boolean
+    onIntent?: () => void | Promise<void>
 }
 
 const BASE_FONT_SIZE = 80
 
-const SignatureTool: React.FC<SignatureToolProps> = ({ annotation, disabled = false, onAdd, default_signatures, presentation = 'toolbar-icon', label, selected }) => {
+const SignatureTool: React.FC<SignatureToolProps> = ({ annotation, disabled = false, onAdd, default_signatures, presentation = 'toolbar-icon', label, selected, onIntent }) => {
     const { defaultOptions } = useOptionsContext()
 
     const signatureColors = defaultOptions.signature!.colors!
@@ -331,6 +332,7 @@ const SignatureTool: React.FC<SignatureToolProps> = ({ annotation, disabled = fa
                             ? { variant: 'ghost', size: '2', style: { width: '100%', justifyContent: 'flex-start', gap: 8 } }
                             : undefined}
                         icon={annotation.icon}
+                        onClick={onIntent}
                     />
                 </Popover.Trigger>
                 <Popover.Content size="1" style={{ width: 180 }} onCloseAutoFocus={(event) => event.preventDefault()}>
