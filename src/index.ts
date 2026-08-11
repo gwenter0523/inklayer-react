@@ -5,6 +5,10 @@ export { PdfAnnotator } from './features/annotator';
 export type {
   PdfAnnotatorProps,
   PdfAnnotatorOptions,
+  PdfAnnotatorChromeProps,
+  PdfAnnotatorToolName,
+  PdfAnnotatorToolControlProps,
+  PdfAnnotatorControlPresentation,
   AnnotationPermissionAction,
   AnnotationPermissionMode,
   AnnotationPermissionRequest,

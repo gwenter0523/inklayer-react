@@ -8,6 +8,7 @@ interface ToolbarButtonProps {
     className?: string;
     disabled?: boolean;
     title?: string;
+    label?: React.ReactNode;
     buttonProps?: Partial<ButtonProps>
 }
 
@@ -17,6 +18,7 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>((
     onClick,
     disabled = false,
     title,
+    label,
     buttonProps = {}
 }, ref) => {
 
@@ -31,9 +33,11 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>((
         onClick={onClick}
         disabled={disabled}
         title={title}
+        aria-label={title}
         {...buttonProps}
     >
         {icon}
+        {label}
     </IconButton>
 
     return (

@@ -1,3 +1,4 @@
+import type React from 'react'
 import { PdfBaseProps, User } from '@/types'
 import { DeepPartial } from '@/types/utils'
 import type { Annotation } from '@/core/annotation.core'
@@ -32,6 +33,51 @@ export interface AnnotationPermissions {
      * the default decision.
      */
     can?: (request: AnnotationPermissionRequest) => boolean | undefined
+}
+
+export type PdfAnnotatorToolName =
+    | 'select'
+    | 'rectangle'
+    | 'circle'
+    | 'note'
+    | 'arrow'
+    | 'cloud'
+    | 'freehand'
+    | 'freeHighlight'
+    | 'freeText'
+    | 'signature'
+    | 'stamp'
+
+export type PdfAnnotatorControlPresentation = 'toolbar-icon' | 'menu-item'
+
+export interface PdfAnnotatorToolControlProps {
+    tool: PdfAnnotatorToolName
+    presentation?: PdfAnnotatorControlPresentation
+    label?: React.ReactNode
+}
+
+export interface PdfAnnotatorChromeProps {
+    activeTool: PdfAnnotatorToolName | null
+    canCreate: boolean
+    ToolControl: React.ComponentType<PdfAnnotatorToolControlProps>
+    ColorControl: React.ComponentType<{
+        presentation?: PdfAnnotatorControlPresentation
+    }>
+    AuthorLabelsControl: React.ComponentType<{
+        presentation?: PdfAnnotatorControlPresentation
+    }>
+    PageZoomControl: React.ComponentType
+    panels: {
+        navigation: { open: boolean; toggle(): void }
+        search: { open: boolean; available: boolean; toggle(): void }
+        annotations: { open: boolean; toggle(): void }
+    }
+    actions: {
+        save(): void
+        getAnnotations(): Annotation[]
+        exportToExcel(fileName?: string): void
+        exportToPdf(fileName?: string): void
+    }
 }
 
 export type PdfAnnotatorUserOptions = DeepPartial<PdfAnnotatorOptions>
@@ -226,6 +272,15 @@ export type PdfAnnotatorOptions = {
  * PDF 批注组件的配置参数
  */
 export interface PdfAnnotatorProps extends PdfBaseProps {
+
+    /**
+     * Replaces the built-in annotator chrome with a host-owned layout while
+     * keeping annotation controls and viewer actions SDK-owned.
+     */
+    chrome?: React.ComponentType<PdfAnnotatorChromeProps>
+
+    /** Whether the SDK search panel is available to a host chrome. */
+    searchAvailable?: boolean
 
     /**
      * 当前用户信息，用于标注作者标识

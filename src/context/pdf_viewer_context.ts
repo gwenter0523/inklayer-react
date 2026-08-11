@@ -19,6 +19,10 @@ export interface PdfViewerContextValue {
     isReady: boolean
 
     activeSidebarPanel: SidebarPanelKey | null
+
+    isNavigationSidebarOpen: boolean
+
+    toggleNavigationSidebar: () => void
     
     toggleSidebar: () => void
 

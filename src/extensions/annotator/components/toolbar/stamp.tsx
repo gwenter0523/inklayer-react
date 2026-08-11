@@ -8,6 +8,7 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat.js'
 import { useUserContext } from '@/context/user_context'
 import { ToolbarButton } from '@/components/toolbar_button'
+import type { PdfAnnotatorControlPresentation } from '../../types/annotator'
 import { useOptionsContext } from '../../context/options_context'
 import {
     Button,
@@ -33,6 +34,8 @@ interface SignatureToolProps {
     disabled?: boolean
     default_stamps?: string[]
     onAdd: (signatureDataUrl: string) => void
+    presentation?: PdfAnnotatorControlPresentation
+    label?: React.ReactNode
 }
 
 type FieldType = {
@@ -91,7 +94,7 @@ const DATE_FORMAT_OPTIONS = [
     }
 ]
 
-const StampTool: React.FC<SignatureToolProps> = ({ annotation, disabled = false, default_stamps, onAdd }) => {
+const StampTool: React.FC<SignatureToolProps> = ({ annotation, disabled = false, default_stamps, onAdd, presentation = 'toolbar-icon', label }) => {
     const { defaultOptions } = useOptionsContext()
 
     const maxSize = defaultOptions.stamp!.maxSize!
@@ -407,7 +410,15 @@ const StampTool: React.FC<SignatureToolProps> = ({ annotation, disabled = false,
         <>
             <Popover.Root>
                 <Popover.Trigger>
-                    <ToolbarButton disabled={disabled} title={t(`annotator:tool.${annotation.name}`)} icon={annotation.icon} />
+                    <ToolbarButton
+                        disabled={disabled}
+                        title={t(`annotator:tool.${annotation.name}`)}
+                        label={presentation === 'menu-item' ? label : undefined}
+                        buttonProps={presentation === 'menu-item'
+                            ? { variant: 'ghost', size: '2', style: { width: '100%', justifyContent: 'flex-start', gap: 8 } }
+                            : undefined}
+                        icon={annotation.icon}
+                    />
                 </Popover.Trigger>
                 <Popover.Content
                     size="1"

@@ -36,6 +36,8 @@ export interface PdfViewerProviderProps extends Omit<UseViewerOptions, 'eventBus
     style?: React.CSSProperties
     initialScale?: PdfScale
     user?: User
+    hideHeader?: boolean
+    hidePageIndicator?: boolean
 }
 
 export const PdfViewerProvider: React.FC<PdfViewerProviderProps> = ({
@@ -48,12 +50,17 @@ export const PdfViewerProvider: React.FC<PdfViewerProviderProps> = ({
     style = { width: '100vw', height: '100vh' },
     initialScale = 'auto',
     user,
+    hideHeader = false,
+    hidePageIndicator = false,
     ...viewerOptions
 }) => {
     const { t } = useTranslation(['viewer'], { useSuspense: false })
     const viewerContainerRef = useRef<HTMLDivElement>(null)
     const { loading, progress, pdfDocument, pdfViewer, eventBus, loadError } = usePdfViewer(viewerContainerRef, viewerOptions)
     const [isNavigationSidebarOpen, setIsNavigationSidebarOpen] = useState(false)
+    const toggleNavigationSidebar = useCallback(() => {
+        setIsNavigationSidebarOpen((open) => !open)
+    }, [])
 
     const [activeSidebarPanel, setActiveSidebarPanel] = useState<SidebarPanelKey | null>(() => {
         if (defaultActiveSidebarKey) return defaultActiveSidebarKey
@@ -135,6 +142,8 @@ export const PdfViewerProvider: React.FC<PdfViewerProviderProps> = ({
             viewerContainerRef,
             isReady,
             activeSidebarPanel,
+            isNavigationSidebarOpen,
+            toggleNavigationSidebar,
             toggleSidebar,
             openSidebar,
             closeSidebar,
@@ -152,6 +161,8 @@ export const PdfViewerProvider: React.FC<PdfViewerProviderProps> = ({
             openSidebar,
             closeSidebar,
             activeSidebarPanel,
+            isNavigationSidebarOpen,
+            toggleNavigationSidebar,
             printClean,
             downloadClean
         ]
@@ -224,7 +235,7 @@ export const PdfViewerProvider: React.FC<PdfViewerProviderProps> = ({
                 <Flex id="InkLayer" className={styles.InkLayerViewer} style={style} direction="column" width="100%" position="relative">
                     <LoadingIndicator progress={progress} loading={loading} />
                     {loadError && <ErrorDisplay error={loadError} />}
-                    <Flex pl="2" pr="2" className={styles.viewerHeader}>
+                    {!hideHeader && <Flex pl="2" pr="2" className={styles.viewerHeader}>
                         <div className={styles['viewerHeader-title']}>
                             <Flex align="center" gap="2" className={styles['viewerHeader-title-left']}>
                                 <Tooltip content={t('viewer:navigation.toggle')}>
@@ -253,7 +264,7 @@ export const PdfViewerProvider: React.FC<PdfViewerProviderProps> = ({
                                 </Flex>
                             </div>
                         </div>
-                    </Flex>
+                    </Flex>}
                     <Flex flexGrow="1" minHeight="0" className={styles.viewerBody}>
                         <NavigationSidebar
                             open={isNavigationSidebarOpen}
@@ -268,7 +279,7 @@ export const PdfViewerProvider: React.FC<PdfViewerProviderProps> = ({
                                     </Flex>
                                 )}
                                 <Box position="relative" flexGrow="1" className={styles['viewerContainer-content']}>
-                                    <PageIndicator />
+                                    {!hidePageIndicator && <PageIndicator />}
                                     <div ref={viewerContainerRef} className={styles.pdfjsViewerContainer}>
                                         <div className="pdfViewer"></div>
                                     </div>

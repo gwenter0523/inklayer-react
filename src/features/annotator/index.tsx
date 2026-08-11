@@ -20,6 +20,7 @@ import { AiOutlineSave, AiOutlineSearch } from 'react-icons/ai'
 import { SearchSidebar } from '@/components/search_sidebar'
 import useSystemAppearance from '@/hooks/useSystemAppearance'
 import { annotationsToStores, storesToAnnotations, storeToAnnotation } from '@/core/adapters/store.mapper'
+import { PdfAnnotatorChromeBridge } from './chrome'
 
 export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
     appearance = 'auto',
@@ -44,7 +45,9 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
     onAnnotationSelected,
     onAnnotationUpdated,
     layoutStyle,
-    actions
+    actions,
+    chrome,
+    searchAvailable = true
 }) => {
     // Annotation[] → IAnnotationStore[]（组件内部格式转换）
     const effectiveAnnotations = useMemo(
@@ -179,7 +182,9 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
                         initialScale={initialScale}
                         user={user}
                         {...viewerOptions}
-                        toolbar={<Toolbar defaultAnnotationName="" />}
+                        toolbar={chrome ? undefined : <Toolbar defaultAnnotationName="" />}
+                        hideHeader={Boolean(chrome)}
+                        hidePageIndicator={Boolean(chrome)}
                         defaultActiveSidebarKey={defaultShowAnnotationsSidebar ? 'annotator-sidebar-toggle' : null}
                         sidebar={[
                             {
@@ -195,9 +200,16 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
                                 render: () => <Sidebar />
                             }
                         ]}
-                        actions={<ActionsButtons />}
+                        actions={chrome ? undefined : <ActionsButtons />}
                         style={layoutStyle}
                     >
+                        {chrome ? (
+                            <PdfAnnotatorChromeBridge
+                                Chrome={chrome}
+                                onSave={onSave}
+                                searchAvailable={searchAvailable}
+                            />
+                        ) : null}
                         <AnnotatorExtension
                             onLoad={() => {
                                 onLoad?.()

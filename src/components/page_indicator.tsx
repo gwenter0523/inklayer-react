@@ -6,7 +6,12 @@ import { useTranslation } from 'react-i18next'
 
 const AUTO_HIDE_DELAY = 3000
 
-export const PageIndicator: React.FC = () => {
+export interface PageIndicatorProps {
+    /** Keep the control visible when it is hosted by a persistent bottom HUD. */
+    persistent?: boolean
+}
+
+export const PageIndicator: React.FC<PageIndicatorProps> = ({ persistent = false }) => {
     const { t } = useTranslation(['viewer'], { useSuspense: false })
     const { pdfViewer, isReady } = usePdfViewerContext()
 
@@ -42,8 +47,8 @@ export const PageIndicator: React.FC = () => {
 
     const showTemporarily = useCallback(() => {
         setVisible(true)
-        scheduleHide()
-    }, [scheduleHide])
+        if (!persistent) scheduleHide()
+    }, [persistent, scheduleHide])
 
     const handleMouseEnter = useCallback(() => {
         interactionRef.current.hovered = true
@@ -158,6 +163,12 @@ export const PageIndicator: React.FC = () => {
         }
     }, [pdfViewer, isReady, updatePageInfo, showTemporarily])
 
+    useEffect(() => {
+        if (!persistent) return
+        clearHideTimer()
+        setVisible(true)
+    }, [clearHideTimer, persistent])
+
     /** 监听 PDF 容器滚动 */
     useEffect(() => {
         if (!pdfViewer?.container) return
@@ -197,17 +208,17 @@ export const PageIndicator: React.FC = () => {
 
     return (
         <Box
-            position="absolute"
+            position={persistent ? 'static' : 'absolute'}
             bottom="20px"
             left="50%"
             style={{
-                transform: 'translateX(-50%)',
+                transform: persistent ? undefined : 'translateX(-50%)',
                 zIndex: 1000,
                 background: 'rgba(60, 60, 60, 0.85)',
                 color: '#fff',
                 borderRadius: '4px',
-                opacity: enabled && visible ? 1 : 0,
-                pointerEvents: enabled && visible ? 'auto' : 'none',
+                opacity: enabled && (persistent || visible) ? 1 : 0,
+                pointerEvents: enabled && (persistent || visible) ? 'auto' : 'none',
                 transition: 'opacity 0.3s ease'
             }}
             onMouseEnter={handleMouseEnter}

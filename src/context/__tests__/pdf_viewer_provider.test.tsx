@@ -169,4 +169,21 @@ describe('PdfViewerProvider navigation sidebar layout', () => {
         expect(mockSetScaleValue).not.toHaveBeenCalled()
         expect(mockUpdate).not.toHaveBeenCalled()
     })
+
+    it('suppresses built-in header and page indicator when custom chrome owns the surface', () => {
+        render(
+            <Theme>
+                <PdfViewerProvider
+                    title="Test Viewer"
+                    hideHeader
+                    hidePageIndicator
+                >
+                    <div>Child content</div>
+                </PdfViewerProvider>
+            </Theme>
+        )
+
+        expect(screen.queryByRole('button', { name: 'Toggle document navigation' })).toBeNull()
+        expect(screen.queryByText('Child content')).not.toBeNull()
+    })
 })

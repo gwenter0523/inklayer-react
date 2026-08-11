@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { formatFileSize } from '../../utils/utils'
 import { loadFontWithFontFace } from '../../utils/fontLoader'
 import { ToolbarButton } from '@/components/toolbar_button'
+import type { PdfAnnotatorControlPresentation } from '../../types/annotator'
 import { useOptionsContext } from '../../context/options_context'
 import { Button, Callout, Dialog, Flex, Popover, SegmentedControl, Select, Text, useThemeContext } from '@radix-ui/themes'
 import { AiOutlineImport, AiOutlinePlusCircle } from 'react-icons/ai';
@@ -19,11 +20,13 @@ interface SignatureToolProps {
     disabled?: boolean
     default_signatures?: string[]
     onAdd: (signatureDataUrl: string) => void
+    presentation?: PdfAnnotatorControlPresentation
+    label?: React.ReactNode
 }
 
 const BASE_FONT_SIZE = 80
 
-const SignatureTool: React.FC<SignatureToolProps> = ({ annotation, disabled = false, onAdd, default_signatures }) => {
+const SignatureTool: React.FC<SignatureToolProps> = ({ annotation, disabled = false, onAdd, default_signatures, presentation = 'toolbar-icon', label }) => {
     const { defaultOptions } = useOptionsContext()
 
     const signatureColors = defaultOptions.signature!.colors!
@@ -317,7 +320,15 @@ const SignatureTool: React.FC<SignatureToolProps> = ({ annotation, disabled = fa
         <>
             <Popover.Root>
                 <Popover.Trigger>
-                    <ToolbarButton disabled={disabled} title={t(`annotator:tool.${annotation.name}`)} icon={annotation.icon} />
+                    <ToolbarButton
+                        disabled={disabled}
+                        title={t(`annotator:tool.${annotation.name}`)}
+                        label={presentation === 'menu-item' ? label : undefined}
+                        buttonProps={presentation === 'menu-item'
+                            ? { variant: 'ghost', size: '2', style: { width: '100%', justifyContent: 'flex-start', gap: 8 } }
+                            : undefined}
+                        icon={annotation.icon}
+                    />
                 </Popover.Trigger>
                 <Popover.Content size="1" style={{ width: 180 }} onCloseAutoFocus={(event) => event.preventDefault()}>
                     <div className={styles.SignaturePop}>
