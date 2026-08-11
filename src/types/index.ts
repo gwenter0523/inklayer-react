@@ -25,6 +25,17 @@ export interface User {
 
 export type PdfScale = 'auto' | 'page-actual' | 'page-fit' | 'page-width' | string
 
+export interface PdfJsOptions {
+    /** Base URL for packed CMap assets used by embedded CID fonts. */
+    cMapUrl?: string
+    /** Whether the CMap assets use the packed binary format. */
+    cMapPacked?: boolean
+    /** Base URL for standard PDF font assets. */
+    standardFontDataUrl?: string
+    /** Allow PDF.js to fall back to system fonts when an embedded font is unavailable. */
+    useSystemFonts?: boolean
+}
+
 export interface PdfBaseProps {
     /**
      * 主题模式
@@ -101,5 +112,8 @@ export interface PdfBaseProps {
      * @default auto
      */
     enableRange?: boolean | 'auto'
+
+    /** PDF.js document asset options for CMaps and standard fonts. */
+    pdfjsOptions?: PdfJsOptions
 
 }

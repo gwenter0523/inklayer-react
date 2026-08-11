@@ -30,6 +30,7 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
     data,
     url,
     locale = 'zh-CN',
+    pdfjsOptions,
     user = { id: 'null', name: 'unknown' },
     annotationPermissions,
     defaultShowAnnotationAuthorLabels = false,
@@ -55,8 +56,8 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
         [initialAnnotations]
     )
     const viewerOptions = useMemo(
-        () => ({ textLayerMode: 1, annotationMode: 0, externalLinkTarget: 0, enableRange }),
-        [enableRange]
+        () => ({ textLayerMode: 1, annotationMode: 0, externalLinkTarget: 0, enableRange, pdfjsOptions }),
+        [enableRange, pdfjsOptions]
     )
 
     const { t } = useTranslation(['annotator', 'common'], { useSuspense: false })

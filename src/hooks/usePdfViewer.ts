@@ -11,6 +11,7 @@ import {
 } from 'pdfjs-dist/legacy/build/pdf.mjs'
 
 import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url'
+import type { PdfJsOptions } from '@/types'
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl
 
@@ -37,6 +38,8 @@ export interface UseViewerOptions {
     annotationMode?: number
     /** 外部链接打开方式 */
     externalLinkTarget?: number
+    /** PDF.js document asset options for CMaps and standard fonts. */
+    pdfjsOptions?: PdfJsOptions
 }
 
 function isRangeFailure(error: unknown) {
@@ -59,7 +62,8 @@ export function usePdfViewer(containerRef: React.RefObject<HTMLDivElement>, opti
         eventBus: externalEventBus,
         textLayerMode = 1,
         annotationMode = AnnotationMode.DISABLE,
-        externalLinkTarget = 2
+        externalLinkTarget = 2,
+        pdfjsOptions
     } = options
 
     const onLoadSuccessRef = useRef(onLoadSuccess)
@@ -147,20 +151,21 @@ export function usePdfViewer(containerRef: React.RefObject<HTMLDivElement>, opti
             if (data) {
                 // 如果提供了 data，则直接使用数据
                 return getDocument({
+                    ...pdfjsOptions,
                     data: data,
                     disableRange: true,
                     disableStream: true
                 })
             } else if (url && useRange) {
                 const transport = await createTransport(url as string)
-                return getDocument({ range: transport })
+                return getDocument({ ...pdfjsOptions, range: transport })
             } else if (url) {
-                return getDocument({ url, disableRange: true, disableStream: true })
+                return getDocument({ ...pdfjsOptions, url, disableRange: true, disableStream: true })
             } else {
                 throw new Error('Either url or data must be provided')
             }
         },
-        [url, createTransport, data]
+        [url, createTransport, data, pdfjsOptions]
     )
 
     const loadingTaskRef = useRef<PDFDocumentLoadingTask | null>(null)

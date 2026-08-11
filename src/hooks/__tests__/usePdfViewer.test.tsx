@@ -91,6 +91,35 @@ describe('usePdfViewer', () => {
         unmount()
     })
 
+    it('passes host PDF.js font asset options to document loading', async () => {
+        const loadingTask = createDeferredTask()
+        jest.mocked(getDocument).mockReturnValue(loadingTask as never)
+        const containerRef = { current: document.createElement('div') }
+
+        const { unmount } = renderHook(() =>
+            usePdfViewer(containerRef, {
+                url: 'test.pdf',
+                enableRange: false,
+                pdfjsOptions: {
+                    cMapUrl: '/cmaps/',
+                    cMapPacked: true,
+                    standardFontDataUrl: '/standard_fonts/',
+                    useSystemFonts: false
+                }
+            })
+        )
+
+        await waitFor(() => expect(getDocument).toHaveBeenCalledTimes(1))
+        expect(getDocument).toHaveBeenCalledWith(expect.objectContaining({
+            cMapUrl: '/cmaps/',
+            cMapPacked: true,
+            standardFontDataUrl: '/standard_fonts/',
+            useSystemFonts: false
+        }))
+
+        unmount()
+    })
+
     it('ignores a stale loading task after the URL changes', async () => {
         const firstTask = createDeferredTask()
         const secondTask = createDeferredTask()

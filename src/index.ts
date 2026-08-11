@@ -21,4 +21,4 @@ export type {
   IAnnotationComment,
   IAnnotationReference,
 } from './extensions/annotator/const/definitions';
-export type {User, PdfBaseProps} from './types';
+export type {User, PdfBaseProps, PdfJsOptions} from './types';

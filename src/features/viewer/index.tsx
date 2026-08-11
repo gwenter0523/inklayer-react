@@ -116,6 +116,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
     url,
     data,
     locale = 'zh-CN',
+    pdfjsOptions,
     initialScale,
     layoutStyle,
     theme = 'violet',
@@ -134,9 +135,10 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
             textLayerMode: showTextLayer ? 1 : 0,
             annotationMode: showAnnotations ? 1 : 0,
             externalLinkTarget: 0,
-            enableRange
+            enableRange,
+            pdfjsOptions
         }),
-        [showTextLayer, showAnnotations, enableRange]
+        [showTextLayer, showAnnotations, enableRange, pdfjsOptions]
     )
 
     useEffect(() => {

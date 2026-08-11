@@ -712,6 +712,8 @@ export declare interface PdfBaseProps {
      * @default auto
      */
     enableRange?: boolean | 'auto';
+    /** PDF.js document asset options for CMaps and standard fonts. */
+    pdfjsOptions?: PdfJsOptions;
 }
 
 declare type PdfjsAnnotationSubtype = 'None' | 'Link' | 'Text' | 'Widget' | 'Popup' | 'FreeText' | 'Line' | 'Square' | 'Circle' | 'PolyLine' | 'Polygon' | 'Caret' | 'Ink' | 'Highlight' | 'Underline' | 'Squiggly' | 'StrikeOut' | 'Stamp' | 'FileAttachment' | 'Note' | 'Arrow';
@@ -745,6 +747,17 @@ declare enum PdfjsAnnotationType {
     THREED = 25,
     REDACT = 26,
     NOTE = 27
+}
+
+export declare interface PdfJsOptions {
+    /** Base URL for packed CMap assets used by embedded CID fonts. */
+    cMapUrl?: string;
+    /** Whether the CMap assets use the packed binary format. */
+    cMapPacked?: boolean;
+    /** Base URL for standard PDF font assets. */
+    standardFontDataUrl?: string;
+    /** Allow PDF.js to fall back to system fonts when an embedded font is unavailable. */
+    useSystemFonts?: boolean;
 }
 
 /**
