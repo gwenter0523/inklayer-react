@@ -14,6 +14,7 @@ export type {
   AnnotationPermissionMode,
   AnnotationPermissionRequest,
   AnnotationPermissions,
+  PdfAnnotatorWriteIntent,
 } from './extensions/annotator/types/annotator';
 export { PdfViewer } from './features/viewer';
 export type { PdfViewerProps } from './features/viewer';

@@ -36,7 +36,7 @@ const MenuBar = forwardRef<MenuBarRef, MenuBarProps>(function MenuBar(props, ref
     const { t } = useTranslation(['common', 'annotator'], { useSuspense: false })
     const { openSidebar, activeSidebarPanel, viewerContainerRef } = usePdfViewerContext()
 
-    const { painter } = usePainter()
+    const { painter, requestWrite } = usePainter()
     const { defaultOptions } = useOptionsContext()
     const { popoverBarProps = {} } = props
 
@@ -102,23 +102,42 @@ const MenuBar = forwardRef<MenuBarRef, MenuBarProps>(function MenuBar(props, ref
     }))
 
     const isStyleSupported = currentAnnotation && annotationDefinitions.find((item) => item.type === currentAnnotation.type)?.styleEditable
-    const canComment = Boolean(currentAnnotation && painter?.can('annotation.comment', currentAnnotation))
-    const canEdit = Boolean(currentAnnotation && painter?.can('annotation.edit', currentAnnotation))
-    const canDelete = Boolean(currentAnnotation && painter?.can('annotation.delete', currentAnnotation))
+    const canRequestWrite = Boolean(requestWrite)
+    const canComment = Boolean(currentAnnotation && (painter?.can('annotation.comment', currentAnnotation) || canRequestWrite))
+    const canEdit = Boolean(currentAnnotation && (painter?.can('annotation.edit', currentAnnotation) || canRequestWrite))
+    const canDelete = Boolean(currentAnnotation && (painter?.can('annotation.delete', currentAnnotation) || canRequestWrite))
+
+    const requestMutation = async (
+        action: 'annotation.comment' | 'annotation.edit' | 'annotation.delete',
+        annotation: IAnnotationStore
+    ): Promise<IAnnotationStore | null> => {
+        if (painter?.can(action, annotation)) return annotation
+        if (!requestWrite) return null
+        const granted = await requestWrite({ kind: 'mutation', action, annotationId: annotation.id })
+        if (!granted) return null
+        return useAnnotationStore.getState().getAnnotation(annotation.id) ?? annotation
+    }
 
     const handleAnnotationStyleChange = (style: IAnnotationStyle) => {
-        if (!currentAnnotation || !painter?.can('annotation.edit', currentAnnotation)) return
-        painter?.updateAnnotationStyle(currentAnnotation, style)
+        if (!currentAnnotation || !painter) return
+        void requestMutation('annotation.edit', currentAnnotation).then((annotation) => {
+            if (annotation) painter.updateAnnotationStyle(annotation, style)
+        })
     }
 
     const handleAnnotationDelete = () => {
-        if (!currentAnnotation || !painter?.can('annotation.delete', currentAnnotation)) return
-        painter?.delete(currentAnnotation.id, true)
+        if (!currentAnnotation || !painter) return
+        void requestMutation('annotation.delete', currentAnnotation).then((annotation) => {
+            if (annotation) painter.delete(annotation.id, true)
+        })
     }
 
     const handleOpenComment = (annotation: IAnnotationStore) => {
-        openSidebar('annotator-sidebar-toggle')
-        useAnnotationStore.getState().setSelectedAnnotation(annotation, SelectionSource.CANVAS)
+        void requestMutation('annotation.comment', annotation).then((latest) => {
+            if (!latest) return
+            openSidebar('annotator-sidebar-toggle')
+            useAnnotationStore.getState().setSelectedAnnotation(latest, SelectionSource.CANVAS)
+        })
     }
 
     return (

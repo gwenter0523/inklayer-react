@@ -11,7 +11,7 @@ import {
     annotationToolNameForType,
 } from '../../extensions/annotator/components/toolbar/controls'
 import { exportAnnotationsToExcel, exportAnnotationsToPdf } from '../../extensions/annotator/painter/annot'
-import { storesToAnnotations } from '../../core/adapters/store.mapper'
+import { annotationsToStores, storesToAnnotations } from '../../core/adapters/store.mapper'
 import type {
     PdfAnnotatorChromeProps,
     PdfAnnotatorProps,
@@ -20,6 +20,7 @@ import type {
 interface PdfAnnotatorChromeBridgeProps {
     Chrome: NonNullable<PdfAnnotatorProps['chrome']>
     onSave?: PdfAnnotatorProps['onSave']
+    enableNativeAnnotations: boolean
     searchAvailable: boolean
 }
 
@@ -29,9 +30,10 @@ const ANNOTATIONS_PANEL_KEY = 'annotator-sidebar-toggle'
 export const PdfAnnotatorChromeBridge: React.FC<PdfAnnotatorChromeBridgeProps> = ({
     Chrome,
     onSave,
+    enableNativeAnnotations,
     searchAvailable,
 }) => {
-    const { painter } = usePainter()
+    const { painter, requestWrite } = usePainter()
     const currentAnnotationType = useAnnotationStore((state) => state.currentAnnotationType)
     const {
         activeSidebarPanel,
@@ -42,6 +44,7 @@ export const PdfAnnotatorChromeBridge: React.FC<PdfAnnotatorChromeBridgeProps> =
         pdfViewer,
     } = usePdfViewerContext()
     const canCreate = painter?.can('annotation.create') ?? false
+    const canRequestWrite = Boolean(requestWrite)
 
     useEffect(() => {
         if (canCreate) return
@@ -64,6 +67,9 @@ export const PdfAnnotatorChromeBridge: React.FC<PdfAnnotatorChromeBridgeProps> =
             if (painter) onSave?.(storesToAnnotations(painter.getData()))
         },
         getAnnotations: () => storesToAnnotations(painter?.getData() ?? []),
+        replaceAnnotations: async (annotations) => {
+            if (painter) await painter.replaceAnnotations(annotationsToStores(annotations), enableNativeAnnotations)
+        },
         exportToExcel: (fileName) => {
             if (painter && pdfViewer) void exportAnnotationsToExcel(pdfViewer, painter.getData(), fileName)
         },
@@ -76,6 +82,7 @@ export const PdfAnnotatorChromeBridge: React.FC<PdfAnnotatorChromeBridgeProps> =
         <Chrome
             activeTool={annotationToolNameForType(currentAnnotationType?.type)}
             canCreate={canCreate}
+            canRequestWrite={canRequestWrite}
             ToolControl={AnnotationToolControl}
             ColorControl={AnnotationColorControl}
             AuthorLabelsControl={AnnotationAuthorLabelsControl}

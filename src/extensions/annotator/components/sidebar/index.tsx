@@ -81,7 +81,8 @@ const Sidebar: React.FC = () => {
     const annotations = useAnnotationStore((state) => state.annotations)
     const currentUser = useContext(UserContext)
     const { isSidebarCollapsed } = usePdfViewerContext()
-    const { painter } = usePainter()
+    const { painter, requestWrite } = usePainter()
+    const canRequestWrite = Boolean(requestWrite)
     const currentAnnotation = useAnnotationStore((state) => state.selectedAnnotation)
     const selectionRevision = useAnnotationStore((state) => state.selectionRevision)
     const setCurrentAnnotation = useAnnotationStore((state) => state.setSelectedAnnotation)
@@ -111,14 +112,14 @@ const Sidebar: React.FC = () => {
         const annotation = useAnnotationStore.getState().getAnnotation(selectedAnnotationId)
         if (!annotation) return
 
-        const canEdit = Boolean(painter?.can('annotation.edit', annotation))
+        const canEdit = Boolean(painter?.can('annotation.edit', annotation) || canRequestWrite)
         const isEmptyComment = annotation.contentsObj?.text === ''
         const isEmptyReply = annotation.comments?.length === 0
         // 根据批注归属与内容决定打开评论或回复。
         setEditorState(
             canEdit && isEmptyComment && isEmptyReply
                 ? { kind: 'annotation-edit', annotationId: annotation.id }
-                : painter?.can('annotation.comment', annotation)
+                : painter?.can('annotation.comment', annotation) || canRequestWrite
                     ? { kind: 'annotation-reply', annotationId: annotation.id }
                     : null
         )
@@ -127,6 +128,7 @@ const Sidebar: React.FC = () => {
         currentAnnotation?.store?.id,
         isSidebarCollapsed,
         painter,
+        canRequestWrite,
         selectionRevision
     ])
 
@@ -381,18 +383,24 @@ const Sidebar: React.FC = () => {
     }
 
     const openAnnotationReply = (annotation: IAnnotationStore) => {
-        handleAnnotationClick(annotation)
-        setEditorState({
-            kind: 'annotation-reply',
-            annotationId: annotation.id
+        void requestAnnotationWrite('annotation.comment', annotation).then((latest) => {
+            if (!latest) return
+            handleAnnotationClick(latest)
+            setEditorState({
+                kind: 'annotation-reply',
+                annotationId: latest.id
+            })
         })
     }
 
     const openAnnotationEditor = (annotation: IAnnotationStore) => {
-        handleAnnotationClick(annotation)
-        setEditorState({
-            kind: 'annotation-edit',
-            annotationId: annotation.id
+        void requestAnnotationWrite('annotation.edit', annotation).then((latest) => {
+            if (!latest) return
+            handleAnnotationClick(latest)
+            setEditorState({
+                kind: 'annotation-edit',
+                annotationId: latest.id
+            })
         })
     }
 
@@ -400,11 +408,15 @@ const Sidebar: React.FC = () => {
         annotation: IAnnotationStore,
         reply: IAnnotationComment
     ) => {
-        handleAnnotationClick(annotation)
-        setEditorState({
-            kind: 'reply-edit',
-            annotationId: annotation.id,
-            replyId: reply.id
+        void requestAnnotationWrite('comment.edit', annotation, reply).then((latest) => {
+            const latestReply = latest?.comments?.find((comment) => comment.id === reply.id)
+            if (!latest || !latestReply) return
+            handleAnnotationClick(latest)
+            setEditorState({
+                kind: 'reply-edit',
+                annotationId: latest.id,
+                replyId: latestReply.id
+            })
         })
     }
 
@@ -447,75 +459,89 @@ const Sidebar: React.FC = () => {
         void painter?.highlight(annotation)
     }
 
+    const requestAnnotationWrite = async (
+        action: import('../../types/annotator').AnnotationPermissionAction,
+        annotation: IAnnotationStore,
+        comment?: IAnnotationComment
+    ): Promise<IAnnotationStore | null> => {
+        if (painter?.can(action, annotation, comment)) return annotation
+        if (!requestWrite) return null
+        const granted = await requestWrite({ kind: 'mutation', action, annotationId: annotation.id })
+        if (!granted) return null
+        return useAnnotationStore.getState().getAnnotation(annotation.id) ?? annotation
+    }
+
     const updateComment = (annotation: IAnnotationStore, draft: AnnotationReferenceDraft) => {
         const latestAnnotation = useAnnotationStore.getState().getAnnotation(annotation.id)
-        if (!latestAnnotation || !painter?.can('annotation.edit', latestAnnotation)) return
-        painter.update(latestAnnotation.id, {
-            contentsObj: applyAnnotationCommentDraft(latestAnnotation.contentsObj, draft),
-            date: formatTimestamp(Date.now())
-        }, 'annotation.edit')
-
-        setEditorState(null)
+        if (!latestAnnotation || !painter) return
+        void requestAnnotationWrite('annotation.edit', latestAnnotation).then((writable) => {
+            if (!writable) return
+            painter.update(writable.id, {
+                contentsObj: applyAnnotationCommentDraft(writable.contentsObj, draft),
+                date: formatTimestamp(Date.now())
+            }, 'annotation.edit')
+            setEditorState(null)
+        })
     }
 
     const addReply = (annotation: IAnnotationStore, draft: AnnotationReferenceDraft, status?: CommentStatus) => {
         const latestAnnotation = useAnnotationStore.getState().getAnnotation(annotation.id)
-        if (!latestAnnotation) return
+        if (!latestAnnotation || !painter) return
         const action = status === undefined ? 'annotation.comment' : 'annotation.change-status'
-        if (!painter?.can(action, latestAnnotation)) return
-        const replyUser = currentUser?.user ?? undefined
-        const newReply = createAnnotationReply({
-            id: generateUUID(),
-            title: replyUser?.name ?? 'Anonymous',
-            date: formatTimestamp(Date.now()),
-            draft,
-            status,
-            user: replyUser
+        void requestAnnotationWrite(action, latestAnnotation).then((writable) => {
+            if (!writable) return
+            const replyUser = currentUser?.user ?? undefined
+            const newReply = createAnnotationReply({
+                id: generateUUID(),
+                title: replyUser?.name ?? 'Anonymous',
+                date: formatTimestamp(Date.now()),
+                draft,
+                status,
+                user: replyUser
+            })
+            painter.update(writable.id, {
+                comments: [...(writable.comments || []), newReply]
+            }, action)
+            setEditorState(null)
         })
-
-        painter.update(latestAnnotation.id, {
-            comments: [...(latestAnnotation.comments || []), newReply]
-        }, action)
-
-        setEditorState(null)
     }
 
     const updateReply = (annotation: IAnnotationStore, reply: IAnnotationComment, draft: AnnotationReferenceDraft) => {
         const latestAnnotation = useAnnotationStore.getState().getAnnotation(annotation.id)
         const latestReply = latestAnnotation?.comments?.find((comment) => comment.id === reply.id)
-        if (
-            !latestAnnotation
-            || !latestReply
-            || !painter?.can('comment.edit', latestAnnotation, latestReply)
-        ) {
+        if (!latestAnnotation || !latestReply || !painter) {
             return
         }
-        const updatedComments = applyAnnotationReplyDraft(
-            latestAnnotation.comments || [],
-            latestReply.id,
-            draft,
-            formatTimestamp(Date.now()),
-            currentUser?.user?.name || latestReply.title
-        )
-
-        painter.update(latestAnnotation.id, {
-            comments: updatedComments
-        }, 'comment.edit', latestReply)
-
-        setEditorState(null)
+        void requestAnnotationWrite('comment.edit', latestAnnotation, latestReply).then((writable) => {
+            const writableReply = writable?.comments?.find((comment) => comment.id === latestReply.id)
+            if (!writable || !writableReply) return
+            const updatedComments = applyAnnotationReplyDraft(
+                writable.comments || [],
+                writableReply.id,
+                draft,
+                formatTimestamp(Date.now()),
+                currentUser?.user?.name || writableReply.title
+            )
+            painter.update(writable.id, {
+                comments: updatedComments
+            }, 'comment.edit', writableReply)
+            setEditorState(null)
+        })
     }
 
     const deleteAnnotation = (annotation: IAnnotationStore) => {
-        if (!painter?.can('annotation.delete', annotation)) return
-        painter?.delete(annotation.id, true)
+        if (!painter) return
+        void requestAnnotationWrite('annotation.delete', annotation).then((writable) => {
+            if (writable) painter.delete(writable.id, true)
+        })
     }
 
     const deleteReply = (annotation: IAnnotationStore, reply: IAnnotationComment) => {
-        if (!painter?.deleteComment(annotation.id, reply.id)) return
-
-        if (editorState?.kind === 'reply-edit' && editorState.replyId === reply.id) {
-            setEditorState(null)
-        }
+        if (!painter) return
+        void requestAnnotationWrite('comment.delete', annotation, reply).then((writable) => {
+            if (!writable || !painter.deleteComment(writable.id, reply.id)) return
+            if (editorState?.kind === 'reply-edit' && editorState.replyId === reply.id) setEditorState(null)
+        })
     }
 
     // Comment 编辑框
@@ -633,10 +659,10 @@ const Sidebar: React.FC = () => {
                 </Flex>
                 {sortedAnnotations.map((annotation) => {
                     const isSelected = annotation.id === currentAnnotation?.store?.id
-                    const canComment = Boolean(painter?.can('annotation.comment', annotation))
-                    const canEdit = Boolean(painter?.can('annotation.edit', annotation))
-                    const canDelete = Boolean(painter?.can('annotation.delete', annotation))
-                    const canChangeStatus = Boolean(painter?.can('annotation.change-status', annotation))
+                    const canComment = Boolean(painter?.can('annotation.comment', annotation) || canRequestWrite)
+                    const canEdit = Boolean(painter?.can('annotation.edit', annotation) || canRequestWrite)
+                    const canDelete = Boolean(painter?.can('annotation.delete', annotation) || canRequestWrite)
+                    const canChangeStatus = Boolean(painter?.can('annotation.change-status', annotation) || canRequestWrite)
                     const lastStatus = getLastStatus(annotation)
                     const annotationAuthorName = getAnnotationAuthorName(annotation) ?? annotation.title
                     const hasReferenceNumber = isValidReferenceNumber(annotation.referenceNumber)
@@ -807,8 +833,8 @@ const Sidebar: React.FC = () => {
                             {commentInput(annotation)}
                             {annotation.comments?.map((reply) => {
                                 const replyDateTime = formatPDFCompactDateTime(reply.date)
-                                const canEditReply = Boolean(painter?.can('comment.edit', annotation, reply))
-                                const canDeleteReply = Boolean(painter?.can('comment.delete', annotation, reply))
+                                const canEditReply = Boolean(painter?.can('comment.edit', annotation, reply) || canRequestWrite)
+                                const canDeleteReply = Boolean(painter?.can('comment.delete', annotation, reply) || canRequestWrite)
 
                                 return (
                                     <div className={styles.reply} key={reply.id}>

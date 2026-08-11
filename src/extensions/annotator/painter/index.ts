@@ -1199,6 +1199,23 @@ export class Painter {
     }
 
     /**
+     * Replace the provider state after a serialized writer transfer. This is
+     * intentionally silent: the incoming snapshot is already durable state,
+     * not a new local mutation.
+     */
+    public async replaceAnnotations(annotations: IAnnotationStore[], enableNativeAnnotations = false): Promise<void> {
+        this.disablePainting()
+        this.clearHistory()
+        this.editorStore.forEach((editor) => {
+            editor.shapeGroupStore.forEach((shapeGroup) => shapeGroup.konvaGroup.destroy())
+        })
+        this.editorStore.clear()
+        useAnnotationStore.getState().clearAnnotations()
+        await this.initAnnotationsOnce(annotations, enableNativeAnnotations)
+        this.konvaCanvasStore.forEach(({ pageNumber }) => this.reDrawAnnotation(pageNumber))
+    }
+
+    /**
      * @description 更新 store
      * @param id
      * @param updates

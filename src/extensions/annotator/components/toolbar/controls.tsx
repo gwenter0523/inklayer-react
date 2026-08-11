@@ -70,7 +70,7 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
     default_stamps,
 }) => {
     const { t } = useTranslation(['annotator'], { useSuspense: false })
-    const { painter } = usePainter()
+    const { painter, requestWrite } = usePainter()
     const currentAnnotationType = useAnnotationStore((state) => state.currentAnnotationType)
     const annotation = useMemo(() => annotationTypeForTool(tool), [tool])
     const canCreate = painter?.can('annotation.create') ?? false
@@ -78,23 +78,34 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
     const title = label ?? t(`annotator:tool.${annotation.name}`)
     const buttonProps = presentationButtonProps(presentation)
 
-    const activate = useCallback((dataTransfer: string | null = null) => {
+    const activate = useCallback(async (dataTransfer: string | null = null) => {
+        if (!canCreate && requestWrite) {
+            const granted = await requestWrite({ kind: 'tool', tool })
+            if (!granted) return
+        }
         const next = selected ? null : annotation
         painter?.activate(next, next && [AnnotationType.SIGNATURE, AnnotationType.STAMP].includes(next.type)
             ? dataTransfer
             : null)
-    }, [annotation, painter, selected])
+    }, [annotation, canCreate, painter, requestWrite, selected, tool])
+
+    const canRequestCreate = canCreate || Boolean(requestWrite)
+    const requestToolIntent = useCallback(() => {
+        if (canCreate || !requestWrite) return
+        void requestWrite({ kind: 'tool', tool })
+    }, [canCreate, requestWrite, tool])
 
     if (tool === 'signature') {
         return (
             <SignatureTool
                 annotation={annotation}
-                disabled={!canCreate}
+                disabled={!canRequestCreate}
                 selected={selected}
                 presentation={presentation}
                 label={title}
                 default_signatures={default_signatures}
                 onAdd={(dataUrl) => activate(dataUrl)}
+                onIntent={requestToolIntent}
             />
         )
     }
@@ -103,19 +114,20 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
         return (
             <StampTool
                 annotation={annotation}
-                disabled={!canCreate}
+                disabled={!canRequestCreate}
                 selected={selected}
                 presentation={presentation}
                 label={title}
                 default_stamps={default_stamps}
                 onAdd={(dataUrl) => activate(dataUrl)}
+                onIntent={requestToolIntent}
             />
         )
     }
 
     return (
         <ToolbarButton
-            disabled={tool !== 'select' && !canCreate}
+            disabled={tool !== 'select' && !canRequestCreate}
             selected={selected}
             tooltip={presentation === 'menu-item' ? 'none' : 'auto'}
             title={String(title)}
@@ -131,7 +143,7 @@ export const AnnotationColorControl: React.FC<{
     presentation?: PdfAnnotatorControlPresentation
 }> = ({ presentation = 'toolbar-icon' }) => {
     const { defaultOptions } = useOptionsContext()
-    const { painter } = usePainter()
+    const { painter, requestWrite } = usePainter()
     const currentAnnotationType = useAnnotationStore((state) => state.currentAnnotationType)
     const isColorDisabled = !currentAnnotationType?.styleEditable?.color
     const buttonProps = presentationButtonProps(presentation)
@@ -142,7 +154,16 @@ export const AnnotationColorControl: React.FC<{
             ...currentAnnotationType,
             style: { ...currentAnnotationType.style, color },
         }
-        painter?.activate(updatedAnnotation, null)
+        if (painter?.can('annotation.create')) {
+            painter.activate(updatedAnnotation, null)
+            return
+        }
+        const request = requestWrite?.({ kind: 'tool', tool: annotationToolNameForType(updatedAnnotation.type) ?? 'select' })
+        if (request) {
+            void request.then((granted) => {
+                if (granted) painter?.activate(updatedAnnotation, null)
+            })
+        }
     }
 
     return (
@@ -153,7 +174,7 @@ export const AnnotationColorControl: React.FC<{
             popover
             trigger={(
                 <ToolbarButton
-                    disabled={isColorDisabled || !painter?.can('annotation.create')}
+                    disabled={isColorDisabled || (!painter?.can('annotation.create') && !requestWrite)}
                     tooltip={presentation === 'menu-item' ? 'none' : 'auto'}
                     title="Color"
                     label={presentation === 'menu-item' ? 'Color' : undefined}

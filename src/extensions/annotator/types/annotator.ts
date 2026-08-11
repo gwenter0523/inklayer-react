@@ -50,6 +50,13 @@ export type PdfAnnotatorToolName =
 
 export type PdfAnnotatorControlPresentation = 'toolbar-icon' | 'menu-item'
 
+export type PdfAnnotatorWriteIntent = Readonly<{
+    kind: 'tool' | 'mutation'
+    tool?: PdfAnnotatorToolName
+    action?: AnnotationPermissionAction
+    annotationId?: string
+}>
+
 export interface PdfAnnotatorToolControlProps {
     tool: PdfAnnotatorToolName
     presentation?: PdfAnnotatorControlPresentation
@@ -67,6 +74,7 @@ export interface PdfAnnotatorHistoryControl {
 export interface PdfAnnotatorChromeProps {
     activeTool: PdfAnnotatorToolName | null
     canCreate: boolean
+    canRequestWrite?: boolean
     ToolControl: React.ComponentType<PdfAnnotatorToolControlProps>
     ColorControl: React.ComponentType<{
         presentation?: PdfAnnotatorControlPresentation
@@ -84,6 +92,7 @@ export interface PdfAnnotatorChromeProps {
     actions: {
         save(): void
         getAnnotations(): Annotation[]
+        replaceAnnotations?(annotations: Annotation[]): Promise<void>
         exportToExcel(fileName?: string): void
         exportToPdf(fileName?: string): void
     }
@@ -303,6 +312,13 @@ export interface PdfAnnotatorProps extends PdfBaseProps {
      * @default { mode: 'unrestricted' }
      */
     annotationPermissions?: AnnotationPermissions
+
+    /**
+     * Requests the host's durable writer before a real annotation mutation.
+     * Read-only peers keep their annotation controls visible while this seam
+     * performs the serialized writer transfer.
+     */
+    requestWrite?(intent: PdfAnnotatorWriteIntent): Promise<boolean>
 
     /**
      * 是否在批注器初始化时显示全部批注作者标签。
