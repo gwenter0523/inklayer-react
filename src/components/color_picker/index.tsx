@@ -13,6 +13,10 @@ interface ColorPickerProps {
     popover?: boolean;
     custom?: boolean;
     trigger?: React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+    onContentPointerEnter?: React.PointerEventHandler<HTMLDivElement>;
+    onContentPointerLeave?: React.PointerEventHandler<HTMLDivElement>;
 }
 
 export const ColorPicker: React.FC<ColorPickerProps> = ({
@@ -22,11 +26,19 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
     transparent = false,
     popover = false,
     custom = true,
-    trigger
+    trigger,
+    open,
+    onOpenChange,
+    onContentPointerEnter,
+    onContentPointerLeave
 }) => {
 
     const { t } = useTranslation('common', { useSuspense: false })
     const [color, setColor] = useState(value);
+
+    React.useEffect(() => {
+        setColor(value)
+    }, [value])
 
     const handleColorChange = (newColor: string) => {
         setColor(newColor);
@@ -72,7 +84,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
         <>
             {
                 popover ? (
-                    <Popover.Root>
+                    <Popover.Root open={open} onOpenChange={onOpenChange}>
                         <Popover.Trigger>
                             {
                                 trigger || <IconButton variant="outline" color="gray">
@@ -80,7 +92,10 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
                                 </IconButton>
                             }
                         </Popover.Trigger>
-                        <Popover.Content>
+                        <Popover.Content
+                            onPointerEnter={onContentPointerEnter}
+                            onPointerLeave={onContentPointerLeave}
+                        >
                             <ColorPalette />
                         </Popover.Content>
                     </Popover.Root>

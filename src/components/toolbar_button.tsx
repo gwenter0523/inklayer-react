@@ -11,6 +11,10 @@ interface ToolbarButtonProps {
     label?: React.ReactNode;
     tooltip?: 'auto' | 'none';
     tooltipSide?: 'top' | 'right' | 'bottom' | 'left';
+    onPointerEnter?: React.PointerEventHandler<HTMLButtonElement>;
+    onPointerLeave?: React.PointerEventHandler<HTMLButtonElement>;
+    onFocus?: React.FocusEventHandler<HTMLButtonElement>;
+    onBlur?: React.FocusEventHandler<HTMLButtonElement>;
     buttonProps?: Partial<ButtonProps>
 }
 
@@ -24,6 +28,10 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>((
     tooltip = 'auto',
     tooltipSide = 'bottom',
     className,
+    onPointerEnter,
+    onPointerLeave,
+    onFocus,
+    onBlur,
     buttonProps = {}
 }, ref) => {
     const [tooltipOpen, setTooltipOpen] = useState(false)
@@ -65,6 +73,10 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>((
         data-inklayer-toolbar-button="true"
         data-selected={selected ? 'true' : 'false'}
         {...buttonProps}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        onFocus={onFocus}
+        onBlur={onBlur}
         onPointerDown={closeTooltips}
     >
         {icon}

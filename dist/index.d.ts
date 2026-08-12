@@ -678,6 +678,11 @@ export declare interface PdfAnnotatorToolControlProps {
     tool: PdfAnnotatorToolName;
     presentation?: PdfAnnotatorControlPresentation;
     label?: default_2.ReactNode;
+    /**
+     * Open the tool's color palette while the selected color-capable tool is hovered or focused.
+     * The color palette is only active for the selected tool; other tools keep their tooltip.
+     */
+    colorOnHover?: boolean;
 }
 
 export declare type PdfAnnotatorToolName = 'select' | 'rectangle' | 'circle' | 'note' | 'arrow' | 'cloud' | 'freehand' | 'freeHighlight' | 'freeText' | 'signature' | 'stamp';

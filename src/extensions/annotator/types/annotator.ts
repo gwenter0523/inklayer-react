@@ -61,6 +61,11 @@ export interface PdfAnnotatorToolControlProps {
     tool: PdfAnnotatorToolName
     presentation?: PdfAnnotatorControlPresentation
     label?: React.ReactNode
+    /**
+     * Open the tool's color palette while the selected color-capable tool is hovered or focused.
+     * The color palette is only active for the selected tool; other tools keep their tooltip.
+     */
+    colorOnHover?: boolean
 }
 
 export interface PdfAnnotatorHistoryControl {

@@ -14,6 +14,10 @@ jest.mock('../../../context/use_painter', () => ({
     usePainter: () => ({ painter: mockPainter, requestWrite: mockRequestWrite }),
 }))
 
+jest.mock('../../../context/options_context', () => ({
+    useOptionsContext: () => ({ defaultOptions: { colors: ['#ff0000'] } }),
+}))
+
 jest.mock('../../../store', () => ({
     useAnnotationStore: (selector: (state: { currentAnnotationType: null }) => unknown) => selector({ currentAnnotationType: null }),
 }))

@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ButtonProps, Flex, Separator } from '@radix-ui/themes'
 import { ColorPicker } from '@/components/color_picker'
 import { ToolbarButton } from '@/components/toolbar_button'
@@ -66,10 +66,12 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
     tool,
     presentation = 'toolbar-icon',
     label,
+    colorOnHover = false,
     default_signatures,
     default_stamps,
 }) => {
     const { t } = useTranslation(['annotator'], { useSuspense: false })
+    const { defaultOptions } = useOptionsContext()
     const { painter, requestWrite } = usePainter()
     const currentAnnotationType = useAnnotationStore((state) => state.currentAnnotationType)
     const annotation = useMemo(() => annotationTypeForTool(tool), [tool])
@@ -77,6 +79,38 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
     const selected = currentAnnotationType?.type === annotation.type
     const title = label ?? t(`annotator:tool.${annotation.name}`)
     const buttonProps = presentationButtonProps(presentation)
+    const colorHoverEnabled = colorOnHover && presentation === 'toolbar-icon' && selected && Boolean(annotation.styleEditable?.color)
+    const [colorOpen, setColorOpen] = useState(false)
+    const closeTimerRef = useRef<number | null>(null)
+
+    const clearColorCloseTimer = useCallback(() => {
+        if (closeTimerRef.current === null) return
+        window.clearTimeout(closeTimerRef.current)
+        closeTimerRef.current = null
+    }, [])
+
+    const openColor = useCallback(() => {
+        clearColorCloseTimer()
+        if (colorHoverEnabled) setColorOpen(true)
+    }, [clearColorCloseTimer, colorHoverEnabled])
+
+    const closeColor = useCallback(() => {
+        clearColorCloseTimer()
+        setColorOpen(false)
+    }, [clearColorCloseTimer])
+
+    const scheduleColorClose = useCallback(() => {
+        clearColorCloseTimer()
+        closeTimerRef.current = window.setTimeout(() => {
+            closeTimerRef.current = null
+            setColorOpen(false)
+        }, 120)
+    }, [clearColorCloseTimer])
+
+    useEffect(() => {
+        if (!colorHoverEnabled) closeColor()
+        return clearColorCloseTimer
+    }, [clearColorCloseTimer, closeColor, colorHoverEnabled])
 
     const activate = useCallback(async (dataTransfer: string | null = null) => {
         if (!canCreate && requestWrite) {
@@ -125,16 +159,56 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
         )
     }
 
-    return (
+    const toolbarButton = (
         <ToolbarButton
             disabled={tool !== 'select' && !canRequestCreate}
             selected={selected}
-            tooltip={presentation === 'menu-item' ? 'none' : 'auto'}
+            tooltip={presentation === 'menu-item' || colorHoverEnabled ? 'none' : 'auto'}
             title={String(title)}
             label={presentation === 'menu-item' ? title : undefined}
             icon={annotation.icon}
             buttonProps={buttonProps}
+            onPointerEnter={colorHoverEnabled ? openColor : undefined}
+            onPointerLeave={colorHoverEnabled ? scheduleColorClose : undefined}
+            onFocus={colorHoverEnabled ? openColor : undefined}
+            onBlur={colorHoverEnabled ? scheduleColorClose : undefined}
             onClick={() => activate()}
+        />
+    )
+
+    if (!colorOnHover || presentation !== 'toolbar-icon' || !annotation.styleEditable?.color) {
+        return toolbarButton
+    }
+
+    return (
+        <ColorPicker
+            value={currentAnnotationType?.style?.color || defaultOptions!.colors![0]}
+            onChange={(color) => {
+                if (!currentAnnotationType) return
+                const updatedAnnotation = {
+                    ...currentAnnotationType,
+                    style: { ...currentAnnotationType.style, color },
+                }
+                if (painter?.can('annotation.create')) {
+                    painter.activate(updatedAnnotation, null)
+                    return
+                }
+                const request = requestWrite?.({ kind: 'tool', tool: annotationToolNameForType(updatedAnnotation.type) ?? 'select' })
+                if (request) {
+                    void request.then((granted) => {
+                        if (granted) painter?.activate(updatedAnnotation, null)
+                    })
+                }
+            }}
+            presets={defaultOptions!.colors!}
+            popover
+            open={selected && colorOpen}
+            onOpenChange={(open) => {
+                if (selected) setColorOpen(open)
+            }}
+            onContentPointerEnter={clearColorCloseTimer}
+            onContentPointerLeave={scheduleColorClose}
+            trigger={toolbarButton}
         />
     )
 }
