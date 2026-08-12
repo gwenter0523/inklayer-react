@@ -183,8 +183,6 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
             ref={colorHoverEnabled ? triggerRef : undefined}
             onPointerEnter={colorHoverEnabled ? openColor : undefined}
             onPointerLeave={colorHoverEnabled ? scheduleColorClose : undefined}
-            onFocus={colorHoverEnabled ? openColor : undefined}
-            onBlur={colorHoverEnabled ? scheduleColorClose : undefined}
             onClick={() => activate()}
         />
     )
@@ -217,7 +215,13 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
             popover
             open={selected && colorOpen}
             onOpenChange={(open) => {
-                if (selected) setColorOpen(open)
+                if (!selected) return
+                if (open) {
+                    colorSurfaceInsideRef.current = true
+                    setColorOpen(true)
+                } else if (!colorSurfaceInsideRef.current) {
+                    setColorOpen(false)
+                }
             }}
             contentRef={contentRef}
             onContentPointerEnter={openColor}

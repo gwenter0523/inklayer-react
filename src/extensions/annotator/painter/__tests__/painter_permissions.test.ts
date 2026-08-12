@@ -157,10 +157,7 @@ describe('Painter permission guards', () => {
 
         ;(painter as unknown as { saveToStore: (value: IAnnotationStore) => void }).saveToStore(nextAnnotation)
 
-        expect(mockState.setSelectedAnnotation).toHaveBeenCalledWith(
-            expect.objectContaining({ id: 'rectangle-2', type: AnnotationType.RECTANGLE }),
-            'canvas'
-        )
+        expect(mockState.setSelectedAnnotation).not.toHaveBeenCalled()
         expect((painter as unknown as { selector: { select: jest.Mock } }).selector.select).not.toHaveBeenCalled()
     })
 

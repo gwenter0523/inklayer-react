@@ -96,6 +96,8 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
                         </Popover.Trigger>
                         <Popover.Content
                             ref={contentRef}
+                            sideOffset={0}
+                            onPointerDownOutside={() => onOpenChange?.(false)}
                             onPointerEnter={onContentPointerEnter}
                             onPointerLeave={onContentPointerLeave}
                         >

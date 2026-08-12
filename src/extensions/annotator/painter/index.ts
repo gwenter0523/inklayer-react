@@ -597,11 +597,8 @@ export class Painter {
                 redo: () => this.restoreDeletedAnnotation(historyEntry)
             })
         }
-        if (currentAnnotation) {
-            // Keep the active drawing tool armed after each annotation. The user
-            // explicitly exits it by selecting another tool or clicking it again.
-            useAnnotationStore.getState().setSelectedAnnotation(numberedAnnotation, SelectionSource.CANVAS)
-        }
+        // Do not change the active annotation here. Completing one drawing must
+        // leave the selected tool armed; `activate` is the explicit exit path.
         this.onAnnotationAdd(numberedAnnotation, isOriginal, currentAnnotation)
     }
 

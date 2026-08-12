@@ -69,12 +69,14 @@ jest.mock('@/components/color_picker', () => ({
     ColorPicker: ({
         trigger,
         open,
+        onOpenChange,
         contentRef,
         onContentPointerEnter,
         onContentPointerLeave,
     }: {
         trigger?: ReactNode
         open?: boolean
+        onOpenChange?: (open: boolean) => void
         contentRef?: React.Ref<HTMLDivElement>
         onContentPointerEnter?: React.PointerEventHandler<HTMLDivElement>
         onContentPointerLeave?: React.PointerEventHandler<HTMLDivElement>
@@ -84,6 +86,7 @@ jest.mock('@/components/color_picker', () => ({
             <div
                 ref={contentRef}
                 data-testid="color-palette"
+                onClick={() => onOpenChange?.(false)}
                 onPointerEnter={onContentPointerEnter}
                 onPointerLeave={onContentPointerLeave}
             />
@@ -130,6 +133,9 @@ describe('AnnotationToolControl color hover', () => {
         fireEvent.pointerLeave(button)
         fireEvent.pointerEnter(screen.getByTestId('color-palette'))
         act(() => jest.advanceTimersByTime(120))
+        expect(screen.getByText('矩形').closest('[data-color-picker-open]')).toHaveAttribute('data-color-picker-open', 'true')
+
+        fireEvent.click(screen.getByTestId('color-palette'))
         expect(screen.getByText('矩形').closest('[data-color-picker-open]')).toHaveAttribute('data-color-picker-open', 'true')
 
         fireEvent.pointerLeave(screen.getByTestId('color-palette'))
