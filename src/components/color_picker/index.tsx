@@ -18,6 +18,7 @@ interface ColorPickerProps {
     contentRef?: React.Ref<HTMLDivElement>;
     onContentPointerEnter?: React.PointerEventHandler<HTMLDivElement>;
     onContentPointerLeave?: React.PointerEventHandler<HTMLDivElement>;
+    onPointerDownOutside?: () => void;
 }
 
 export const ColorPicker: React.FC<ColorPickerProps> = ({
@@ -32,7 +33,8 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
     onOpenChange,
     contentRef,
     onContentPointerEnter,
-    onContentPointerLeave
+    onContentPointerLeave,
+    onPointerDownOutside
 }) => {
 
     const { t } = useTranslation('common', { useSuspense: false })
@@ -97,7 +99,10 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
                         <Popover.Content
                             ref={contentRef}
                             sideOffset={0}
-                            onPointerDownOutside={() => onOpenChange?.(false)}
+                            onPointerDownOutside={() => {
+                                if (onPointerDownOutside) onPointerDownOutside()
+                                else onOpenChange?.(false)
+                            }}
                             onPointerEnter={onContentPointerEnter}
                             onPointerLeave={onContentPointerLeave}
                         >

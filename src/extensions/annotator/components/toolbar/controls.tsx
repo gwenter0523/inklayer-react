@@ -110,7 +110,11 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
     }, [])
 
     const scheduleColorClose = useCallback((event?: React.PointerEvent<HTMLElement> | React.FocusEvent<HTMLElement>) => {
-        if (isColorSurfaceTarget(event?.relatedTarget ?? null)) return
+        if (isColorSurfaceTarget(event?.relatedTarget ?? null)) {
+            colorSurfaceInsideRef.current = true
+            clearColorCloseTimer()
+            return
+        }
         colorSurfaceInsideRef.current = false
         clearColorCloseTimer()
         closeTimerRef.current = window.setTimeout(() => {
@@ -123,6 +127,22 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
         if (!colorHoverEnabled) closeColor()
         return clearColorCloseTimer
     }, [clearColorCloseTimer, closeColor, colorHoverEnabled])
+
+    useEffect(() => {
+        if (!colorHoverEnabled || !colorOpen) return undefined
+
+        const handlePointerMove = (event: PointerEvent) => {
+            if (isColorSurfaceTarget(event.target)) {
+                colorSurfaceInsideRef.current = true
+                clearColorCloseTimer()
+                return
+            }
+            if (colorSurfaceInsideRef.current) scheduleColorClose()
+        }
+
+        document.addEventListener('pointermove', handlePointerMove, true)
+        return () => document.removeEventListener('pointermove', handlePointerMove, true)
+    }, [clearColorCloseTimer, colorHoverEnabled, colorOpen, isColorSurfaceTarget, scheduleColorClose])
 
     const activate = useCallback(async (dataTransfer: string | null = null) => {
         if (!canCreate && requestWrite) {
@@ -226,6 +246,7 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
             contentRef={contentRef}
             onContentPointerEnter={openColor}
             onContentPointerLeave={scheduleColorClose}
+            onPointerDownOutside={closeColor}
             trigger={toolbarButton}
         />
     )

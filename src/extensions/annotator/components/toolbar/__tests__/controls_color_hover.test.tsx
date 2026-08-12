@@ -73,6 +73,7 @@ jest.mock('@/components/color_picker', () => ({
         contentRef,
         onContentPointerEnter,
         onContentPointerLeave,
+        onPointerDownOutside,
     }: {
         trigger?: ReactNode
         open?: boolean
@@ -80,13 +81,21 @@ jest.mock('@/components/color_picker', () => ({
         contentRef?: React.Ref<HTMLDivElement>
         onContentPointerEnter?: React.PointerEventHandler<HTMLDivElement>
         onContentPointerLeave?: React.PointerEventHandler<HTMLDivElement>
+        onPointerDownOutside?: () => void
     }) => (
-        <div data-color-picker-open={open ? 'true' : 'false'}>
+        <div
+            data-testid="color-picker-root"
+            data-color-picker-open={open ? 'true' : 'false'}
+            onPointerDown={(event) => {
+                if (event.target === event.currentTarget) onPointerDownOutside?.()
+            }}
+        >
             {trigger}
             <div
                 ref={contentRef}
                 data-testid="color-palette"
                 onClick={() => onOpenChange?.(false)}
+                onPointerDown={() => onPointerDownOutside?.()}
                 onPointerEnter={onContentPointerEnter}
                 onPointerLeave={onContentPointerLeave}
             />
@@ -138,6 +147,11 @@ describe('AnnotationToolControl color hover', () => {
         fireEvent.click(screen.getByTestId('color-palette'))
         expect(screen.getByText('矩形').closest('[data-color-picker-open]')).toHaveAttribute('data-color-picker-open', 'true')
 
+        fireEvent.pointerDown(screen.getByTestId('color-picker-root'))
+        expect(screen.getByText('矩形').closest('[data-color-picker-open]')).toHaveAttribute('data-color-picker-open', 'false')
+
+        fireEvent.pointerEnter(button)
+        expect(screen.getByText('矩形').closest('[data-color-picker-open]')).toHaveAttribute('data-color-picker-open', 'true')
         fireEvent.pointerLeave(screen.getByTestId('color-palette'))
         act(() => jest.advanceTimersByTime(120))
         expect(screen.getByText('矩形').closest('[data-color-picker-open]')).toHaveAttribute('data-color-picker-open', 'false')

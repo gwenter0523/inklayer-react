@@ -47,11 +47,16 @@ export const PdfAnnotatorChromeBridge: React.FC<PdfAnnotatorChromeBridgeProps> =
     const canRequestWrite = Boolean(requestWrite)
 
     useEffect(() => {
-        if (canCreate) return
+        // A requestable reader can still be in the short hand-off window between
+        // the tool click and the writer becoming visible to the permission
+        // controller. Clearing the tool here races that hand-off and makes every
+        // drawing appear one-shot. Only fail closed when creation is unavailable
+        // and there is no writer request path left.
+        if (canCreate || canRequestWrite) return
         if (currentAnnotationType && currentAnnotationType.type !== AnnotationType.SELECT) {
             painter?.activate(null, null)
         }
-    }, [canCreate, currentAnnotationType, painter])
+    }, [canCreate, canRequestWrite, currentAnnotationType, painter])
 
     useEffect(() => () => {
         painter?.activate(null, null)
