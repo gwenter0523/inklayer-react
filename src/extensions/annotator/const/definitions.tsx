@@ -100,7 +100,6 @@ export interface IAnnotationType {
     pdfjsAnnotationType: PdfjsAnnotationType
     subtype: PdfjsAnnotationSubtype
     webSelectionDependencies: boolean // 是否依赖选择
-    isOnce: boolean // 是否只绘制一次
     resizable: boolean // 是否可调整大小
     draggable: boolean // 是否可拖动位置
     icon?: React.JSX.Element // 可选的图标，用于表示批注类型
@@ -193,7 +192,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.NONE,
         subtype: 'None',
         webSelectionDependencies: false,
-        isOnce: false, // 是否只绘制一次
         resizable: false,
         draggable: false,
         icon: <SelectIcon />, // 图标
@@ -204,7 +202,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.HIGHLIGHT,
         subtype: 'Highlight',
         webSelectionDependencies: true,
-        isOnce: false,
         resizable: false,
         draggable: false,
         icon: <HighlightIcon />,
@@ -223,7 +220,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.STRIKEOUT,
         subtype: 'StrikeOut',
         webSelectionDependencies: true,
-        isOnce: false,
         resizable: false,
         draggable: false,
         icon: <StrikeoutIcon />,
@@ -242,7 +238,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.UNDERLINE,
         subtype: 'Underline',
         webSelectionDependencies: true,
-        isOnce: false,
         resizable: false,
         draggable: false,
         icon: <UnderlineIcon />,
@@ -261,7 +256,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.SQUARE,
         subtype: 'Square',
         webSelectionDependencies: false,
-        isOnce: true,
         resizable: true,
         draggable: true,
         icon: <RectangleIcon />,
@@ -282,7 +276,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.CIRCLE,
         subtype: 'Circle',
         webSelectionDependencies: false,
-        isOnce: true,
         resizable: true,
         draggable: true,
         icon: <CircleIcon />,
@@ -303,7 +296,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.TEXT,
         subtype: 'Text',
         webSelectionDependencies: false,
-        isOnce: true,
         resizable: false,
         draggable: true,
         icon: <NoteIcon />,
@@ -314,7 +306,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.LINE,
         subtype: 'Arrow',
         webSelectionDependencies: false,
-        isOnce: true,
         resizable: true,
         draggable: true,
         icon: <ArrowIcon />,
@@ -335,7 +326,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.POLYLINE,
         subtype: 'PolyLine',
         webSelectionDependencies: false,
-        isOnce: true,
         resizable: true,
         draggable: true,
         icon: <CloudIcon />,
@@ -356,7 +346,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.INK,
         subtype: 'Ink',
         webSelectionDependencies: false,
-        isOnce: true,
         resizable: true,
         draggable: true,
         icon: <FreehandIcon />,
@@ -377,7 +366,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.INK,
         subtype: 'Highlight',
         webSelectionDependencies: false,
-        isOnce: true,
         resizable: true,
         draggable: true,
         icon: <FreeHighlightIcon />,
@@ -398,7 +386,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.FREETEXT,
         subtype: 'FreeText',
         webSelectionDependencies: false,
-        isOnce: true,
         resizable: true,
         draggable: true,
         icon: <FreetextIcon />,
@@ -418,7 +405,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.STAMP,
         subtype: 'Caret',
         webSelectionDependencies: false,
-        isOnce: true,
         resizable: true,
         draggable: true,
         icon: <SignatureIcon />
@@ -429,7 +415,6 @@ export const annotationDefinitions: IAnnotationType[] = [
         pdfjsAnnotationType: PdfjsAnnotationType.STAMP,
         subtype: 'Stamp',
         webSelectionDependencies: false,
-        isOnce: true,
         resizable: true,
         draggable: true,
         icon: <StampIcon />

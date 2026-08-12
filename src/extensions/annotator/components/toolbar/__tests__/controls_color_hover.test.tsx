@@ -2,7 +2,7 @@
 
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen } from '@testing-library/react'
-import type { ReactNode } from 'react'
+import React, { forwardRef, type ReactNode } from 'react'
 import { AnnotationType } from '../../../const/definitions'
 import { AnnotationToolControl } from '../controls'
 
@@ -12,6 +12,17 @@ const mockPainter = {
 }
 
 let mockCurrentAnnotationType: { type: AnnotationType; style: { color?: string }; styleEditable?: { color?: boolean } } | null = null
+
+type ToolbarButtonMockProps = {
+    title?: string
+    tooltip?: string
+    label?: ReactNode
+    onClick?: () => void
+    onPointerEnter?: () => void
+    onPointerLeave?: () => void
+    onFocus?: () => void
+    onBlur?: () => void
+}
 
 jest.mock('../../../context/use_painter', () => ({
     usePainter: () => ({ painter: mockPainter, requestWrite: undefined }),
@@ -28,7 +39,7 @@ jest.mock('../../../store', () => ({
 }))
 
 jest.mock('@/components/toolbar_button', () => ({
-    ToolbarButton: ({
+    ToolbarButton: forwardRef<HTMLButtonElement, ToolbarButtonMockProps>(({
         title,
         tooltip,
         label,
@@ -37,17 +48,9 @@ jest.mock('@/components/toolbar_button', () => ({
         onPointerLeave,
         onFocus,
         onBlur,
-    }: {
-        title?: string
-        tooltip?: string
-        label?: ReactNode
-        onClick?: () => void
-        onPointerEnter?: () => void
-        onPointerLeave?: () => void
-        onFocus?: () => void
-        onBlur?: () => void
-    }) => (
+    }, ref) => (
         <button
+            ref={ref}
             type="button"
             aria-label={title}
             data-tooltip={tooltip}
@@ -59,12 +62,32 @@ jest.mock('@/components/toolbar_button', () => ({
         >
             {label ?? title}
         </button>
-    ),
+    )),
 }))
 
 jest.mock('@/components/color_picker', () => ({
-    ColorPicker: ({ trigger, open }: { trigger?: ReactNode; open?: boolean }) => (
-        <div data-color-picker-open={open ? 'true' : 'false'}>{trigger}</div>
+    ColorPicker: ({
+        trigger,
+        open,
+        contentRef,
+        onContentPointerEnter,
+        onContentPointerLeave,
+    }: {
+        trigger?: ReactNode
+        open?: boolean
+        contentRef?: React.Ref<HTMLDivElement>
+        onContentPointerEnter?: React.PointerEventHandler<HTMLDivElement>
+        onContentPointerLeave?: React.PointerEventHandler<HTMLDivElement>
+    }) => (
+        <div data-color-picker-open={open ? 'true' : 'false'}>
+            {trigger}
+            <div
+                ref={contentRef}
+                data-testid="color-palette"
+                onPointerEnter={onContentPointerEnter}
+                onPointerLeave={onContentPointerLeave}
+            />
+        </div>
     ),
 }))
 
@@ -105,6 +128,11 @@ describe('AnnotationToolControl color hover', () => {
         expect(screen.getByText('矩形').closest('[data-color-picker-open]')).toHaveAttribute('data-color-picker-open', 'true')
 
         fireEvent.pointerLeave(button)
+        fireEvent.pointerEnter(screen.getByTestId('color-palette'))
+        act(() => jest.advanceTimersByTime(120))
+        expect(screen.getByText('矩形').closest('[data-color-picker-open]')).toHaveAttribute('data-color-picker-open', 'true')
+
+        fireEvent.pointerLeave(screen.getByTestId('color-palette'))
         act(() => jest.advanceTimersByTime(120))
         expect(screen.getByText('矩形').closest('[data-color-picker-open]')).toHaveAttribute('data-color-picker-open', 'false')
     })
@@ -116,7 +144,7 @@ describe('AnnotationToolControl color hover', () => {
         const button = screen.getByRole('button', { name: '矩形' })
         expect(button).toHaveAttribute('data-tooltip', 'auto')
         fireEvent.pointerEnter(button)
-        expect(button.closest('[data-color-picker-open]')).toHaveAttribute('data-color-picker-open', 'false')
+        expect(button.closest('[data-color-picker-open]')).toBeNull()
     })
 
     it('does not add color behavior to tools without editable colors', () => {

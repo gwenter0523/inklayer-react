@@ -598,11 +598,9 @@ export class Painter {
             })
         }
         if (currentAnnotation) {
-            if (currentAnnotation.isOnce) {
-                this.selectAnnotation(numberedAnnotation.id, false, SelectionSource.CANVAS)
-            } else {
-                useAnnotationStore.getState().setSelectedAnnotation(numberedAnnotation, SelectionSource.CANVAS)
-            }
+            // Keep the active drawing tool armed after each annotation. The user
+            // explicitly exits it by selecting another tool or clicking it again.
+            useAnnotationStore.getState().setSelectedAnnotation(numberedAnnotation, SelectionSource.CANVAS)
         }
         this.onAnnotationAdd(numberedAnnotation, isOriginal, currentAnnotation)
     }

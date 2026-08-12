@@ -82,6 +82,9 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
     const colorHoverEnabled = colorOnHover && presentation === 'toolbar-icon' && selected && Boolean(annotation.styleEditable?.color)
     const [colorOpen, setColorOpen] = useState(false)
     const closeTimerRef = useRef<number | null>(null)
+    const triggerRef = useRef<HTMLButtonElement>(null)
+    const contentRef = useRef<HTMLDivElement>(null)
+    const colorSurfaceInsideRef = useRef(false)
 
     const clearColorCloseTimer = useCallback(() => {
         if (closeTimerRef.current === null) return
@@ -91,21 +94,30 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
 
     const openColor = useCallback(() => {
         clearColorCloseTimer()
+        colorSurfaceInsideRef.current = true
         if (colorHoverEnabled) setColorOpen(true)
     }, [clearColorCloseTimer, colorHoverEnabled])
 
     const closeColor = useCallback(() => {
         clearColorCloseTimer()
+        colorSurfaceInsideRef.current = false
         setColorOpen(false)
     }, [clearColorCloseTimer])
 
-    const scheduleColorClose = useCallback(() => {
+    const isColorSurfaceTarget = useCallback((target: EventTarget | null) => {
+        if (!(target instanceof Node)) return false
+        return Boolean(triggerRef.current?.contains(target) || contentRef.current?.contains(target))
+    }, [])
+
+    const scheduleColorClose = useCallback((event?: React.PointerEvent<HTMLElement> | React.FocusEvent<HTMLElement>) => {
+        if (isColorSurfaceTarget(event?.relatedTarget ?? null)) return
+        colorSurfaceInsideRef.current = false
         clearColorCloseTimer()
         closeTimerRef.current = window.setTimeout(() => {
             closeTimerRef.current = null
-            setColorOpen(false)
+            if (!colorSurfaceInsideRef.current) setColorOpen(false)
         }, 120)
-    }, [clearColorCloseTimer])
+    }, [clearColorCloseTimer, isColorSurfaceTarget])
 
     useEffect(() => {
         if (!colorHoverEnabled) closeColor()
@@ -168,6 +180,7 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
             label={presentation === 'menu-item' ? title : undefined}
             icon={annotation.icon}
             buttonProps={buttonProps}
+            ref={colorHoverEnabled ? triggerRef : undefined}
             onPointerEnter={colorHoverEnabled ? openColor : undefined}
             onPointerLeave={colorHoverEnabled ? scheduleColorClose : undefined}
             onFocus={colorHoverEnabled ? openColor : undefined}
@@ -176,7 +189,7 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
         />
     )
 
-    if (!colorOnHover || presentation !== 'toolbar-icon' || !annotation.styleEditable?.color) {
+    if (!colorHoverEnabled) {
         return toolbarButton
     }
 
@@ -206,7 +219,8 @@ export const AnnotationToolControl: React.FC<AnnotationToolControlProps> = ({
             onOpenChange={(open) => {
                 if (selected) setColorOpen(open)
             }}
-            onContentPointerEnter={clearColorCloseTimer}
+            contentRef={contentRef}
+            onContentPointerEnter={openColor}
             onContentPointerLeave={scheduleColorClose}
             trigger={toolbarButton}
         />

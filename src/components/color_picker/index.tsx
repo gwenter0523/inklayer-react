@@ -15,6 +15,7 @@ interface ColorPickerProps {
     trigger?: React.ReactNode;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
+    contentRef?: React.Ref<HTMLDivElement>;
     onContentPointerEnter?: React.PointerEventHandler<HTMLDivElement>;
     onContentPointerLeave?: React.PointerEventHandler<HTMLDivElement>;
 }
@@ -29,6 +30,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
     trigger,
     open,
     onOpenChange,
+    contentRef,
     onContentPointerEnter,
     onContentPointerLeave
 }) => {
@@ -93,6 +95,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
                             }
                         </Popover.Trigger>
                         <Popover.Content
+                            ref={contentRef}
                             onPointerEnter={onContentPointerEnter}
                             onPointerLeave={onContentPointerLeave}
                         >

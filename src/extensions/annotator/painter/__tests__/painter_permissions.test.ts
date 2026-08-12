@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
 import { Painter } from '..'
-import type { IAnnotationStore } from '../../const/definitions'
+import { AnnotationType, type IAnnotationStore } from '../../const/definitions'
 import { AnnotationPermissionController } from '../../permissions/permission_controller'
 import type { AnnotationPermissions } from '../../types/annotator'
 import type { User } from '@/types'
@@ -33,7 +33,9 @@ const mockState = {
     getAnnotation: jest.fn(() => annotation),
     updateAnnotation: jest.fn((_id: string, updates: Partial<IAnnotationStore>) => ({ ...annotation, ...updates })),
     removeAnnotation: jest.fn(),
-    setCurrentAnnotationType: jest.fn()
+    setCurrentAnnotationType: jest.fn(),
+    addAnnotation: jest.fn(),
+    setSelectedAnnotation: jest.fn()
 }
 
 jest.mock('../../store', () => ({
@@ -61,6 +63,10 @@ function createPainter(can: boolean) {
         konvaCanvasStore: new Map(),
         onAnnotationChanged: jest.fn(),
         onAnnotationDelete: jest.fn(),
+        onAnnotationAdd: jest.fn(),
+        currentUser: { id: 'alice', name: 'Alice' },
+        nextAnnotationReferenceNumber: 1,
+        mutationHistory: { record: jest.fn(), clear: jest.fn() },
         webSelection: { highlight: jest.fn() },
         disablePainting: jest.fn(),
         setDefaultMode: jest.fn()
@@ -139,6 +145,23 @@ describe('Painter permission guards', () => {
         expect((painter as unknown as { disablePainting: jest.Mock }).disablePainting).toHaveBeenCalledTimes(1)
         expect((painter as unknown as { setDefaultMode: jest.Mock }).setDefaultMode).toHaveBeenCalledTimes(1)
         expect((painter as unknown as { webSelection: { highlight: jest.Mock } }).webSelection.highlight).not.toHaveBeenCalled()
+    })
+
+    it('keeps the active drawing tool armed after an annotation is added', () => {
+        const painter = createPainter(true)
+        const nextAnnotation = {
+            ...annotation,
+            id: 'rectangle-2',
+            type: AnnotationType.RECTANGLE,
+        }
+
+        ;(painter as unknown as { saveToStore: (value: IAnnotationStore) => void }).saveToStore(nextAnnotation)
+
+        expect(mockState.setSelectedAnnotation).toHaveBeenCalledWith(
+            expect.objectContaining({ id: 'rectangle-2', type: AnnotationType.RECTANGLE }),
+            'canvas'
+        )
+        expect((painter as unknown as { selector: { select: jest.Mock } }).selector.select).not.toHaveBeenCalled()
     })
 
     it('enforces the Alice, Bob, and admin collaboration flow through public mutations', () => {
