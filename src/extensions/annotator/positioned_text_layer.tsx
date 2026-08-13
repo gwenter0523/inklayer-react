@@ -83,12 +83,24 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
 
         refreshVisiblePages()
         const refresh = () => refreshVisiblePages()
+        const delayedRefreshes = [0, 50, 200, 500].map((delay) => window.setTimeout(refresh, delay))
+        const viewerContainer = viewerContainerRef.current
+        const resizeObserver = typeof ResizeObserver === 'undefined' || !viewerContainer
+            ? null
+            : new ResizeObserver(refresh)
+        if (viewerContainer) {
+            resizeObserver?.observe(viewerContainer)
+            viewerContainer.addEventListener('scroll', refresh, { passive: true })
+        }
         eventBus.on('pagesloaded', refresh)
         eventBus.on('pagerendered', refresh)
         eventBus.on('updateviewarea', refresh)
         eventBus.on('scalechanging', refresh)
         eventBus.on('rotationchanging', refresh)
         return () => {
+            delayedRefreshes.forEach((timer) => window.clearTimeout(timer))
+            resizeObserver?.disconnect()
+            viewerContainer?.removeEventListener('scroll', refresh)
             eventBus.off('pagesloaded', refresh)
             eventBus.off('pagerendered', refresh)
             eventBus.off('updateviewarea', refresh)
