@@ -3,7 +3,9 @@
     right: auto;
     bottom: auto;
     overflow: hidden;
-    z-index: 9;
+    // Keep the transparent span owner above PDF.js/Konva painter canvases;
+    // pointer-events:none on the parent still lets blank regions fall through.
+    z-index: 100;
     pointer-events: none;
     user-select: text;
     -webkit-user-select: text;
