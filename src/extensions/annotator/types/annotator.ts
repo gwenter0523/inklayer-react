@@ -103,16 +103,30 @@ export interface PdfAnnotatorChromeProps {
     }
 }
 
+/** Provider-neutral point in the page's visual top-left coordinate space. */
+export interface PdfPositionedTextPoint {
+    readonly x: number
+    readonly y: number
+}
+
 /**
  * Provider-neutral geometry for an externally supplied selectable text span.
  * Coordinates are expressed in the page's visual top-left coordinate space.
+ * Polygon points are ordered around the text quad, beginning at its top-left
+ * corner. A bbox remains the preferred representation for axis-aligned text.
  */
-export interface PdfPositionedTextGeometry {
-    readonly x: number
-    readonly y: number
-    readonly width: number
-    readonly height: number
-}
+export type PdfPositionedTextGeometry =
+    | Readonly<{
+        readonly kind: 'bbox'
+        readonly x: number
+        readonly y: number
+        readonly width: number
+        readonly height: number
+    }>
+    | Readonly<{
+        readonly kind: 'polygon'
+        readonly points: readonly PdfPositionedTextPoint[]
+    }>
 
 export interface PdfPositionedTextSpan {
     /** Stable source identity for the supplied span. */

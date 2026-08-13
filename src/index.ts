@@ -16,6 +16,7 @@ export type {
   AnnotationPermissions,
   PdfAnnotatorWriteIntent,
   PdfPositionedTextGeometry,
+  PdfPositionedTextPoint,
   PdfPositionedTextSpan,
   PdfPositionedTextPage,
   PdfPositionedTextSource,

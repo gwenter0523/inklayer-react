@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { usePdfViewerContext } from '@/context/pdf_viewer_context'
 import type {
+    PdfPositionedTextGeometry,
     PdfPositionedTextPage,
     PdfPositionedTextSource,
     PdfPositionedTextSpan
@@ -172,21 +173,57 @@ function PositionedTextSpan({
     scaleY: number
 }): React.JSX.Element | null {
     const { geometry } = span
-    if (![geometry.x, geometry.y, geometry.width, geometry.height].every(Number.isFinite) ||
-        geometry.width <= 0 || geometry.height <= 0 || !span.text) return null
+    const style = positionedTextStyle(geometry, scaleX, scaleY)
+    if (!style || !span.text) return null
 
     return <span
         className={styles.positionedTextSpan}
         data-inklayer-positioned-text-id={span.id}
         data-inklayer-positioned-text-block-id={span.blockId}
         data-inklayer-positioned-text-span-id={span.spanId}
-        style={{
-            left: geometry.x * scaleX,
-            top: geometry.y * scaleY,
-            width: geometry.width * scaleX,
-            height: geometry.height * scaleY,
-            fontSize: Math.max(1, geometry.height * scaleY),
-            lineHeight: `${Math.max(1, geometry.height * scaleY)}px`
-        }}
+        style={style}
     >{span.text}</span>
+}
+
+function positionedTextStyle(
+    geometry: PdfPositionedTextGeometry,
+    scaleX: number,
+    scaleY: number
+): React.CSSProperties | null {
+    const points = geometry.kind === 'bbox'
+        ? [
+            { x: geometry.x, y: geometry.y },
+            { x: geometry.x + geometry.width, y: geometry.y },
+            { x: geometry.x + geometry.width, y: geometry.y + geometry.height },
+            { x: geometry.x, y: geometry.y + geometry.height }
+        ]
+        : geometry.points
+    if (points.length < 4 || !points.slice(0, 4).every((point) => Number.isFinite(point.x) && Number.isFinite(point.y))) {
+        return null
+    }
+    const [topLeft, topRight, , bottomLeft] = points
+    const width = Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y)
+    const height = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y)
+    if (![width, height, scaleX, scaleY].every(Number.isFinite) ||
+        width <= 0 || height <= 0 || scaleX <= 0 || scaleY <= 0) return null
+    const cssWidth = width * scaleX
+    const cssHeight = height * scaleY
+    const matrix = [
+        (topRight.x - topLeft.x) * scaleX / cssWidth,
+        (topRight.y - topLeft.y) * scaleY / cssWidth,
+        (bottomLeft.x - topLeft.x) * scaleX / cssHeight,
+        (bottomLeft.y - topLeft.y) * scaleY / cssHeight,
+        0,
+        0
+    ]
+    return {
+        left: topLeft.x * scaleX,
+        top: topLeft.y * scaleY,
+        width: cssWidth,
+        height: cssHeight,
+        fontSize: Math.max(1, cssHeight),
+        lineHeight: `${Math.max(1, cssHeight)}px`,
+        transformOrigin: '0 0',
+        transform: `matrix(${matrix.join(',')})`
+    }
 }

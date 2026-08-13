@@ -73,7 +73,7 @@ describe('PositionedTextLayer', () => {
                         blockId: 'block-a',
                         spanId: 'span-a',
                         text: '可选择文字',
-                        geometry: { x: 60, y: 120, width: 180, height: 32 }
+                        geometry: { kind: 'bbox', x: 60, y: 120, width: 180, height: 32 }
                     }]
                 }
                 : { pageNumber, dimensions: { width: 600, height: 800 }, spans: [] })
@@ -100,7 +100,64 @@ describe('PositionedTextLayer', () => {
         expect(span).toHaveTextContent('可选择文字')
         expect(span).toHaveAttribute('data-inklayer-positioned-text-block-id', 'block-a')
         expect(span).toHaveStyle({ left: '60px', top: '120px', width: '180px', height: '32px' })
+        expect(span).toHaveStyle({ transform: 'matrix(1,0,0,1,0,0)' })
         expect(eventBus.on).toHaveBeenCalledWith('scalechanging', expect.any(Function))
+        host.remove()
+    })
+
+    it('preserves a rotated text quad in the selectable span transform', async () => {
+        const pageDiv = document.createElement('div')
+        const host = document.createElement('div')
+        host.appendChild(pageDiv)
+        document.body.appendChild(host)
+        Object.defineProperty(pageDiv, 'getBoundingClientRect', {
+            configurable: true,
+            value: () => ({ top: 0, bottom: 800, left: 0, right: 600, width: 600, height: 800, x: 0, y: 0, toJSON: () => ({}) })
+        })
+        Object.defineProperty(host, 'getBoundingClientRect', {
+            configurable: true,
+            value: () => ({ top: 0, bottom: 800, left: 0, right: 600, width: 600, height: 800, x: 0, y: 0, toJSON: () => ({}) })
+        })
+        const eventBus = { on: jest.fn(), off: jest.fn() }
+        const pdfViewer = {
+            pagesCount: 1,
+            currentPageNumber: 1,
+            getPageView: jest.fn(() => ({ div: pageDiv, viewport: { width: 600, height: 800 } }))
+        }
+        const source: PdfPositionedTextSource = {
+            pageCount: 1,
+            getPage: jest.fn(async () => ({
+                pageNumber: 1,
+                dimensions: { width: 600, height: 800 },
+                spans: [{
+                    id: 'rotated',
+                    text: '旋转文字',
+                    geometry: {
+                        kind: 'polygon',
+                        points: [{ x: 100, y: 100 }, { x: 100, y: 200 }, { x: 80, y: 200 }, { x: 80, y: 100 }]
+                    }
+                }]
+            }))
+        }
+        const contextValue = {
+            pdfViewer,
+            eventBus,
+            viewerContainerRef: { current: host },
+            isReady: true,
+        } as unknown as PdfViewerContextValue
+
+        render(
+            <PdfViewerContext.Provider value={contextValue}>
+                <PositionedTextLayer source={source} />
+            </PdfViewerContext.Provider>
+        )
+
+        await waitFor(() => expect(pageDiv.querySelector('[data-inklayer-positioned-text-id="rotated"]')).toBeInTheDocument())
+        expect(pageDiv.querySelector('[data-inklayer-positioned-text-id="rotated"]')).toHaveStyle({
+            left: '100px',
+            top: '100px',
+            transform: 'matrix(0,1,-1,0,0,0)'
+        })
         host.remove()
     })
 })

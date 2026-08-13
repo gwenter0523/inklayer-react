@@ -826,13 +826,19 @@ declare interface PdfPoint {
 /**
  * Provider-neutral geometry for an externally supplied selectable text span.
  * Coordinates are expressed in the page's visual top-left coordinate space.
+ * Polygon points are ordered around the text quad, beginning at its top-left
+ * corner. A bbox remains the preferred representation for axis-aligned text.
  */
-export declare interface PdfPositionedTextGeometry {
+export declare type PdfPositionedTextGeometry = Readonly<{
+    readonly kind: 'bbox';
     readonly x: number;
     readonly y: number;
     readonly width: number;
     readonly height: number;
-}
+}> | Readonly<{
+    readonly kind: 'polygon';
+    readonly points: readonly PdfPositionedTextPoint[];
+}>;
 
 export declare interface PdfPositionedTextPage {
     /** One-based physical PDF page number. */
@@ -843,6 +849,12 @@ export declare interface PdfPositionedTextPage {
         height: number;
     }>;
     readonly spans: readonly PdfPositionedTextSpan[];
+}
+
+/** Provider-neutral point in the page's visual top-left coordinate space. */
+export declare interface PdfPositionedTextPoint {
+    readonly x: number;
+    readonly y: number;
 }
 
 /**
