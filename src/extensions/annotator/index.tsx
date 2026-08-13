@@ -54,6 +54,7 @@ export const AnnotatorExtension: React.FC<AnnotatorExtensionProps> = ({
         isSidebarCollapsed,
         activeSidebarPanel,
         openSidebar,
+        viewerContainerRef,
     } = usePdfViewerContext()
     const { user } = useUserContext()
     const { refreshPainter, setPainter } = usePainter()
@@ -186,7 +187,9 @@ export const AnnotatorExtension: React.FC<AnnotatorExtensionProps> = ({
         // NOTE: private pdfjs event API, version-sensitive
         eventBus._on('updateviewarea', handleViewAreaChanged)
 
-        painterInstance.initWebSelection(pdfViewer.viewer as HTMLDivElement)
+        if (viewerContainerRef.current) {
+            painterInstance.initWebSelection(viewerContainerRef.current)
+        }
 
         // 检查文档是否已经加载
         const handleDocumentLoaded = async () => {

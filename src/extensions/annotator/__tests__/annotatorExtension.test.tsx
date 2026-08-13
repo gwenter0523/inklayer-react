@@ -21,6 +21,7 @@ const mockPdfViewer = {
     pagesCount: 1,
     getPageView: jest.fn(() => ({ div: document.createElement('div'), canvas: document.createElement('canvas') }))
 }
+const mockViewerContainerRef = { current: document.createElement('div') }
 const mockPainterInstances: MockPainter[] = []
 const mockDefaultOptions = {}
 let mockInitAnnotations: () => Promise<void>
@@ -46,7 +47,8 @@ jest.mock('../../../context/pdf_viewer_context', () => ({
         eventBus: mockEventBus,
         isSidebarCollapsed: false,
         activeSidebarPanel: null,
-        openSidebar: mockOpenSidebar
+        openSidebar: mockOpenSidebar,
+        viewerContainerRef: mockViewerContainerRef
     })
 }))
 
