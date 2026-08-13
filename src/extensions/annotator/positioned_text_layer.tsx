@@ -174,7 +174,7 @@ function PositionedTextSpan({
 }): React.JSX.Element | null {
     const { geometry } = span
     const style = positionedTextStyle(geometry, scaleX, scaleY)
-    if (!style || !span.text) return null
+    if (!style || !span.text.trim()) return null
 
     return <span
         className={styles.positionedTextSpan}

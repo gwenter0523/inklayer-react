@@ -11734,7 +11734,7 @@ function Nd({
   scaleY: t
 }) {
   const { geometry: o } = n, r = Id(o, e, t);
-  return !r || !n.text ? null : /* @__PURE__ */ c(
+  return !r || !n.text.trim() ? null : /* @__PURE__ */ c(
     "span",
     {
       className: lr.positionedTextSpan,
