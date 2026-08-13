@@ -21,6 +21,7 @@ import { SearchSidebar } from '@/components/search_sidebar'
 import useSystemAppearance from '@/hooks/useSystemAppearance'
 import { annotationsToStores, storesToAnnotations, storeToAnnotation } from '@/core/adapters/store.mapper'
 import { PdfAnnotatorChromeBridge } from './chrome'
+import { PositionedTextLayer } from '../../extensions/annotator/positioned_text_layer'
 
 export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
     appearance = 'auto',
@@ -49,7 +50,8 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
     layoutStyle,
     actions,
     chrome,
-    searchAvailable = true
+    searchAvailable = true,
+    positionedTextSource
 }) => {
     // Annotation[] → IAnnotationStore[]（组件内部格式转换）
     const effectiveAnnotations = useMemo(
@@ -57,8 +59,8 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
         [initialAnnotations]
     )
     const viewerOptions = useMemo(
-        () => ({ textLayerMode: 1, annotationMode: 0, externalLinkTarget: 0, enableRange, pdfjsOptions }),
-        [enableRange, pdfjsOptions]
+        () => ({ textLayerMode: positionedTextSource ? 0 : 1, annotationMode: 0, externalLinkTarget: 0, enableRange, pdfjsOptions }),
+        [enableRange, pdfjsOptions, positionedTextSource]
     )
 
     const { t } = useTranslation(['annotator', 'common'], { useSuspense: false })
@@ -205,6 +207,7 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
                         actions={chrome ? undefined : <ActionsButtons />}
                         style={layoutStyle}
                     >
+                        {positionedTextSource && <PositionedTextLayer source={positionedTextSource} />}
                         {chrome ? (
                                 <PdfAnnotatorChromeBridge
                                     Chrome={chrome}

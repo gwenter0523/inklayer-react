@@ -1,0 +1,106 @@
+/** @jest-environment jsdom */
+
+import '@testing-library/jest-dom'
+import { render, waitFor } from '@testing-library/react'
+import React from 'react'
+import { PdfViewerContext, type PdfViewerContextValue } from '@/context/pdf_viewer_context'
+import { PositionedTextLayer } from '../positioned_text_layer'
+import type { PdfPositionedTextSource } from '../types/annotator'
+
+describe('PositionedTextLayer', () => {
+    it('loads only visible pages plus one adjacent page and projects span geometry', async () => {
+        const host = document.createElement('div')
+        document.body.appendChild(host)
+        const pageDivs = [1, 2, 3].map(() => document.createElement('div'))
+        pageDivs.forEach((div) => host.appendChild(div))
+        const pageRects = [
+            { top: 0, bottom: 800 },
+            { top: 816, bottom: 1616 },
+            { top: 1632, bottom: 2432 }
+        ]
+        pageDivs.forEach((div, index) => {
+            Object.defineProperty(div, 'getBoundingClientRect', {
+                configurable: true,
+                value: () => ({
+                    ...pageRects[index],
+                    left: 0,
+                    right: 600,
+                    width: 600,
+                    height: 800,
+                    x: 0,
+                    y: pageRects[index].top,
+                    toJSON: () => ({})
+                })
+            })
+        })
+        const viewerContainer = document.createElement('div')
+        host.appendChild(viewerContainer)
+        Object.defineProperty(viewerContainer, 'getBoundingClientRect', {
+            configurable: true,
+            value: () => ({
+                top: 0,
+                bottom: 800,
+                left: 0,
+                right: 600,
+                width: 600,
+                height: 800,
+                x: 0,
+                y: 0,
+                toJSON: () => ({})
+            })
+        })
+        const eventHandlers = new Map<string, () => void>()
+        const eventBus = {
+            on: jest.fn((event: string, handler: () => void) => eventHandlers.set(event, handler)),
+            off: jest.fn((event: string) => eventHandlers.delete(event))
+        }
+        const pdfViewer = {
+            pagesCount: 3,
+            currentPageNumber: 1,
+            getPageView: jest.fn((index: number) => ({
+                div: pageDivs[index],
+                viewport: { width: 600, height: 800 }
+            }))
+        }
+        const source: PdfPositionedTextSource = {
+            pageCount: 3,
+            getPage: jest.fn(async (pageNumber: number) => pageNumber === 1
+                ? {
+                    pageNumber: 1,
+                    dimensions: { width: 600, height: 800 },
+                    spans: [{
+                        id: 'span-a',
+                        blockId: 'block-a',
+                        spanId: 'span-a',
+                        text: '可选择文字',
+                        geometry: { x: 60, y: 120, width: 180, height: 32 }
+                    }]
+                }
+                : { pageNumber, dimensions: { width: 600, height: 800 }, spans: [] })
+        }
+        const contextValue = {
+            pdfViewer,
+            eventBus,
+            viewerContainerRef: { current: viewerContainer },
+            isReady: true,
+        } as unknown as PdfViewerContextValue
+
+        render(
+            <PdfViewerContext.Provider value={contextValue}>
+                <PositionedTextLayer source={source} />
+            </PdfViewerContext.Provider>
+        )
+
+        await waitFor(() => expect(source.getPage).toHaveBeenCalledWith(1))
+        expect(source.getPage).toHaveBeenCalledWith(2)
+        expect(source.getPage).not.toHaveBeenCalledWith(3)
+        await waitFor(() => expect(pageDivs[0].querySelector('[data-inklayer-positioned-text-id="span-a"]')).toBeInTheDocument())
+
+        const span = pageDivs[0].querySelector('[data-inklayer-positioned-text-id="span-a"]')
+        expect(span).toHaveTextContent('可选择文字')
+        expect(span).toHaveAttribute('data-inklayer-positioned-text-block-id', 'block-a')
+        expect(span).toHaveStyle({ left: '60px', top: '120px', width: '180px', height: '32px' })
+        expect(eventBus.on).toHaveBeenCalledWith('scalechanging', expect.any(Function))
+        host.remove()
+    })
+})

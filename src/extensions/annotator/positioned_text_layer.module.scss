@@ -1,0 +1,23 @@
+.positionedTextLayer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 9;
+    pointer-events: auto;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.positionedTextSpan {
+    position: absolute;
+    display: block;
+    overflow: visible;
+    box-sizing: border-box;
+    color: transparent;
+    background: transparent;
+    white-space: pre;
+    pointer-events: auto;
+    user-select: text;
+    -webkit-user-select: text;
+    cursor: text;
+}

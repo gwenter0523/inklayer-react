@@ -592,6 +592,12 @@ export declare interface PdfAnnotatorProps extends PdfBaseProps {
     /** Whether the SDK search panel is available to a host chrome. */
     searchAvailable?: boolean;
     /**
+     * Optional provider-neutral processed text source. When present, InkLayer
+     * disables PDF.js native text selection and renders this page-lazy source
+     * as the single selectable text owner over the original PDF visuals.
+     */
+    positionedTextSource?: PdfPositionedTextSource;
+    /**
      * 当前用户信息，用于标注作者标识
      * @default: { id: 'null', name: 'unknown' }
      */
@@ -815,6 +821,46 @@ declare interface PdfPoint {
     x: number;
     /** Y 坐标（从下向上） */
     y: number;
+}
+
+/**
+ * Provider-neutral geometry for an externally supplied selectable text span.
+ * Coordinates are expressed in the page's visual top-left coordinate space.
+ */
+export declare interface PdfPositionedTextGeometry {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+}
+
+export declare interface PdfPositionedTextPage {
+    /** One-based physical PDF page number. */
+    readonly pageNumber: number;
+    /** Visual page dimensions matching the geometry coordinate space. */
+    readonly dimensions: Readonly<{
+        width: number;
+        height: number;
+    }>;
+    readonly spans: readonly PdfPositionedTextSpan[];
+}
+
+/**
+ * Lazy external text provider owned by the host application.
+ * InkLayer owns the page transform and selectable DOM projection.
+ */
+export declare interface PdfPositionedTextSource {
+    readonly pageCount: number;
+    getPage(pageNumber: number): Promise<PdfPositionedTextPage | null>;
+}
+
+export declare interface PdfPositionedTextSpan {
+    /** Stable source identity for the supplied span. */
+    readonly id: string;
+    readonly blockId?: string;
+    readonly spanId?: string;
+    readonly text: string;
+    readonly geometry: PdfPositionedTextGeometry;
 }
 
 /** 四边形点，用于文本高亮等多段区域

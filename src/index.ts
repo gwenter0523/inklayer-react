@@ -15,6 +15,10 @@ export type {
   AnnotationPermissionRequest,
   AnnotationPermissions,
   PdfAnnotatorWriteIntent,
+  PdfPositionedTextGeometry,
+  PdfPositionedTextSpan,
+  PdfPositionedTextPage,
+  PdfPositionedTextSource,
 } from './extensions/annotator/types/annotator';
 export { PdfViewer } from './features/viewer';
 export type { PdfViewerProps } from './features/viewer';
