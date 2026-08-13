@@ -1,6 +1,7 @@
 .positionedTextLayer {
     position: absolute;
-    inset: 0;
+    right: auto;
+    bottom: auto;
     overflow: hidden;
     z-index: 9;
     pointer-events: none;

@@ -15,7 +15,11 @@ interface PositionedTextLayerProps {
 
 interface PageMount {
     readonly pageNumber: number
-    readonly div: HTMLDivElement
+    readonly host: HTMLDivElement
+    readonly left: number
+    readonly top: number
+    readonly width: number
+    readonly height: number
     readonly scaleX: number
     readonly scaleY: number
 }
@@ -138,27 +142,41 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
         return visiblePageNumbers.flatMap((pageNumber): PageMount[] => {
             const pageView = pdfViewer.getPageView(pageNumber - 1)
             const page = pages.get(pageNumber)
-            if (!pageView?.div || !page) return []
+            const host = viewerContainerRef.current
+            if (!pageView?.div || !page || !host) return []
             const viewport = pageView.viewport
             if (!viewport ||
                 ![viewport.width, viewport.height, page.dimensions.width, page.dimensions.height].every(Number.isFinite) ||
                 viewport.width <= 0 || viewport.height <= 0 ||
                 page.dimensions.width <= 0 || page.dimensions.height <= 0) return []
+            const pageRect = pageView.div.getBoundingClientRect()
+            const hostRect = host.getBoundingClientRect()
+            const left = pageRect.left - hostRect.left + host.scrollLeft
+            const top = pageRect.top - hostRect.top + host.scrollTop
+            if (![left, top, pageRect.width, pageRect.height].every(Number.isFinite)) return []
             return [{
                 pageNumber,
-                div: pageView.div,
+                host,
+                left,
+                top,
+                width: pageRect.width,
+                height: pageRect.height,
                 scaleX: viewport.width / page.dimensions.width,
                 scaleY: viewport.height / page.dimensions.height
             }]
         })
-    }, [pages, pdfViewer, visiblePageNumbers])
+    }, [pages, pdfViewer, viewerContainerRef, visiblePageNumbers])
 
     return <>
         {mountedPages.map((mount) => {
             const page = pages.get(mount.pageNumber)
             if (!page) return null
             return createPortal(
-                <div className={styles.positionedTextLayer} data-inklayer-positioned-text-page={mount.pageNumber}>
+                <div
+                    className={styles.positionedTextLayer}
+                    data-inklayer-positioned-text-page={mount.pageNumber}
+                    style={{ left: mount.left, top: mount.top, width: mount.width, height: mount.height }}
+                >
                     {page.spans.map((span) => (
                         <PositionedTextSpan
                             key={span.id}
@@ -168,7 +186,7 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
                         />
                     ))}
                 </div>,
-                mount.div,
+                mount.host,
                 `positioned-text-${mount.pageNumber}`
             )
         })}

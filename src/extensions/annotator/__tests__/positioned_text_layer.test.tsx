@@ -94,9 +94,9 @@ describe('PositionedTextLayer', () => {
         await waitFor(() => expect(source.getPage).toHaveBeenCalledWith(1))
         expect(source.getPage).toHaveBeenCalledWith(2)
         expect(source.getPage).not.toHaveBeenCalledWith(3)
-        await waitFor(() => expect(pageDivs[0].querySelector('[data-inklayer-positioned-text-id="span-a"]')).toBeInTheDocument())
+        await waitFor(() => expect(viewerContainer.querySelector('[data-inklayer-positioned-text-id="span-a"]')).toBeInTheDocument())
 
-        const span = pageDivs[0].querySelector('[data-inklayer-positioned-text-id="span-a"]')
+        const span = viewerContainer.querySelector('[data-inklayer-positioned-text-id="span-a"]')
         expect(span).toHaveTextContent('可选择文字')
         expect(span).toHaveAttribute('data-inklayer-positioned-text-block-id', 'block-a')
         expect(span).toHaveStyle({ left: '60px', top: '120px', width: '180px', height: '32px' })
@@ -152,8 +152,8 @@ describe('PositionedTextLayer', () => {
             </PdfViewerContext.Provider>
         )
 
-        await waitFor(() => expect(pageDiv.querySelector('[data-inklayer-positioned-text-id="rotated"]')).toBeInTheDocument())
-        expect(pageDiv.querySelector('[data-inklayer-positioned-text-id="rotated"]')).toHaveStyle({
+        await waitFor(() => expect(host.querySelector('[data-inklayer-positioned-text-id="rotated"]')).toBeInTheDocument())
+        expect(host.querySelector('[data-inklayer-positioned-text-id="rotated"]')).toHaveStyle({
             left: '100px',
             top: '100px',
             transform: 'matrix(0,1,-1,0,0,0)'
