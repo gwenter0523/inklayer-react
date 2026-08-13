@@ -46,7 +46,7 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
             const pageView = pdfViewer.getPageView(index)
             const pageRect = pageView?.div?.getBoundingClientRect()
             if (!pageRect || pageRect.width <= 0 || pageRect.height <= 0) continue
-            if (!hasMeasuredViewport || (
+            if (hasMeasuredViewport && (
                 pageRect.bottom >= containerRect.top &&
                 pageRect.top <= containerRect.bottom
             )) {
@@ -127,7 +127,10 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
             const page = pages.get(pageNumber)
             if (!pageView?.div || !page) return []
             const viewport = pageView.viewport
-            if (!viewport || page.dimensions.width <= 0 || page.dimensions.height <= 0) return []
+            if (!viewport ||
+                ![viewport.width, viewport.height, page.dimensions.width, page.dimensions.height].every(Number.isFinite) ||
+                viewport.width <= 0 || viewport.height <= 0 ||
+                page.dimensions.width <= 0 || page.dimensions.height <= 0) return []
             return [{
                 pageNumber,
                 div: pageView.div,

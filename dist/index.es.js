@@ -1,15 +1,15 @@
 import { jsxs as x, Fragment as Ce, jsx as c } from "react/jsx-runtime";
-import Pt, { useRef as W, useState as K, useCallback as J, useEffect as ne, createContext as Qt, useContext as Ht, memo as go, useMemo as xe, forwardRef as en, useImperativeHandle as In, useLayoutEffect as ct, useSyncExternalStore as ur, useId as hr, createElement as pr } from "react";
+import Pt, { useRef as W, useState as K, useCallback as J, useEffect as ne, createContext as Qt, useContext as Ht, memo as go, useMemo as xe, forwardRef as en, useImperativeHandle as Nn, useLayoutEffect as ct, useSyncExternalStore as ur, useId as hr, createElement as pr } from "react";
 import * as fr from "pdfjs-dist/legacy/build/pdf.mjs";
 import { AnnotationMode as gr, AnnotationEditorType as mr, getDocument as cn, PDFDataRangeTransport as vr } from "pdfjs-dist/legacy/build/pdf.mjs";
 import { EventBus as yr, PDFLinkService as br, DownloadManager as Sr, PDFFindController as wr, PDFViewer as Cr } from "pdfjs-dist/legacy/web/pdf_viewer.mjs";
 import "pdfjs-dist/legacy/web/pdf_viewer.css";
 import { useThemeContext as tn, Flex as Q, Spinner as mo, Box as lt, Text as ae, Progress as xr, Callout as dt, Strong as Ar, IconButton as et, TextField as kt, Tabs as Tt, Tooltip as Rt, Button as ye, Popover as ke, Card as Tr, Grid as Wt, Separator as tt, Slider as Gn, HoverCard as ln, DropdownMenu as me, Dialog as at, SegmentedControl as gt, Select as Re, CheckboxGroup as bt, TextArea as kr, Badge as Er, Checkbox as $t, Theme as vo } from "@radix-ui/themes";
 import { useTranslation as ve, initReactI18next as Rr } from "react-i18next";
-import { AiOutlineWarning as Pr, AiOutlineLeft as yo, AiOutlineRight as bo, AiOutlineArrowLeft as Ir, AiOutlineLine as Nr, AiOutlinePlus as Mr, AiOutlinePlusCircle as So, AiOutlineImport as wo, AiOutlineExclamationCircle as Dr, AiOutlineBold as Lr, AiOutlineItalic as _r, AiOutlineUnderline as Or, AiOutlineStrikethrough as Hr, AiOutlineExclamation as Gr, AiOutlineEllipsis as Un, AiOutlineFilter as Ur, AiOutlineMinusSquare as zr, AiOutlineStop as Fr, AiOutlineCheckCircle as jr, AiOutlineMinusCircle as Wr, AiOutlineDislike as Br, AiOutlineLike as Vr, AiOutlineSearch as Nn, AiFillCloseCircle as $r, AiOutlineSave as Yr, AiOutlinePrinter as Kr } from "react-icons/ai";
+import { AiOutlineWarning as Pr, AiOutlineLeft as yo, AiOutlineRight as bo, AiOutlineArrowLeft as Nr, AiOutlineLine as Ir, AiOutlinePlus as Mr, AiOutlinePlusCircle as So, AiOutlineImport as wo, AiOutlineExclamationCircle as Dr, AiOutlineBold as Lr, AiOutlineItalic as _r, AiOutlineUnderline as Or, AiOutlineStrikethrough as Hr, AiOutlineExclamation as Gr, AiOutlineEllipsis as Un, AiOutlineFilter as Ur, AiOutlineMinusSquare as zr, AiOutlineStop as Fr, AiOutlineCheckCircle as jr, AiOutlineMinusCircle as Wr, AiOutlineDislike as Br, AiOutlineLike as Vr, AiOutlineSearch as In, AiFillCloseCircle as $r, AiOutlineSave as Yr, AiOutlinePrinter as Kr } from "react-icons/ai";
 import { PDFDocument as Mn, PDFName as j, PDFHexString as Co, PDFArray as xo, PDFDict as Sn, PDFString as re, PDFRef as Xr, PDFNumber as ee, PDFRawStream as qr } from "pdf-lib";
 import { GoSidebarExpand as Jr, GoSidebarCollapse as Zr } from "react-icons/go";
-import N from "konva";
+import I from "konva";
 import { nanoid as Qr } from "nanoid";
 import Te, { t as be } from "i18next";
 import { computePosition as Bt, flip as Ao } from "@floating-ui/dom";
@@ -43,7 +43,7 @@ function ai(o, e) {
     pdfjsOptions: p
   } = e, g = W(s), v = W(i), y = W(a), b = W(l);
   g.current = s, v.current = i, y.current = a, b.current = l;
-  const w = W(null), S = W(null), A = W(null), E = W(null), M = W(0), [_, B] = K(!0), [V, O] = K(0), [k, L] = K(null), [Y, G] = K(null), [I, D] = K(null), q = J(() => {
+  const w = W(null), S = W(null), A = W(null), E = W(null), M = W(0), [_, B] = K(!0), [V, O] = K(0), [k, L] = K(null), [Y, G] = K(null), [N, D] = K(null), q = J(() => {
     if (E.current && (E.current(), E.current = null), !o.current) throw new Error("PDF container not ready");
     const P = u || new yr();
     A.current = P;
@@ -172,7 +172,7 @@ function ai(o, e) {
     /** PDF 元数据 */
     metadata: Y,
     /** 加载错误 */
-    loadError: I
+    loadError: N
   };
 }
 const Eo = Qt(null), Fe = () => {
@@ -185,7 +185,7 @@ const Eo = Qt(null), Fe = () => {
   if (!o)
     throw new Error("useUserContext must be used within a UserProvider");
   return o;
-}, ci = "_InkLayerViewer_1ief7_1", li = "_viewerHeader_1ief7_91", di = "_viewerBody_1ief7_130", ui = "_navigationSidebarTriggerIcon_1ief7_136", hi = "_viewerWrapper_1ief7_142", pi = "_viewerContainer_1ief7_150", fi = "_pdfjsViewerContainer_1ief7_167", gi = "_viewerSidebar_1ief7_197", mi = "_sidebarOverlay_1ief7_225", Ne = {
+}, ci = "_InkLayerViewer_1ief7_1", li = "_viewerHeader_1ief7_91", di = "_viewerBody_1ief7_130", ui = "_navigationSidebarTriggerIcon_1ief7_136", hi = "_viewerWrapper_1ief7_142", pi = "_viewerContainer_1ief7_150", fi = "_pdfjsViewerContainer_1ief7_167", gi = "_viewerSidebar_1ief7_197", mi = "_sidebarOverlay_1ief7_225", Ie = {
   InkLayerViewer: ci,
   viewerHeader: li,
   "viewerHeader-title": "_viewerHeader-title_1ief7_102",
@@ -342,7 +342,7 @@ const bi = ({ loading: o, progress: e, loadingDelay: t = 500, progressHideDelay:
     O(T) ? k(T) : u(r.toString());
   }, [l, r, k, O, A]), G = J(() => {
     A(), r > 1 && k(r - 1);
-  }, [r, k, A]), I = J(() => {
+  }, [r, k, A]), N = J(() => {
     A(), r < i && k(r + 1);
   }, [r, i, k, A]);
   ne(() => {
@@ -457,7 +457,7 @@ const bi = ({ loading: o, progress: e, loadingDelay: t = 500, progressHideDelay:
             color: "gray",
             variant: "ghost",
             disabled: r >= i || d,
-            onClick: I,
+            onClick: N,
             size: "1",
             "aria-label": e("viewer:navigation.nextPage"),
             style: {
@@ -482,23 +482,23 @@ async function zn(o, e = !1) {
   const t = await o.getData(), n = await Mn.load(t);
   return e && Ci(n), n.save();
 }
-function Io(o) {
+function No(o) {
   const e = new ArrayBuffer(o.byteLength);
   return new Uint8Array(e).set(o), e;
 }
 function xi(o, e) {
-  const t = new Blob([Io(o)], { type: "application/pdf" }), n = document.createElement("a");
+  const t = new Blob([No(o)], { type: "application/pdf" }), n = document.createElement("a");
   n.href = URL.createObjectURL(t), n.download = e, n.click(), URL.revokeObjectURL(n.href);
 }
 function Ai(o) {
-  const e = new Blob([Io(o)], { type: "application/pdf" }), t = URL.createObjectURL(e), n = document.createElement("iframe");
+  const e = new Blob([No(o)], { type: "application/pdf" }), t = URL.createObjectURL(e), n = document.createElement("iframe");
   n.style.position = "fixed", n.style.width = "0", n.style.height = "0", n.style.border = "none", n.src = t, document.body.appendChild(n), n.onload = () => {
     n.contentWindow?.focus(), n.contentWindow?.print(), setTimeout(() => {
       document.body.removeChild(n), URL.revokeObjectURL(t);
     }, 1e3);
   };
 }
-function No(o) {
+function Io(o) {
   const e = J(
     async (n) => {
       if (!o) return;
@@ -594,16 +594,16 @@ function ki({
       if (Math.abs(M - w) <= 1 && Math.abs(_ - S) <= 1 && Math.abs(B - A) <= 1 && Math.abs(V - E) <= 1)
         return;
       if (v.touch0X = w, v.touch0Y = S, v.touch1X = A, v.touch1Y = E, M === w && _ === S) {
-        const I = B - w, D = V - S, q = A - w, X = E - S, T = I * X - D * q;
-        if (Math.abs(T) > 0.02 * Math.hypot(I, D) * Math.hypot(q, X))
+        const N = B - w, D = V - S, q = A - w, X = E - S, T = N * X - D * q;
+        if (Math.abs(T) > 0.02 * Math.hypot(N, D) * Math.hypot(q, X))
           return;
       } else if (B === A && V === E) {
-        const I = M - A, D = _ - E, q = w - A, X = S - E, T = I * X - D * q;
-        if (Math.abs(T) > 0.02 * Math.hypot(I, D) * Math.hypot(q, X))
+        const N = M - A, D = _ - E, q = w - A, X = S - E, T = N * X - D * q;
+        if (Math.abs(T) > 0.02 * Math.hypot(N, D) * Math.hypot(q, X))
           return;
       } else {
-        const I = w - M, D = A - B, q = S - _, X = E - V;
-        if (I * D + q * X >= 0) return;
+        const N = w - M, D = A - B, q = S - _, X = E - V;
+        if (N * D + q * X >= 0) return;
       }
       g.preventDefault();
       const O = Math.hypot(w - A, S - E) || 1, k = Math.hypot(M - B, _ - V) || 1, L = o.currentScale, Y = (y.clientX + b.clientX) / 2, G = (y.clientY + b.clientY) / 2;
@@ -628,13 +628,13 @@ function ki({
     };
   }, [o, e, u]);
 }
-const Ei = "_thumbnailList_vmgds_1", Ri = "_thumbnail_vmgds_1", Pi = "_thumbnailCanvasWrapper_vmgds_19", Ii = "_thumbnailCanvas_vmgds_19", Ni = "_thumbnailPlaceholder_vmgds_51", Mi = "_thumbnailError_vmgds_58", Di = "_thumbnailPageNumber_vmgds_71", Li = "_thumbnailMarker_vmgds_93", ft = {
+const Ei = "_thumbnailList_vmgds_1", Ri = "_thumbnail_vmgds_1", Pi = "_thumbnailCanvasWrapper_vmgds_19", Ni = "_thumbnailCanvas_vmgds_19", Ii = "_thumbnailPlaceholder_vmgds_51", Mi = "_thumbnailError_vmgds_58", Di = "_thumbnailPageNumber_vmgds_71", Li = "_thumbnailMarker_vmgds_93", ft = {
   thumbnailList: Ei,
   thumbnail: Ri,
   thumbnailCanvasWrapper: Pi,
   "thumbnail--selected": "_thumbnail--selected_vmgds_27",
-  thumbnailCanvas: Ii,
-  thumbnailPlaceholder: Ni,
+  thumbnailCanvas: Ni,
+  thumbnailPlaceholder: Ii,
   thumbnailError: Mi,
   thumbnailPageNumber: Di,
   thumbnailMarker: Li
@@ -1095,7 +1095,7 @@ const Ki = ({ onNavigate: o }) => {
       P.target !== P.currentTarget || P.propertyName !== "width" || Y();
     },
     [Y]
-  ), I = !!(b && w && p.current && !g), { printClean: D, downloadClean: q } = No(y);
+  ), N = !!(b && w && p.current && !g), { printClean: D, downloadClean: q } = Io(y);
   ki({
     pdfViewer: b ?? null,
     containerRef: p,
@@ -1108,7 +1108,7 @@ const Ki = ({ onNavigate: o }) => {
       pdfViewer: b,
       eventBus: w,
       viewerContainerRef: p,
-      isReady: I,
+      isReady: N,
       activeSidebarPanel: _,
       isNavigationSidebarOpen: A,
       toggleNavigationSidebar: M,
@@ -1123,7 +1123,7 @@ const Ki = ({ onNavigate: o }) => {
       y,
       b,
       w,
-      I,
+      N,
       O,
       V,
       k,
@@ -1168,11 +1168,11 @@ const Ki = ({ onNavigate: o }) => {
   return ne(() => {
     if (!t || !_) return;
     t.some((Z) => Z.key === _) || B(null);
-  }, [t, _]), /* @__PURE__ */ c(Dn.Provider, { value: T, children: /* @__PURE__ */ c(Eo.Provider, { value: X, children: /* @__PURE__ */ x(Q, { id: "InkLayer", className: Ne.InkLayerViewer, style: i, direction: "column", width: "100%", position: "relative", children: [
+  }, [t, _]), /* @__PURE__ */ c(Dn.Provider, { value: T, children: /* @__PURE__ */ c(Eo.Provider, { value: X, children: /* @__PURE__ */ x(Q, { id: "InkLayer", className: Ie.InkLayerViewer, style: i, direction: "column", width: "100%", position: "relative", children: [
     /* @__PURE__ */ c(bi, { progress: v, loading: g }),
     S && /* @__PURE__ */ c(Si, { error: S }),
-    !u && /* @__PURE__ */ c(Q, { pl: "2", pr: "2", className: Ne.viewerHeader, children: /* @__PURE__ */ x("div", { className: Ne["viewerHeader-title"], children: [
-      /* @__PURE__ */ x(Q, { align: "center", gap: "2", className: Ne["viewerHeader-title-left"], children: [
+    !u && /* @__PURE__ */ c(Q, { pl: "2", pr: "2", className: Ie.viewerHeader, children: /* @__PURE__ */ x("div", { className: Ie["viewerHeader-title"], children: [
+      /* @__PURE__ */ x(Q, { align: "center", gap: "2", className: Ie["viewerHeader-title-left"], children: [
         /* @__PURE__ */ c(Rt, { content: f("viewer:navigation.toggle"), children: /* @__PURE__ */ c(
           ye,
           {
@@ -1185,17 +1185,17 @@ const Ki = ({ onNavigate: o }) => {
             "aria-expanded": A,
             "aria-label": f("viewer:navigation.toggle"),
             onClick: () => E((P) => !P),
-            children: A ? /* @__PURE__ */ c(Jr, { className: Ne.navigationSidebarTriggerIcon }) : /* @__PURE__ */ c(Zr, { className: Ne.navigationSidebarTriggerIcon })
+            children: A ? /* @__PURE__ */ c(Jr, { className: Ie.navigationSidebarTriggerIcon }) : /* @__PURE__ */ c(Zr, { className: Ie.navigationSidebarTriggerIcon })
           }
         ) }),
-        /* @__PURE__ */ c("div", { className: Ne["viewerHeader-title-name"], children: r || "PDF Viewer" })
+        /* @__PURE__ */ c("div", { className: Ie["viewerHeader-title-name"], children: r || "PDF Viewer" })
       ] }),
-      /* @__PURE__ */ c("div", { className: Ne["viewerHeader-title-actions"], children: /* @__PURE__ */ x(Q, { direction: "row", gap: "3", justify: "between", align: "center", children: [
+      /* @__PURE__ */ c("div", { className: Ie["viewerHeader-title-actions"], children: /* @__PURE__ */ x(Q, { direction: "row", gap: "3", justify: "between", align: "center", children: [
         U,
         s
       ] }) })
     ] }) }),
-    /* @__PURE__ */ x(Q, { flexGrow: "1", minHeight: "0", className: Ne.viewerBody, children: [
+    /* @__PURE__ */ x(Q, { flexGrow: "1", minHeight: "0", className: Ie.viewerBody, children: [
       /* @__PURE__ */ c(
         ns,
         {
@@ -1204,12 +1204,12 @@ const Ki = ({ onNavigate: o }) => {
           onTransitionEnd: G
         }
       ),
-      /* @__PURE__ */ x(Q, { flexGrow: "1", minHeight: "0", className: Ne.viewerWrapper, children: [
-        /* @__PURE__ */ x(Q, { className: Ne.viewerContainer, direction: "column", flexGrow: "1", children: [
-          e && /* @__PURE__ */ c(Q, { align: "center", justify: "center", className: Ne["viewerContainer-header"], children: e }),
-          /* @__PURE__ */ x(lt, { position: "relative", flexGrow: "1", className: Ne["viewerContainer-content"], children: [
+      /* @__PURE__ */ x(Q, { flexGrow: "1", minHeight: "0", className: Ie.viewerWrapper, children: [
+        /* @__PURE__ */ x(Q, { className: Ie.viewerContainer, direction: "column", flexGrow: "1", children: [
+          e && /* @__PURE__ */ c(Q, { align: "center", justify: "center", className: Ie["viewerContainer-header"], children: e }),
+          /* @__PURE__ */ x(lt, { position: "relative", flexGrow: "1", className: Ie["viewerContainer-content"], children: [
             !d && /* @__PURE__ */ c(Po, {}),
-            /* @__PURE__ */ c("div", { ref: p, className: Ne.pdfjsViewerContainer, children: /* @__PURE__ */ c("div", { className: "pdfViewer" }) })
+            /* @__PURE__ */ c("div", { ref: p, className: Ie.pdfjsViewerContainer, children: /* @__PURE__ */ c("div", { className: "pdfViewer" }) })
           ] })
         ] }),
         /* @__PURE__ */ c(
@@ -1217,19 +1217,19 @@ const Ki = ({ onNavigate: o }) => {
           {
             id: "InkLayer-viewer-sidebar",
             className: [
-              Ne.viewerSidebar,
-              z ? "" : Ne["viewerSidebar--hidden"]
+              Ie.viewerSidebar,
+              z ? "" : Ie["viewerSidebar--hidden"]
             ].join(" "),
             pl: "1",
             pr: "1",
             onTransitionEnd: G,
-            children: z && /* @__PURE__ */ c("div", { className: Ne["viewerSidebar-container"], children: z.render(X) })
+            children: z && /* @__PURE__ */ c("div", { className: Ie["viewerSidebar-container"], children: z.render(X) })
           }
         ),
         z && /* @__PURE__ */ c(
           "div",
           {
-            className: Ne.sidebarOverlay,
+            className: Ie.sidebarOverlay,
             onClick: () => B(null)
           }
         )
@@ -1237,72 +1237,72 @@ const Ki = ({ onNavigate: o }) => {
     ] }),
     o
   ] }) }) });
-}, Ie = ({ children: o, style: e, ...t }) => /* @__PURE__ */ c("svg", { ...t, style: { width: "1em", height: "1em", ...e }, children: o }), rs = ({ style: o }) => /* @__PURE__ */ c(Ie, { viewBox: "0 0 320 512", style: o, children: /* @__PURE__ */ c(
+}, Ne = ({ children: o, style: e, ...t }) => /* @__PURE__ */ c("svg", { ...t, style: { width: "1em", height: "1em", ...e }, children: o }), rs = ({ style: o }) => /* @__PURE__ */ c(Ne, { viewBox: "0 0 320 512", style: o, children: /* @__PURE__ */ c(
   "path",
   {
     fill: "currentColor",
     d: "M0 55.2V426c0 12.2 9.9 22 22 22c6.3 0 12.4-2.7 16.6-7.5L121.2 346l58.1 116.3c7.9 15.8 27.1 22.2 42.9 14.3s22.2-27.1 14.3-42.9L179.8 320H297.9c12.2 0 22.1-9.9 22.1-22.1c0-6.3-2.7-12.3-7.4-16.5L38.6 37.9C34.3 34.1 28.9 32 23.2 32C10.4 32 0 42.4 0 55.2z"
   }
-) }), Lo = ({ style: o }) => /* @__PURE__ */ c(Ie, { fill: "currentColor", viewBox: "0 0 576 512", style: o, children: /* @__PURE__ */ c(
+) }), Lo = ({ style: o }) => /* @__PURE__ */ c(Ne, { fill: "currentColor", viewBox: "0 0 576 512", style: o, children: /* @__PURE__ */ c(
   "path",
   {
     fill: "currentColor",
     d: "M315 315l158.4-215L444.1 70.6 229 229 315 315zm-187 5l0 0V248.3c0-15.3 7.2-29.6 19.5-38.6L420.6 8.4C428 2.9 437 0 446.2 0c11.4 0 22.4 4.5 30.5 12.6l54.8 54.8c8.1 8.1 12.6 19 12.6 30.5c0 9.2-2.9 18.2-8.4 25.6L334.4 396.5c-9 12.3-23.4 19.5-38.6 19.5H224l-25.4 25.4c-12.5 12.5-32.8 12.5-45.3 0l-50.7-50.7c-12.5-12.5-12.5-32.8 0-45.3L128 320zM7 466.3l63-63 70.6 70.6-31 31c-4.5 4.5-10.6 7-17 7H24c-13.3 0-24-10.7-24-24v-4.7c0-6.4 2.5-12.5 7-17z"
   }
-) }), _o = ({ style: o }) => /* @__PURE__ */ c(Ie, { fill: "currentColor", viewBox: "0 0 512 512", style: o, children: /* @__PURE__ */ c(
+) }), _o = ({ style: o }) => /* @__PURE__ */ c(Ne, { fill: "currentColor", viewBox: "0 0 512 512", style: o, children: /* @__PURE__ */ c(
   "path",
   {
     fill: "currentColor",
     d: "M161.3 144c3.2-17.2 14-30.1 33.7-38.6c21.1-9 51.8-12.3 88.6-6.5c11.9 1.9 48.8 9.1 60.1 12c17.1 4.5 34.6-5.6 39.2-22.7s-5.6-34.6-22.7-39.2c-14.3-3.8-53.6-11.4-66.6-13.4c-44.7-7-88.3-4.2-123.7 10.9c-36.5 15.6-64.4 44.8-71.8 87.3c-.1 .6-.2 1.1-.2 1.7c-2.8 23.9 .5 45.6 10.1 64.6c4.5 9 10.2 16.9 16.7 23.9H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H270.1c-.1 0-.3-.1-.4-.1l-1.1-.3c-36-10.8-65.2-19.6-85.2-33.1c-9.3-6.3-15-12.6-18.2-19.1c-3.1-6.1-5.2-14.6-3.8-27.4zM348.9 337.2c2.7 6.5 4.4 15.8 1.9 30.1c-3 17.6-13.8 30.8-33.9 39.4c-21.1 9-51.7 12.3-88.5 6.5c-18-2.9-49.1-13.5-74.4-22.1c-5.6-1.9-11-3.7-15.9-5.4c-16.8-5.6-34.9 3.5-40.5 20.3s3.5 34.9 20.3 40.5c3.6 1.2 7.9 2.7 12.7 4.3l0 0 0 0c24.9 8.5 63.6 21.7 87.6 25.6l0 0 .2 0c44.7 7 88.3 4.2 123.7-10.9c36.5-15.6 64.4-44.8 71.8-87.3c3.6-21 2.7-40.4-3.1-58.1H335.1c7 5.6 11.4 11.2 13.9 17.2z"
   }
-) }), Oo = ({ style: o }) => /* @__PURE__ */ c(Ie, { fill: "currentColor", viewBox: "0 0 448 512", style: o, children: /* @__PURE__ */ c(
+) }), Oo = ({ style: o }) => /* @__PURE__ */ c(Ne, { fill: "currentColor", viewBox: "0 0 448 512", style: o, children: /* @__PURE__ */ c(
   "path",
   {
     fill: "currentColor",
     d: "M16 64c0-17.7 14.3-32 32-32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H128V224c0 53 43 96 96 96s96-43 96-96V96H304c-17.7 0-32-14.3-32-32s14.3-32 32-32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H384V224c0 88.4-71.6 160-160 160s-160-71.6-160-160V96H48C30.3 96 16 81.7 16 64zM0 448c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32z"
   }
-) }), is = ({ style: o }) => /* @__PURE__ */ c(Ie, { fill: "currentColor", viewBox: "0 0 384 512", style: o, children: /* @__PURE__ */ c(
+) }), is = ({ style: o }) => /* @__PURE__ */ c(Ne, { fill: "currentColor", viewBox: "0 0 384 512", style: o, children: /* @__PURE__ */ c(
   "path",
   {
     fill: "currentColor",
     d: "M32 32C14.3 32 0 46.3 0 64S14.3 96 32 96H160V448c0 17.7 14.3 32 32 32s32-14.3 32-32V96H352c17.7 0 32-14.3 32-32s-14.3-32-32-32H192 32z"
   }
-) }), ss = ({ style: o }) => /* @__PURE__ */ c(Ie, { fill: "currentColor", viewBox: "0 0 512 512", style: o, children: /* @__PURE__ */ c(
+) }), ss = ({ style: o }) => /* @__PURE__ */ c(Ne, { fill: "currentColor", viewBox: "0 0 512 512", style: o, children: /* @__PURE__ */ c(
   "path",
   {
     fill: "currentColor",
     d: "M384 80c8.8 0 16 7.2 16 16V416c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V96c0-8.8 7.2-16 16-16H384zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"
   }
-) }), as = ({ style: o }) => /* @__PURE__ */ c(Ie, { fill: "currentColor", viewBox: "0 0 512 512", style: o, children: /* @__PURE__ */ c("path", { fill: "currentColor", d: "M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z" }) }), cs = ({ style: o }) => /* @__PURE__ */ c(Ie, { fill: "currentColor", viewBox: "0 0 512 512", style: o, children: /* @__PURE__ */ c(
+) }), as = ({ style: o }) => /* @__PURE__ */ c(Ne, { fill: "currentColor", viewBox: "0 0 512 512", style: o, children: /* @__PURE__ */ c("path", { fill: "currentColor", d: "M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z" }) }), cs = ({ style: o }) => /* @__PURE__ */ c(Ne, { fill: "currentColor", viewBox: "0 0 512 512", style: o, children: /* @__PURE__ */ c(
   "path",
   {
     fill: "currentColor",
     d: "M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"
   }
-) }), ls = ({ style: o }) => /* @__PURE__ */ c(Ie, { fill: "currentColor", viewBox: "0 0 576 512", style: o, children: /* @__PURE__ */ c(
+) }), ls = ({ style: o }) => /* @__PURE__ */ c(Ne, { fill: "currentColor", viewBox: "0 0 576 512", style: o, children: /* @__PURE__ */ c(
   "path",
   {
     fill: "currentColor",
     d: "M315 315l158.4-215L444.1 70.6 229 229 315 315zm-187 5l0 0V248.3c0-15.3 7.2-29.6 19.5-38.6L420.6 8.4C428 2.9 437 0 446.2 0c11.4 0 22.4 4.5 30.5 12.6l54.8 54.8c8.1 8.1 12.6 19 12.6 30.5c0 9.2-2.9 18.2-8.4 25.6L334.4 396.5c-9 12.3-23.4 19.5-38.6 19.5H224l-25.4 25.4c-12.5 12.5-32.8 12.5-45.3 0l-50.7-50.7c-12.5-12.5-12.5-32.8 0-45.3L128 320zM7 466.3l63-63 70.6 70.6-31 31c-4.5 4.5-10.6 7-17 7H24c-13.3 0-24-10.7-24-24v-4.7c0-6.4 2.5-12.5 7-17z"
   }
-) }), ds = ({ style: o }) => /* @__PURE__ */ c(Ie, { fill: "currentColor", viewBox: "0 0 640 512", style: o, children: /* @__PURE__ */ c(
+) }), ds = ({ style: o }) => /* @__PURE__ */ c(Ne, { fill: "currentColor", viewBox: "0 0 640 512", style: o, children: /* @__PURE__ */ c(
   "path",
   {
     fill: "currentColor",
     d: "M192 128c0-17.7 14.3-32 32-32s32 14.3 32 32v7.8c0 27.7-2.4 55.3-7.1 82.5l-84.4 25.3c-40.6 12.2-68.4 49.6-68.4 92v71.9c0 40 32.5 72.5 72.5 72.5c26 0 50-13.9 62.9-36.5l13.9-24.3c26.8-47 46.5-97.7 58.4-150.5l94.4-28.3-12.5 37.5c-3.3 9.8-1.6 20.5 4.4 28.8s15.7 13.3 26 13.3H544c17.7 0 32-14.3 32-32s-14.3-32-32-32H460.4l18-53.9c3.8-11.3 .9-23.8-7.4-32.4s-20.7-11.8-32.2-8.4L316.4 198.1c2.4-20.7 3.6-41.4 3.6-62.3V128c0-53-43-96-96-96s-96 43-96 96v32c0 17.7 14.3 32 32 32s32-14.3 32-32V128zm-9.2 177l49-14.7c-10.4 33.8-24.5 66.4-42.1 97.2l-13.9 24.3c-1.5 2.6-4.3 4.3-7.4 4.3c-4.7 0-8.5-3.8-8.5-8.5V335.6c0-14.1 9.3-26.6 22.8-30.7zM24 368c-13.3 0-24 10.7-24 24s10.7 24 24 24H64.3c-.2-2.8-.3-5.6-.3-8.5V368H24zm592 48c13.3 0 24-10.7 24-24s-10.7-24-24-24H305.9c-6.7 16.3-14.2 32.3-22.3 48H616z"
   }
-) }), us = ({ style: o }) => /* @__PURE__ */ c(Ie, { fill: "currentColor", viewBox: "0 0 512 512", style: o, children: /* @__PURE__ */ c(
+) }), us = ({ style: o }) => /* @__PURE__ */ c(Ne, { fill: "currentColor", viewBox: "0 0 512 512", style: o, children: /* @__PURE__ */ c(
   "path",
   {
     fill: "currentColor",
     d: "M312 201.8c0-17.4 9.2-33.2 19.9-47C344.5 138.5 352 118.1 352 96c0-53-43-96-96-96s-96 43-96 96c0 22.1 7.5 42.5 20.1 58.8c10.7 13.8 19.9 29.6 19.9 47c0 29.9-24.3 54.2-54.2 54.2H112C50.1 256 0 306.1 0 368c0 20.9 13.4 38.7 32 45.3V464c0 26.5 21.5 48 48 48H432c26.5 0 48-21.5 48-48V413.3c18.6-6.6 32-24.4 32-45.3c0-61.9-50.1-112-112-112H366.2c-29.9 0-54.2-24.3-54.2-54.2zM416 416v32H96V416H416z"
   }
-) }), hs = ({ style: o }) => /* @__PURE__ */ x(Ie, { viewBox: "0 0 1024 1024", style: o, children: [
+) }), hs = ({ style: o }) => /* @__PURE__ */ x(Ne, { viewBox: "0 0 1024 1024", style: o, children: [
   /* @__PURE__ */ c("path", { d: "M96 837.68888888h832v160H96z", fill: "var(--palette-preview-color, currentColor)" }),
   /* @__PURE__ */ c("path", { d: "M429.30646525 163.315053m54.92260742 54.92260743l164.76782227 164.76782227q54.92260742 54.92260742 0 109.84521486l-164.76782227 164.76782228q-54.92260742 54.92260742-109.84521486 0l-164.76782228-164.76782228q-54.92260742-54.92260742 0-109.84521486l164.76782228-164.76782227q54.92260742-54.92260742 109.84521486 0Z", fill: "var(--palette-preview-color, currentColor)" }),
   /* @__PURE__ */ c("path", { d: "M364.65047577 163.33699097L262.12304466 60.85098508 320.69831237 2.23429214l153.14905568 153.10763046c2.94119095 2.27838736 5.79953147 4.76390083 8.5335963 7.45654045l234.34249608 234.34249608a82.85044939 82.85044939 0 0 1 0 117.15053543l-234.34249608 234.34249607a82.85044939 82.85044939 0 0 1-117.19196065 0L130.88793283 514.29149456a82.85044939 82.85044939 0 0 1 0-117.15053543l233.76254294-233.80396816z m220.2579197 219.13943862l-0.57995316 0.53852791-161.0612736-161.0612736-226.72025474 226.67882952h454.51756532L584.90839547 382.47642959zM822.68918518 783.3069037a103.56306173 103.56306173 0 0 1-103.56306171-103.56306173c0-57.16681008 87.61435022-161.39267539 103.56306171-161.3926754 15.9487115 0 103.56306173 104.1844401 103.56306173 161.3926754a103.56306173 103.56306173 0 0 1-103.56306173 103.56306173z", fill: "currentColor" })
 ] }), ps = ({ style: o }) => /* @__PURE__ */ x(
-  Ie,
+  Ne,
   {
     viewBox: "0 0 1024 1024",
     style: o,
@@ -1311,10 +1311,10 @@ const Ki = ({ onNavigate: o }) => {
       /* @__PURE__ */ c("path", { fill: "currentColor", stroke: "currentColor", strokeWidth: "24", strokeLinecap: "round", strokeLinejoin: "round", d: "M720.72 551.99c4.72 0 9.24 1.87 12.58 5.21 3.34 3.33 5.21 7.86 5.21 12.58v71.16h106.74v-71.16c0-6.36 3.39-12.23 8.9-15.41a17.78 17.78 0 0 1 17.79 0c5.5 3.18 8.89 9.05 8.89 15.41v71.16h53.37c6.36 0 12.23 3.39 15.41 8.89a17.78 17.78 0 0 1 0 17.79c-3.18 5.5-9.05 8.89-15.41 8.89h-53.37v106.74h53.37c6.36 0 12.23 3.39 15.41 8.9a17.78 17.78 0 0 1 0 17.79c-3.18 5.5-9.05 8.9-15.41 8.89h-53.37v71.16c0 6.36-3.39 12.23-8.89 15.41a17.78 17.78 0 0 1-17.79 0c-5.51-3.18-8.9-9.05-8.9-15.41v-71.16H738.51v71.16c0 6.36-3.39 12.23-8.9 15.41a17.78 17.78 0 0 1-17.79 0c-5.51-3.18-8.9-9.05-8.89-15.41v-71.16h-53.37c-6.36 0-12.23-3.39-15.41-8.89a17.78 17.78 0 0 1 0-17.79c3.18-5.51 9.05-8.9 15.41-8.9h53.37V676.53h-53.37c-9.82 0-17.79-7.96-17.79-17.79 0-9.82 7.96-17.79 17.79-17.79h53.37v-71.16c0-9.83 7.96-17.8 17.79-17.8z m17.79 124.54v106.74h106.74V676.53H738.51z m0 0" })
     ]
   }
-), fs = ({ style: o }) => /* @__PURE__ */ c(Ie, { viewBox: "0 0 1024 1024", style: o, children: /* @__PURE__ */ c("path", { fill: "currentColor", d: "M766.4 744.3c43.7 0 79.4-36.2 79.4-80.5 0-53.5-79.4-140.8-79.4-140.8S687 610.3 687 663.8c0 44.3 35.7 80.5 79.4 80.5zm-377.1-44.1c7.1 7.1 18.6 7.1 25.6 0l256.1-256c7.1-7.1 7.1-18.6 0-25.6l-256-256c-.6-.6-1.3-1.2-2-1.7l-78.2-78.2a9.11 9.11 0 00-12.8 0l-48 48a9.11 9.11 0 000 12.8l67.2 67.2-207.8 207.9c-7.1 7.1-7.1 18.6 0 25.6l255.9 256zm12.9-448.6l178.9 178.9H223.4l178.8-178.9zM904 816H120c-4.4 0-8 3.6-8 8v80c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-80c0-4.4-3.6-8-8-8z" }) }), gs = ({ style: o }) => /* @__PURE__ */ x(Ie, { viewBox: "0 0 1024 1024", style: o, children: [
+), fs = ({ style: o }) => /* @__PURE__ */ c(Ne, { viewBox: "0 0 1024 1024", style: o, children: /* @__PURE__ */ c("path", { fill: "currentColor", d: "M766.4 744.3c43.7 0 79.4-36.2 79.4-80.5 0-53.5-79.4-140.8-79.4-140.8S687 610.3 687 663.8c0 44.3 35.7 80.5 79.4 80.5zm-377.1-44.1c7.1 7.1 18.6 7.1 25.6 0l256.1-256c7.1-7.1 7.1-18.6 0-25.6l-256-256c-.6-.6-1.3-1.2-2-1.7l-78.2-78.2a9.11 9.11 0 00-12.8 0l-48 48a9.11 9.11 0 000 12.8l67.2 67.2-207.8 207.9c-7.1 7.1-7.1 18.6 0 25.6l255.9 256zm12.9-448.6l178.9 178.9H223.4l178.8-178.9zM904 816H120c-4.4 0-8 3.6-8 8v80c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-80c0-4.4-3.6-8-8-8z" }) }), gs = ({ style: o }) => /* @__PURE__ */ x(Ne, { viewBox: "0 0 1024 1024", style: o, children: [
   /* @__PURE__ */ c("path", { d: "M66.782609 772.541217h196.051478a58.835478 58.835478 0 0 1 58.768696 58.768696v117.359304l235.78713-165.442782c9.928348-6.989913 21.615304-10.685217 33.747478-10.685218H957.217391V89.043478H66.782609v683.475479zM313.61113 1022.886957a58.768696 58.768696 0 0 1-58.768695-58.768696v-124.794435H58.724174A58.813217 58.813217 0 0 1 0 780.55513V81.029565A58.835478 58.835478 0 0 1 58.768696 22.26087h906.462608A58.835478 58.835478 0 0 1 1024 81.029565v699.503305a58.835478 58.835478 0 0 1-58.768696 58.768695H593.697391L347.336348 1012.201739c-10.106435 7.101217-21.904696 10.685217-33.725218 10.685218z", fill: "currentColor" }),
   /* @__PURE__ */ c("path", { d: "M761.878261 326.032696h-499.756522a33.391304 33.391304 0 0 1 0-66.782609h499.756522a33.391304 33.391304 0 1 1 0 66.782609M761.878261 567.652174h-499.756522a33.391304 33.391304 0 0 1 0-66.782609h499.756522a33.391304 33.391304 0 1 1 0 66.782609", fill: "currentColor" })
-] }), Ho = ({ style: o }) => /* @__PURE__ */ c(Ie, { viewBox: "0 0 1024 1024", style: o, children: /* @__PURE__ */ c("path", { fill: "currentColor", d: "M464 512a48 48 0 1096 0 48 48 0 10-96 0zm200 0a48 48 0 1096 0 48 48 0 10-96 0zm-400 0a48 48 0 1096 0 48 48 0 10-96 0zm661.2-173.6c-22.6-53.7-55-101.9-96.3-143.3a444.35 444.35 0 00-143.3-96.3C630.6 75.7 572.2 64 512 64h-2c-60.6.3-119.3 12.3-174.5 35.9a445.35 445.35 0 00-142 96.5c-40.9 41.3-73 89.3-95.2 142.8-23 55.4-34.6 114.3-34.3 174.9A449.4 449.4 0 00112 714v152a46 46 0 0046 46h152.1A449.4 449.4 0 00510 960h2.1c59.9 0 118-11.6 172.7-34.3a444.48 444.48 0 00142.8-95.2c41.3-40.9 73.8-88.7 96.5-142 23.6-55.2 35.6-113.9 35.9-174.5.3-60.9-11.5-120-34.8-175.6zm-151.1 438C704 845.8 611 884 512 884h-1.7c-60.3-.3-120.2-15.3-173.1-43.5l-8.4-4.5H188V695.2l-4.5-8.4C155.3 633.9 140.3 574 140 513.7c-.4-99.7 37.7-193.3 107.6-263.8 69.8-70.5 163.1-109.5 262.8-109.9h1.7c50 0 98.5 9.7 144.2 28.9 44.6 18.7 84.6 45.6 119 80 34.3 34.3 61.3 74.4 80 119 19.4 46.2 29.1 95.2 28.9 145.8-.6 99.6-39.7 192.9-110.1 262.7z" }) }), ms = ({ style: o }) => /* @__PURE__ */ c(Ie, { style: o, viewBox: "0 0 1024 1024", children: /* @__PURE__ */ c("path", { d: "M820.35259846 337.71374951V646.0663464h134.06634641V109.8009592h-536.2653872v134.06634641h308.35259689L109.8009592 860.57250255l93.84644234 93.84644232 616.70519692-616.70519536z", fill: "currentColor" }) }), vs = ({ style: o }) => /* @__PURE__ */ c(Ie, { style: o, viewBox: "0 0 1365 1024", children: /* @__PURE__ */ c("path", { d: "M992 992H392v-2.71999969A319.75999969 319.75999969 0 0 1 193.92000031 393.99999969a400.00000031 400.00000031 0 0 1 790.11999938-41.47999969c2.68000031 0 5.28-0.52000031 8.00000062-0.52000031A319.99999969 319.99999969 0 0 1 992 992z m0-480h-7.99999969a247.99999969 247.99999969 0 0 1-77.28 0H831.99999969v-79.99999969a240 240 0 0 0-480 0v79.99999969a202.87999969 202.87999969 0 0 0-79.99999969 22.56L247.23999969 552.00000031a157.39999969 157.39999969 0 0 0-15.24 15.31999969 54.28000031 54.28000031 0 0 0-9.96 12.48A157.44 157.44 0 0 0 192.00000031 672.00000031a166.36000031 166.36000031 0 0 0 120 159.99999938h679.99999969a160.00000031 160.00000031 0 0 0 0-319.99999969z", fill: "currentColor" }) }), ys = ({ style: o }) => /* @__PURE__ */ c(Ie, { style: o, viewBox: "0 0 1024 1024", children: /* @__PURE__ */ c("path", { fill: "currentColor", d: "M360 184h-8c4.4 0 8-3.6 8-8v8h304v-8c0 4.4 3.6 8 8 8h-8v72h72v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80h72v-72zm504 72H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zM731.3 840H292.7l-24.2-512h487l-24.2 512z" }) });
+] }), Ho = ({ style: o }) => /* @__PURE__ */ c(Ne, { viewBox: "0 0 1024 1024", style: o, children: /* @__PURE__ */ c("path", { fill: "currentColor", d: "M464 512a48 48 0 1096 0 48 48 0 10-96 0zm200 0a48 48 0 1096 0 48 48 0 10-96 0zm-400 0a48 48 0 1096 0 48 48 0 10-96 0zm661.2-173.6c-22.6-53.7-55-101.9-96.3-143.3a444.35 444.35 0 00-143.3-96.3C630.6 75.7 572.2 64 512 64h-2c-60.6.3-119.3 12.3-174.5 35.9a445.35 445.35 0 00-142 96.5c-40.9 41.3-73 89.3-95.2 142.8-23 55.4-34.6 114.3-34.3 174.9A449.4 449.4 0 00112 714v152a46 46 0 0046 46h152.1A449.4 449.4 0 00510 960h2.1c59.9 0 118-11.6 172.7-34.3a444.48 444.48 0 00142.8-95.2c41.3-40.9 73.8-88.7 96.5-142 23.6-55.2 35.6-113.9 35.9-174.5.3-60.9-11.5-120-34.8-175.6zm-151.1 438C704 845.8 611 884 512 884h-1.7c-60.3-.3-120.2-15.3-173.1-43.5l-8.4-4.5H188V695.2l-4.5-8.4C155.3 633.9 140.3 574 140 513.7c-.4-99.7 37.7-193.3 107.6-263.8 69.8-70.5 163.1-109.5 262.8-109.9h1.7c50 0 98.5 9.7 144.2 28.9 44.6 18.7 84.6 45.6 119 80 34.3 34.3 61.3 74.4 80 119 19.4 46.2 29.1 95.2 28.9 145.8-.6 99.6-39.7 192.9-110.1 262.7z" }) }), ms = ({ style: o }) => /* @__PURE__ */ c(Ne, { style: o, viewBox: "0 0 1024 1024", children: /* @__PURE__ */ c("path", { d: "M820.35259846 337.71374951V646.0663464h134.06634641V109.8009592h-536.2653872v134.06634641h308.35259689L109.8009592 860.57250255l93.84644234 93.84644232 616.70519692-616.70519536z", fill: "currentColor" }) }), vs = ({ style: o }) => /* @__PURE__ */ c(Ne, { style: o, viewBox: "0 0 1365 1024", children: /* @__PURE__ */ c("path", { d: "M992 992H392v-2.71999969A319.75999969 319.75999969 0 0 1 193.92000031 393.99999969a400.00000031 400.00000031 0 0 1 790.11999938-41.47999969c2.68000031 0 5.28-0.52000031 8.00000062-0.52000031A319.99999969 319.99999969 0 0 1 992 992z m0-480h-7.99999969a247.99999969 247.99999969 0 0 1-77.28 0H831.99999969v-79.99999969a240 240 0 0 0-480 0v79.99999969a202.87999969 202.87999969 0 0 0-79.99999969 22.56L247.23999969 552.00000031a157.39999969 157.39999969 0 0 0-15.24 15.31999969 54.28000031 54.28000031 0 0 0-9.96 12.48A157.44 157.44 0 0 0 192.00000031 672.00000031a166.36000031 166.36000031 0 0 0 120 159.99999938h679.99999969a160.00000031 160.00000031 0 0 0 0-319.99999969z", fill: "currentColor" }) }), ys = ({ style: o }) => /* @__PURE__ */ c(Ne, { style: o, viewBox: "0 0 1024 1024", children: /* @__PURE__ */ c("path", { fill: "currentColor", d: "M360 184h-8c4.4 0 8-3.6 8-8v8h304v-8c0 4.4 3.6 8 8 8h-8v72h72v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80h72v-72zm504 72H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zM731.3 840H292.7l-24.2-512h487l-24.2 512z" }) });
 var oe = /* @__PURE__ */ ((o) => (o[o.NONE = 0] = "NONE", o[o.TEXT = 1] = "TEXT", o[o.LINK = 2] = "LINK", o[o.FREETEXT = 3] = "FREETEXT", o[o.LINE = 4] = "LINE", o[o.SQUARE = 5] = "SQUARE", o[o.CIRCLE = 6] = "CIRCLE", o[o.POLYGON = 7] = "POLYGON", o[o.POLYLINE = 8] = "POLYLINE", o[o.HIGHLIGHT = 9] = "HIGHLIGHT", o[o.UNDERLINE = 10] = "UNDERLINE", o[o.SQUIGGLY = 11] = "SQUIGGLY", o[o.STRIKEOUT = 12] = "STRIKEOUT", o[o.STAMP = 13] = "STAMP", o[o.CARET = 14] = "CARET", o[o.INK = 15] = "INK", o[o.POPUP = 16] = "POPUP", o[o.FILEATTACHMENT = 17] = "FILEATTACHMENT", o[o.SOUND = 18] = "SOUND", o[o.MOVIE = 19] = "MOVIE", o[o.WIDGET = 20] = "WIDGET", o[o.SCREEN = 21] = "SCREEN", o[o.PRINTERMARK = 22] = "PRINTERMARK", o[o.TRAPNET = 23] = "TRAPNET", o[o.WATERMARK = 24] = "WATERMARK", o[o.THREED = 25] = "THREED", o[o.REDACT = 26] = "REDACT", o[o.NOTE = 27] = "NOTE", o))(oe || {}), R = /* @__PURE__ */ ((o) => (o[o.NONE = -1] = "NONE", o[o.SELECT = 0] = "SELECT", o[o.HIGHLIGHT = 1] = "HIGHLIGHT", o[o.STRIKEOUT = 2] = "STRIKEOUT", o[o.UNDERLINE = 3] = "UNDERLINE", o[o.FREETEXT = 4] = "FREETEXT", o[o.RECTANGLE = 5] = "RECTANGLE", o[o.CIRCLE = 6] = "CIRCLE", o[o.FREEHAND = 7] = "FREEHAND", o[o.FREE_HIGHLIGHT = 8] = "FREE_HIGHLIGHT", o[o.SIGNATURE = 9] = "SIGNATURE", o[o.STAMP = 10] = "STAMP", o[o.NOTE = 11] = "NOTE", o[o.ARROW = 12] = "ARROW", o[o.CLOUD = 13] = "CLOUD", o))(R || {}), st = /* @__PURE__ */ ((o) => (o.Accepted = "Accepted", o.Rejected = "Rejected", o.Cancelled = "Cancelled", o.Completed = "Completed", o.None = "None", o.Closed = "Closed", o))(st || {});
 const De = [
   {
@@ -1755,7 +1755,7 @@ class Ee {
         id: r,
         pageNumber: s,
         konvaString: i.toJSON(),
-        konvaClientRect: N.Node.create(i.toJSON()).getClientRect(),
+        konvaClientRect: I.Node.create(i.toJSON()).getClientRect(),
         title: this.currentUser.name,
         type: a.type,
         pdfjsType: a.pdfjsAnnotationType,
@@ -1890,7 +1890,7 @@ class Ee {
    * @protected
    */
   createShapeGroup() {
-    const e = Go(), t = new N.Group({
+    const e = Go(), t = new I.Group({
       // 创建新的 Konva.Group 对象
       draggable: !1,
       name: _e,
@@ -1920,7 +1920,7 @@ class Ee {
    * @param konvaString 序列化的 Konva.Group 字符串表示
    */
   addSerializedGroupToLayer(e, t) {
-    const n = N.Node.create(t);
+    const n = I.Node.create(t);
     this.registerSerializedGroup(e, n);
   }
   /**
@@ -2002,7 +2002,7 @@ class As extends Ee {
       return;
     this.ellipse = null, this.isPainting = !0, this.currentShapeGroup = this.createShapeGroup(), this.getBgLayer().add(this.currentShapeGroup.konvaGroup);
     const t = this.konvaStage.getRelativePointerPosition();
-    t && (this.vertex = { x: t.x, y: t.y }, this.ellipse = new N.Ellipse({
+    t && (this.vertex = { x: t.x, y: t.y }, this.ellipse = new I.Ellipse({
       radiusX: 0,
       radiusY: 0,
       x: t.x,
@@ -2090,7 +2090,7 @@ class As extends Ee {
     const n = e.id, r = this.getShapeGroupById(n);
     if (r) {
       r.getChildren().forEach((i) => {
-        i instanceof N.Ellipse && (t.color !== void 0 && i.stroke(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity));
+        i instanceof I.Ellipse && (t.color !== void 0 && i.stroke(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity));
       });
       const s = {
         konvaString: r.toJSON()
@@ -2118,7 +2118,7 @@ class Ts extends Ee {
       return;
     Ee.TimerClear(this.pageNumber), this.line = null, this.isPainting = !0, this.currentShapeGroup || (this.currentShapeGroup = this.createShapeGroup(), this.getBgLayer().add(this.currentShapeGroup.konvaGroup));
     const t = this.konvaStage.getRelativePointerPosition();
-    t && (this.line = new N.Line({
+    t && (this.line = new I.Line({
       // do not scale strokes
       strokeScaleEnabled: !1,
       stroke: this.currentAnnotation.style.color,
@@ -2213,7 +2213,7 @@ class Ts extends Ee {
     const n = e.id, r = this.getShapeGroupById(n);
     if (r) {
       r.getChildren().forEach((i) => {
-        i instanceof N.Line && (t.color !== void 0 && i.stroke(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity));
+        i instanceof I.Line && (t.color !== void 0 && i.stroke(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity));
       });
       const s = {
         konvaString: r.toJSON()
@@ -2237,7 +2237,7 @@ class ks extends Ee {
       return;
     this.line = null, this.isPainting = !0, this.currentShapeGroup = this.createShapeGroup(), this.getBgLayer().add(this.currentShapeGroup.konvaGroup);
     const t = this.konvaStage.getRelativePointerPosition();
-    t && (this.line = new N.Line({
+    t && (this.line = new I.Line({
       // do not scale strokes
       strokeScaleEnabled: !1,
       stroke: this.currentAnnotation.style.color,
@@ -2334,7 +2334,7 @@ class ks extends Ee {
     const n = e.id, r = this.getShapeGroupById(n);
     if (r) {
       r.getChildren().forEach((i) => {
-        i instanceof N.Line && (t.color !== void 0 && i.stroke(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity));
+        i instanceof I.Line && (t.color !== void 0 && i.stroke(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity));
       });
       const s = {
         konvaString: r.toJSON()
@@ -2433,10 +2433,10 @@ class Rs {
   }
 }
 const Ps = new Rs();
-async function Is(o, e, t, n) {
+async function Ns(o, e, t, n) {
   return Ps.show(o, e, t, n);
 }
-class Ns extends Ee {
+class Is extends Ee {
   /**
    * 创建一个 EditorFreeText 实例。
    * @param EditorOptions 初始化编辑器的选项
@@ -2460,7 +2460,7 @@ class Ns extends Ee {
     if (e.currentTarget !== this.konvaStage)
       return;
     this.isPainting = !0, this.currentShapeGroup = this.createShapeGroup(), this.getBgLayer().add(this.currentShapeGroup.konvaGroup);
-    const s = r.getBoundingClientRect(), i = s.left + t.x * n.x, a = s.top + t.y * n.y, l = await Is(
+    const s = r.getBoundingClientRect(), i = s.left + t.x * n.x, a = s.top + t.y * n.y, l = await Ns(
       { x: i, y: a },
       this.currentAnnotation.style.fontSize,
       this.currentAnnotation.style.color,
@@ -2480,11 +2480,11 @@ class Ns extends Ee {
       this.delShapeGroup(this.currentShapeGroup.id), this.currentShapeGroup = null;
       return;
     }
-    const l = new N.Text({
+    const l = new I.Text({
       text: i,
       fontSize: s,
       padding: 2
-    }).width(), u = l > An ? An : l, d = new N.Text({
+    }).width(), u = l > An ? An : l, d = new I.Text({
       x: n.x,
       y: n.y + 2,
       text: i,
@@ -2512,7 +2512,7 @@ class Ns extends Ee {
     const n = e.id, r = this.getShapeGroupById(n);
     if (r) {
       r.getChildren().forEach((i) => {
-        i instanceof N.Text && (t.color !== void 0 && i.fill(t.color), t.opacity !== void 0 && i.opacity(t.opacity));
+        i instanceof I.Text && (t.color !== void 0 && i.fill(t.color), t.opacity !== void 0 && i.opacity(t.opacity));
       });
       const s = {
         konvaString: r.toJSON()
@@ -2641,7 +2641,7 @@ class Bn extends Ee {
    * @returns Konva.Rect 高亮形状对象
    */
   createHighlightShape(e, t, n, r) {
-    return new N.Rect({
+    return new I.Rect({
       x: e,
       y: t,
       width: n,
@@ -2659,7 +2659,7 @@ class Bn extends Ee {
    * @returns Konva.Rect 下划线形状对象
    */
   createUnderlineShape(e, t, n, r) {
-    return new N.Rect({
+    return new I.Rect({
       x: e,
       y: r + t - 2,
       width: n,
@@ -2678,7 +2678,7 @@ class Bn extends Ee {
    * @returns Konva.Rect 删除线形状对象
    */
   createStrikeoutShape(e, t, n, r) {
-    return new N.Rect({
+    return new I.Rect({
       x: e,
       y: t + r / 2,
       width: n,
@@ -2712,7 +2712,7 @@ class Bn extends Ee {
     const n = e.id, r = this.getShapeGroupById(n);
     if (r) {
       r.getChildren().forEach((i) => {
-        e.type === R.HIGHLIGHT && i instanceof N.Rect && (t.color !== void 0 && i.fill(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity)), e.type === R.UNDERLINE && i instanceof N.Rect && (t.color !== void 0 && i.fill(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity)), e.type === R.STRIKEOUT && i instanceof N.Rect && (t.color !== void 0 && i.stroke(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity));
+        e.type === R.HIGHLIGHT && i instanceof I.Rect && (t.color !== void 0 && i.fill(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity)), e.type === R.UNDERLINE && i instanceof I.Rect && (t.color !== void 0 && i.fill(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity)), e.type === R.STRIKEOUT && i instanceof I.Rect && (t.color !== void 0 && i.stroke(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity));
       });
       const s = {
         konvaString: r.toJSON()
@@ -2742,7 +2742,7 @@ class Ms extends Ee {
       return;
     this.rect = null, this.isPainting = !0, this.currentShapeGroup = this.createShapeGroup(), this.getBgLayer().add(this.currentShapeGroup.konvaGroup);
     const t = this.konvaStage.getRelativePointerPosition();
-    t && (this.vertex = { x: t.x, y: t.y }, this.rect = new N.Rect({
+    t && (this.vertex = { x: t.x, y: t.y }, this.rect = new I.Rect({
       x: t.x,
       y: t.y,
       width: 0,
@@ -2826,7 +2826,7 @@ class Ms extends Ee {
     const n = e.id, r = this.getShapeGroupById(n);
     if (r) {
       r.getChildren().forEach((i) => {
-        i instanceof N.Rect && (t.color !== void 0 && i.stroke(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity));
+        i instanceof I.Rect && (t.color !== void 0 && i.stroke(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity));
       });
       const s = {
         konvaString: r.toJSON()
@@ -2852,11 +2852,11 @@ class Vn extends Ee {
    * 创建光标图像，并设置 CSS 自定义属性。
    */
   createCursorImg() {
-    const e = new N.Group({
+    const e = new I.Group({
       draggable: !1
     });
-    this.signatureUrl && N.Image.fromURL(this.signatureUrl, (t) => {
-      const { width: n, height: r } = t.getClientRect(), { newWidth: s, newHeight: i } = Kt(n, r, 96), a = { x: s / 2, y: i / 2 }, l = new N.Rect({
+    this.signatureUrl && I.Image.fromURL(this.signatureUrl, (t) => {
+      const { width: n, height: r } = t.getClientRect(), { newWidth: s, newHeight: i } = Kt(n, r, 96), a = { x: s / 2, y: i / 2 }, l = new I.Rect({
         x: 0,
         y: 0,
         width: s,
@@ -2864,7 +2864,7 @@ class Vn extends Ee {
         stroke: this.primaryColor,
         strokeWidth: 2,
         cornerRadius: 2
-      }), u = new N.Rect({
+      }), u = new I.Rect({
         x: 0,
         y: 0,
         width: s,
@@ -2882,13 +2882,13 @@ class Vn extends Ee {
         height: i,
         opacity: 0.92
       });
-      const d = new N.Circle({
+      const d = new I.Circle({
         x: a.x,
         y: a.y,
         radius: 7,
         strokeWidth: 0,
         fill: "rgba(255,255,255,0.8)"
-      }), h = new N.Circle({
+      }), h = new I.Circle({
         x: a.x,
         y: a.y,
         radius: 4,
@@ -2912,7 +2912,7 @@ class Vn extends Ee {
       return;
     this.signatureImage = null, this.currentShapeGroup = this.createShapeGroup(), this.getBgLayer().add(this.currentShapeGroup.konvaGroup);
     const t = this.konvaStage.getRelativePointerPosition();
-    this.signatureUrl && t && N.Image.fromURL(this.signatureUrl, async (n) => {
+    this.signatureUrl && t && I.Image.fromURL(this.signatureUrl, async (n) => {
       const { width: r, height: s } = n.getClientRect(), { newWidth: i, newHeight: a } = Kt(r, s, 120), l = { x: i / 2, y: a / 2 };
       this.signatureImage = n, this.signatureImage.setAttrs({
         x: t.x - l.x,
@@ -2946,12 +2946,12 @@ class Vn extends Ee {
    * @param konvaString 序列化的 Konva.Group 字符串表示
    */
   addSerializedGroupToLayer(e, t) {
-    const n = N.Node.create(t), { konvaGroup: r, added: s } = this.registerSerializedGroup(e, n);
+    const n = I.Node.create(t), { konvaGroup: r, added: s } = this.registerSerializedGroup(e, n);
     if (!s) return;
     const i = this.getGroupNodesByClassName(r, "Image")[0];
     if (!i) return;
     const a = i.getAttr("base64");
-    a && N.Image.fromURL(a, (l) => {
+    a && I.Image.fromURL(a, (l) => {
       l.setAttrs(i.getAttrs()), i.destroy(), r.add(l), r.getLayer()?.batchDraw(), r.fire(nn);
     });
   }
@@ -2980,11 +2980,11 @@ class $n extends Ee {
    * 创建光标图像，并设置 CSS 自定义属性。
    */
   createCursorImg() {
-    const e = new N.Group({
+    const e = new I.Group({
       draggable: !1
     });
-    this.stampUrl && N.Image.fromURL(this.stampUrl, (t) => {
-      const { width: n, height: r } = t.getClientRect(), { newWidth: s, newHeight: i } = Kt(n, r, 96), a = { x: s / 2, y: i / 2 }, l = new N.Rect({
+    this.stampUrl && I.Image.fromURL(this.stampUrl, (t) => {
+      const { width: n, height: r } = t.getClientRect(), { newWidth: s, newHeight: i } = Kt(n, r, 96), a = { x: s / 2, y: i / 2 }, l = new I.Rect({
         x: 0,
         y: 0,
         width: s,
@@ -2992,7 +2992,7 @@ class $n extends Ee {
         stroke: this.primaryColor,
         strokeWidth: 2,
         cornerRadius: 2
-      }), u = new N.Rect({
+      }), u = new I.Rect({
         x: 0,
         y: 0,
         width: s,
@@ -3010,13 +3010,13 @@ class $n extends Ee {
         height: i,
         opacity: 0.92
       });
-      const d = new N.Circle({
+      const d = new I.Circle({
         x: a.x,
         y: a.y,
         radius: 7,
         strokeWidth: 0,
         fill: "rgba(255,255,255,0.8)"
-      }), h = new N.Circle({
+      }), h = new I.Circle({
         x: a.x,
         y: a.y,
         radius: 4,
@@ -3040,7 +3040,7 @@ class $n extends Ee {
       return;
     this.stampImage = null, this.currentShapeGroup = this.createShapeGroup(), this.getBgLayer().add(this.currentShapeGroup.konvaGroup);
     const t = this.konvaStage.getRelativePointerPosition();
-    this.stampUrl && t && N.Image.fromURL(this.stampUrl, async (n) => {
+    this.stampUrl && t && I.Image.fromURL(this.stampUrl, async (n) => {
       const { width: r, height: s } = n.getClientRect(), { newWidth: i, newHeight: a } = Kt(r, s, 120), l = { x: i / 2, y: a / 2 };
       this.stampImage = n, this.stampImage.setAttrs({
         x: t.x - l.x,
@@ -3076,12 +3076,12 @@ class $n extends Ee {
    * @param konvaString 序列化的 Konva.Group 字符串表示
    */
   addSerializedGroupToLayer(e, t) {
-    const n = N.Node.create(t), { konvaGroup: r, added: s } = this.registerSerializedGroup(e, n);
+    const n = I.Node.create(t), { konvaGroup: r, added: s } = this.registerSerializedGroup(e, n);
     if (!s) return;
     const i = this.getGroupNodesByClassName(r, "Image")[0];
     if (!i) return;
     const a = i.getAttr("base64"), l = this.getGroupNodesByClassName(r, "Text")[0];
-    a && N.Image.fromURL(a, (u) => {
+    a && I.Image.fromURL(a, (u) => {
       u.setAttrs(i.getAttrs()), i.destroy(), r.add(u), l && l.moveToTop(), r.getLayer()?.batchDraw(), r.fire(nn);
     });
   }
@@ -3101,7 +3101,7 @@ function jo({
   strokeWidth: r = 0.8,
   cornerSize: s = 4
 }) {
-  const u = [], d = new N.Rect({
+  const u = [], d = new I.Rect({
     x: o,
     y: e,
     width: 18,
@@ -3123,7 +3123,7 @@ function jo({
     strokeWidth: r
   });
   u.push(d);
-  const h = new N.Line({
+  const h = new I.Line({
     points: [
       o + 18 - 5,
       e,
@@ -3138,7 +3138,7 @@ function jo({
     strokeWidth: 0.6
   });
   u.push(h);
-  const f = new N.Line({
+  const f = new I.Line({
     points: [
       o + 18 - 5,
       e + 5,
@@ -3153,7 +3153,7 @@ function jo({
   u.push(f);
   const p = 4, g = 4, v = (20 - p * 2) / (g + 1);
   for (let y = 1; y <= g; y++) {
-    const b = e + p + y * v, w = new N.Line({
+    const b = e + p + y * v, w = new I.Line({
       points: [
         o + 3,
         b,
@@ -3294,7 +3294,7 @@ class Ls {
     return this.getPageShapeGroups(e).find((r) => r.id() === t) || null;
   }
   getFirstShapeInGroup(e) {
-    return e.getChildren().find((t) => t instanceof N.Shape) || null;
+    return e.getChildren().find((t) => t instanceof I.Shape) || null;
   }
   /**
    * 启用给定组中的所有形状的交互功能。
@@ -3304,7 +3304,7 @@ class Ls {
   enableShapeGroups(e, t) {
     e.forEach((n) => {
       this.removeGroupHoverEvents(n), this.bindGroupHoverEvents(n), n.getChildren().forEach((r) => {
-        r instanceof N.Shape && (this.removeShapeEvents(r), this.bindShapeEvents(r, t));
+        r instanceof I.Shape && (this.removeShapeEvents(r), this.bindShapeEvents(r, t));
       });
     });
   }
@@ -3315,7 +3315,7 @@ class Ls {
   disableShapeGroups(e) {
     e.forEach((t) => {
       this.removeGroupHoverEvents(t), t.getChildren().forEach((n) => {
-        n instanceof N.Shape && this.removeShapeEvents(n);
+        n instanceof I.Shape && this.removeShapeEvents(n);
       });
     });
   }
@@ -3377,7 +3377,7 @@ class Ls {
     this.currentTransformerId = s;
     const i = this.getAnnotationStore(s);
     if (e.off("dragend"), !i) return;
-    const a = De.find((f) => f.pdfjsAnnotationType === i.pdfjsType), l = this.canTransform(i), u = Wo(l), d = new N.Transformer({
+    const a = De.find((f) => f.pdfjsAnnotationType === i.pdfjsType), l = this.canTransform(i), u = Wo(l), d = new I.Transformer({
       resizeEnabled: l && a?.resizable,
       rotateEnabled: !1,
       borderStrokeWidth: u.borderStrokeWidth,
@@ -3393,13 +3393,13 @@ class Ls {
       boundBoxFunc: (f, p) => (p.width = Math.max(30, p.width), p)
     });
     r.attrs.id && r.attrs.id === "note" && d.resizeEnabled(!1), e.draggable(!!(l && a?.draggable)), d.off("transformend"), d.off("transformstart"), l && d.on("transformend", () => {
-      this.onChanged(e.id(), e.toJSON(), { ...i }, N.Node.create(e.toJSON()).getClientRect(), d.getClientRect());
+      this.onChanged(e.id(), e.toJSON(), { ...i }, I.Node.create(e.toJSON()).getClientRect(), d.getClientRect());
     }), l && d.on("transformstart", () => {
       this.onCancel();
     }), l && d.on("dragstart", () => {
       this.onCancel();
     }), l && d.on("dragend", () => {
-      this.onChanged(e.id(), e.toJSON(), { ...i }, N.Node.create(e.toJSON()).getClientRect(), d.getClientRect());
+      this.onChanged(e.id(), e.toJSON(), { ...i }, I.Node.create(e.toJSON()).getClientRect(), d.getClientRect());
     });
     let h = null;
     l && d.on("dragmove", () => {
@@ -3424,7 +3424,7 @@ class Ls {
         this.tweenStore.delete(a);
         return;
       }
-      const h = new N.Tween({
+      const h = new I.Tween({
         node: e,
         duration: i,
         opacity: 0,
@@ -3442,7 +3442,7 @@ class Ls {
         this.tweenStore.delete(a);
         return;
       }
-      const h = new N.Tween({
+      const h = new I.Tween({
         node: e,
         duration: i,
         opacity: 1,
@@ -3504,7 +3504,7 @@ class Ls {
     const e = this._currentTransformerId !== null;
     this.transformerStore.forEach((t, n) => {
       t && (t.nodes().forEach((r) => {
-        r instanceof N.Group && (r.draggable(!1), r.off("dragend"));
+        r instanceof I.Group && (r.draggable(!1), r.off("dragend"));
       }), t.off("transformend transformstart dragstart dragend dragmove"), t.nodes([]), t.destroy()), this.cleanupTween(n);
     }), this.transformerStore.clear(), this.currentTransformerId = null, this.onSelectionChanged(null), e && this.onCancel();
   }
@@ -3516,7 +3516,7 @@ class Ls {
     if (e) {
       const t = this.transformerStore.get(e);
       t && t.nodes().forEach((n) => {
-        n instanceof N.Group && n.draggable(!1);
+        n instanceof I.Group && n.draggable(!1);
       });
     }
   }
@@ -3560,7 +3560,7 @@ class Ls {
     const e = this._currentTransformerId;
     if (!e) return;
     const t = this.transformerStore.get(e), n = t?.nodes()[0], r = n?.getStage();
-    !(n instanceof N.Group) || !r || (t?.off("transformend transformstart dragstart dragend dragmove"), t?.nodes([]), t?.destroy(), this.cleanupTween(e), this.transformerStore.delete(e), this._currentTransformerId = null, this.createTransformer(n, r, !1));
+    !(n instanceof I.Group) || !r || (t?.off("transformend transformstart dragstart dragend dragmove"), t?.nodes([]), t?.destroy(), this.cleanupTween(e), this.transformerStore.delete(e), this._currentTransformerId = null, this.createTransformer(n, r, !1));
   }
   delete() {
     this.clearTransformers();
@@ -3783,11 +3783,11 @@ class Os extends Xe {
       e.rect,
       e.pageViewer.viewport.scale,
       e.pageViewer.viewport.height
-    ), u = new N.Group({
+    ), u = new I.Group({
       draggable: !1,
       name: _e,
       id: e.id
-    }), d = new N.Ellipse({
+    }), d = new I.Ellipse({
       radiusX: a / 2,
       radiusY: l / 2,
       x: s + a / 2,
@@ -3831,11 +3831,11 @@ class Hs extends Xe {
       e.rect,
       e.pageViewer.viewport.scale,
       e.pageViewer.viewport.height
-    ), l = new N.Group({
+    ), l = new I.Group({
       draggable: !1,
       name: _e,
       id: e.id
-    }), u = new N.Text({
+    }), u = new I.Text({
       x: i,
       y: a + 2,
       text: s,
@@ -3878,7 +3878,7 @@ class hn extends Xe {
    * @returns Konva.Rect 高亮形状对象
    */
   createHighlightShape(e, t, n, r, s) {
-    return new N.Rect({
+    return new I.Rect({
       x: e,
       y: t,
       width: n,
@@ -3896,7 +3896,7 @@ class hn extends Xe {
    * @returns Konva.Rect 下划线形状对象
    */
   createUnderlineShape(e, t, n, r, s) {
-    return new N.Rect({
+    return new I.Rect({
       x: e,
       y: r + t - 1.5,
       width: n,
@@ -3915,7 +3915,7 @@ class hn extends Xe {
    * @returns Konva.Rect 删除线形状对象
    */
   createStrikeoutShape(e, t, n, r, s) {
-    return new N.Rect({
+    return new I.Rect({
       x: e,
       y: t + r / 2,
       width: n,
@@ -3930,7 +3930,7 @@ class hn extends Xe {
       [oe.HIGHLIGHT]: R.HIGHLIGHT,
       [oe.UNDERLINE]: R.UNDERLINE,
       [oe.STRIKEOUT]: R.STRIKEOUT
-    }[e.annotationType] || R.HIGHLIGHT, i = new N.Group({
+    }[e.annotationType] || R.HIGHLIGHT, i = new I.Group({
       draggable: !1,
       name: _e,
       id: e.id
@@ -3984,11 +3984,11 @@ class Gs extends Xe {
       e.rect,
       e.pageViewer.viewport.scale,
       e.pageViewer.viewport.height
-    ), u = new N.Group({
+    ), u = new I.Group({
       draggable: !1,
       name: _e,
       id: e.id
-    }), d = new N.Rect({
+    }), d = new I.Rect({
       x: s,
       y: i,
       width: a,
@@ -4031,11 +4031,11 @@ class Us extends Xe {
   decodePdfAnnotation(e, t) {
     if (e.inkLists.length === 0)
       return null;
-    const n = Ke(e.color || [0, 0, 0]), r = new N.Group({
+    const n = Ke(e.color || [0, 0, 0]), r = new I.Group({
       draggable: !1,
       name: _e,
       id: e.id
-    }), s = (a) => new N.Line({
+    }), s = (a) => new I.Line({
       strokeScaleEnabled: !1,
       stroke: n,
       strokeWidth: e.borderStyle.width,
@@ -4082,11 +4082,11 @@ class zs extends Xe {
     super(e);
   }
   decodePdfAnnotation(e, t) {
-    const n = Ke(e.color || [0, 0, 0]), r = e.borderStyle.width === 1 ? e.borderStyle.width + 1 : e.borderStyle.width, s = new N.Group({
+    const n = Ke(e.color || [0, 0, 0]), r = e.borderStyle.width === 1 ? e.borderStyle.width + 1 : e.borderStyle.width, s = new I.Group({
       draggable: !1,
       name: _e,
       id: e.id
-    }), i = (p, g) => new N.Line({
+    }), i = (p, g) => new I.Line({
       strokeScaleEnabled: !1,
       stroke: n,
       strokeWidth: r,
@@ -4129,7 +4129,7 @@ class Fs extends Xe {
     super(e);
   }
   decodePdfAnnotation(e, t) {
-    const n = Ke(e.color || [0, 0, 0]), r = e.borderStyle.width === 1 ? e.borderStyle.width + 1 : e.borderStyle.width, s = new N.Group({
+    const n = Ke(e.color || [0, 0, 0]), r = e.borderStyle.width === 1 ? e.borderStyle.width + 1 : e.borderStyle.width, s = new I.Group({
       draggable: !1,
       name: _e,
       id: e.id
@@ -4138,7 +4138,7 @@ class Fs extends Xe {
       return u?.forEach((h) => {
         const { x: f, y: p } = this.convertPoint(h, e.pageViewer.viewport.scale, e.pageViewer.viewport.height);
         d.push(f), d.push(p);
-      }), new N.Line({
+      }), new I.Line({
         strokeScaleEnabled: !1,
         stroke: n,
         strokeWidth: r,
@@ -4180,7 +4180,7 @@ class js extends Xe {
     super(e);
   }
   decodePdfAnnotation(e, t) {
-    const n = Ke(e.color || [0, 0, 0]), r = e.borderStyle.width === 1 ? e.borderStyle.width + 1 : e.borderStyle.width, s = new N.Group({
+    const n = Ke(e.color || [0, 0, 0]), r = e.borderStyle.width === 1 ? e.borderStyle.width + 1 : e.borderStyle.width, s = new I.Group({
       draggable: !1,
       name: _e,
       id: e.id
@@ -4189,7 +4189,7 @@ class js extends Xe {
       return u?.forEach((h) => {
         const { x: f, y: p } = this.convertPoint(h, e.pageViewer.viewport.scale, e.pageViewer.viewport.height);
         d.push(f), d.push(p);
-      }), new N.Line({
+      }), new I.Line({
         strokeScaleEnabled: !1,
         stroke: n,
         strokeWidth: r,
@@ -4232,7 +4232,7 @@ class Ws extends Xe {
   }
   decodePdfAnnotation(e, t) {
     if (e.inReplyTo) return null;
-    const n = Ke(e.color || [0, 0, 0]), { x: r, y: s } = this.convertRect(e.rect, e.pageViewer.viewport.scale, e.pageViewer.viewport.height), i = new N.Group({
+    const n = Ke(e.color || [0, 0, 0]), { x: r, y: s } = this.convertRect(e.rect, e.pageViewer.viewport.scale, e.pageViewer.viewport.height), i = new I.Group({
       draggable: !1,
       name: _e,
       id: e.id
@@ -4292,11 +4292,11 @@ class Bs extends Xe {
       )
     );
     if (s.length < 3) return null;
-    const i = new N.Group({
+    const i = new I.Group({
       draggable: !1,
       name: _e,
       id: e.id
-    }), a = "inkLists" in e ? s.map((d, h) => `${h === 0 ? "M" : "L"} ${d.x} ${d.y}`).join(" ") : Tn([...s, s[0]]), l = new N.Path({
+    }), a = "inkLists" in e ? s.map((d, h) => `${h === 0 ? "M" : "L"} ${d.x} ${d.y}`).join(" ") : Tn([...s, s[0]]), l = new I.Path({
       data: a,
       strokeScaleEnabled: !1,
       stroke: n,
@@ -4344,8 +4344,8 @@ class Vs extends Xe {
       p,
       e.pageViewer.viewport.scale,
       e.pageViewer.viewport.height
-    )), s = r[0], i = r[1], a = r[3], l = r[4], u = a && l ? { x: (a.x + l.x) / 2, y: (a.y + l.y) / 2 } : void 0, d = Ke(e.color || [0, 0, 0]), h = new N.Group({ draggable: !1, name: _e, id: e.id });
-    h.add(new N.Arrow({
+    )), s = r[0], i = r[1], a = r[3], l = r[4], u = a && l ? { x: (a.x + l.x) / 2, y: (a.y + l.y) / 2 } : void 0, d = Ke(e.color || [0, 0, 0]), h = new I.Group({ draggable: !1, name: _e, id: e.id });
+    h.add(new I.Arrow({
       points: [s.x, s.y, i.x, i.y],
       stroke: d,
       fill: d,
@@ -4386,8 +4386,8 @@ class $s extends Xe {
       e.rect,
       e.pageViewer.viewport.scale,
       e.pageViewer.viewport.height
-    ), i = new N.Group({ draggable: !1, name: _e, id: e.id });
-    i.add(new N.Text({
+    ), i = new I.Group({ draggable: !1, name: _e, id: e.id });
+    i.add(new I.Text({
       x: r,
       y: s,
       text: e.contentsObj.str,
@@ -4516,7 +4516,7 @@ class Xs extends Ee {
     if (e.currentTarget !== this.konvaStage) return;
     this.arrow = null, this.isPainting = !0, this.currentShapeGroup = this.createShapeGroup(), this.getBgLayer().add(this.currentShapeGroup.konvaGroup);
     const t = this.konvaStage.getRelativePointerPosition();
-    t && (this.startPoint = { x: t.x, y: t.y }, this.arrow = new N.Arrow({
+    t && (this.startPoint = { x: t.x, y: t.y }, this.arrow = new I.Arrow({
       points: [t.x, t.y, t.x, t.y],
       stroke: this.currentAnnotation.style.color,
       strokeWidth: this.currentAnnotation.style.strokeWidth,
@@ -4582,7 +4582,7 @@ class Xs extends Ee {
     const n = e.id, r = this.getShapeGroupById(n);
     if (r) {
       r.getChildren().forEach((i) => {
-        if (i instanceof N.Arrow) {
+        if (i instanceof I.Arrow) {
           if (t.color !== void 0 && (i.stroke(t.color), i.fill(t.color)), t.strokeWidth !== void 0) {
             const a = t.strokeWidth;
             i.strokeWidth(a);
@@ -4615,7 +4615,7 @@ class qs extends Ee {
   }
   mouseDownHandler(e) {
     const t = this.konvaStage.getRelativePointerPosition();
-    t && (this.points.push(t), this.isPainting || (this.isPainting = !0, this.currentShapeGroup = this.createShapeGroup(), this.getBgLayer().add(this.currentShapeGroup.konvaGroup), this.cloudPath = new N.Path({
+    t && (this.points.push(t), this.isPainting || (this.isPainting = !0, this.currentShapeGroup = this.createShapeGroup(), this.getBgLayer().add(this.currentShapeGroup.konvaGroup), this.cloudPath = new I.Path({
       data: "",
       stroke: this.currentAnnotation.style.color,
       strokeWidth: this.currentAnnotation.style.strokeWidth,
@@ -4677,7 +4677,7 @@ class qs extends Ee {
    * @param pos 起点位置
    */
   drawStartRect(e) {
-    this.startRect = new N.Rect({
+    this.startRect = new I.Rect({
       x: e.x - this.startRectSize / 2,
       y: e.y - this.startRectSize / 2,
       width: this.startRectSize,
@@ -4707,7 +4707,7 @@ class qs extends Ee {
     const n = e.id, r = this.getShapeGroupById(n);
     if (r) {
       r.getChildren().forEach((i) => {
-        i instanceof N.Path && (t.color !== void 0 && i.stroke(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity));
+        i instanceof I.Path && (t.color !== void 0 && i.stroke(t.color), t.strokeWidth !== void 0 && i.strokeWidth(t.strokeWidth), t.opacity !== void 0 && i.opacity(t.opacity));
       });
       const s = {
         konvaString: r.toJSON()
@@ -5446,7 +5446,7 @@ class Ta {
     const r = this.getAnnotationGroup(t, n), s = r?.getLayer();
     if (!r || !s) return;
     const a = 2 / (Math.abs(n.scaleX()) || 1), l = r.getClientRect({ relativeTo: s });
-    this.previewRect = new N.Rect({
+    this.previewRect = new I.Rect({
       name: Cs,
       x: l.x - a,
       y: l.y - a,
@@ -5977,12 +5977,12 @@ class Pa {
    * @returns Konva Stage
    */
   createKonvaStage(e, t) {
-    const n = new N.Stage({
+    const n = new I.Stage({
       container: e,
       width: t.width,
       height: t.height,
       scale: { x: t.scale, y: t.scale }
-    }), r = new N.Layer();
+    }), r = new I.Layer();
     return n.add(r), n;
   }
   /**
@@ -6113,7 +6113,7 @@ class Pa {
     let s = null;
     switch (n.type) {
       case R.FREETEXT:
-        s = new Ns({
+        s = new Is({
           primaryColor: this.primaryColor,
           defaultOptions: this.defaultOptions,
           currentUser: this.currentUser,
@@ -6676,14 +6676,14 @@ const Xo = Qt(void 0), nt = () => {
   if (o === void 0)
     throw new Error("usePainter must be used within a PainterProvider");
   return o;
-}, Ia = {
+}, Na = {
   placement: "bottom",
   middleware: [Ao()]
 }, qo = en(function(e, t) {
   const {
     buttons: n,
     renderButtons: r,
-    positionOptions: s = Ia,
+    positionOptions: s = Na,
     visible: i,
     onVisibleChange: a,
     children: l
@@ -6702,8 +6702,8 @@ const Xo = Qt(void 0), nt = () => {
     if (k.top < 0 || k.left < 0) {
       const G = window.getSelection();
       if (G && G.rangeCount > 0) {
-        const I = G.focusNode, D = G.anchorNode;
-        if (I && D) {
+        const N = G.focusNode, D = G.anchorNode;
+        if (N && D) {
           const q = document.createRange(), X = document.createRange();
           G.anchorOffset <= G.focusOffset ? (q.setStart(G.anchorNode, G.anchorOffset), q.setEnd(G.anchorNode, Math.min(G.anchorOffset + 1, G.anchorNode.textContent?.length || 0)), X.setStart(G.focusNode, Math.max(G.focusOffset - 1, 0)), X.setEnd(G.focusNode, G.focusOffset)) : (q.setStart(G.focusNode, G.focusOffset), q.setEnd(G.focusNode, Math.min(G.focusOffset + 1, G.focusNode.textContent?.length || 0)), X.setStart(G.anchorNode, Math.max(G.anchorOffset - 1, 0)), X.setEnd(G.anchorNode, G.anchorOffset));
           const T = q.getBoundingClientRect(), U = X.getBoundingClientRect();
@@ -6725,10 +6725,10 @@ const Xo = Qt(void 0), nt = () => {
       getBoundingClientRect: () => L
     };
     requestAnimationFrame(() => {
-      y.current && Bt(Y, y.current, s).then(({ x: G, y: I }) => {
+      y.current && Bt(Y, y.current, s).then(({ x: G, y: N }) => {
         y.current && Object.assign(y.current.style, {
           left: `${G}px`,
-          top: `${I}px`
+          top: `${N}px`
         });
       }).catch((G) => {
         console.warn("Failed to compute popover position:", G);
@@ -6790,7 +6790,7 @@ const Xo = Qt(void 0), nt = () => {
       });
     }
   }, [s, p]);
-  In(t, () => ({
+  Nn(t, () => ({
     open: A,
     openWithRect: _,
     close: S
@@ -6816,11 +6816,11 @@ const Xo = Qt(void 0), nt = () => {
       children: l || /* @__PURE__ */ c(Q, { gap: "1", align: "center", children: E })
     }
   ) : null;
-}), Na = en(function(e, t) {
+}), Ia = en(function(e, t) {
   const { t: n } = ve(["annotator"], { useSuspense: !1 }), {
     popoverBarProps: r = {}
   } = e, s = Pt.useRef(null), { painter: i } = nt();
-  return In(t, () => ({
+  return Nn(t, () => ({
     open: (a) => {
       s.current?.open(a);
     },
@@ -6863,7 +6863,7 @@ const Xo = Qt(void 0), nt = () => {
       ...r
     }
   );
-}), Jo = Qt(null), It = () => {
+}), Jo = Qt(null), Nt = () => {
   const o = Ht(Jo);
   if (!o)
     throw new Error("useOptionsContext must be used within a OptionsProvider");
@@ -6996,11 +6996,11 @@ const Et = ({
   ] }) : /* @__PURE__ */ c(w, {}) });
 };
 function Ga(o) {
-  return N.Node.create(o).children[0];
+  return I.Node.create(o).children[0];
 }
 const Ua = en(function(e, t) {
-  const { t: n } = ve(["common", "annotator"], { useSuspense: !1 }), { openSidebar: r, activeSidebarPanel: s, viewerContainerRef: i } = Fe(), { painter: a, requestWrite: l } = nt(), { defaultOptions: u } = It(), { popoverBarProps: d = {} } = e, h = W(null), [f, p] = K(null), [g, v] = K(2), [y, b] = K(1), [w, S] = K(!1), A = W(null), E = J((I, D) => {
-    const q = `${xn}_page_${I.pageNumber}`, X = i?.current?.querySelector(
+  const { t: n } = ve(["common", "annotator"], { useSuspense: !1 }), { openSidebar: r, activeSidebarPanel: s, viewerContainerRef: i } = Fe(), { painter: a, requestWrite: l } = nt(), { defaultOptions: u } = Nt(), { popoverBarProps: d = {} } = e, h = W(null), [f, p] = K(null), [g, v] = K(2), [y, b] = K(1), [w, S] = K(!1), A = W(null), E = J((N, D) => {
+    const q = `${xn}_page_${N.pageNumber}`, X = i?.current?.querySelector(
       `#${q} .konvajs-content`
     );
     if (X) {
@@ -7019,32 +7019,32 @@ const Ua = en(function(e, t) {
     }
   }, [i]);
   ct(() => {
-    const I = A.current;
-    !f || !I || E(f, I);
-  }, [E, f, w]), In(t, () => ({
-    open: (I, D) => {
-      p(I), A.current = D;
-      const q = Ga(I.konvaString);
-      v(q.strokeWidth()), b(q.opacity() * 100), E(I, D);
+    const N = A.current;
+    !f || !N || E(f, N);
+  }, [E, f, w]), Nn(t, () => ({
+    open: (N, D) => {
+      p(N), A.current = D;
+      const q = Ga(N.konvaString);
+      v(q.strokeWidth()), b(q.opacity() * 100), E(N, D);
     },
     close: () => {
       h.current?.close(), p(null), S(!1), A.current = null;
     }
   }));
-  const M = f && De.find((I) => I.type === f.type)?.styleEditable, _ = !!l, B = !!(f && (a?.can("annotation.comment", f) || _)), V = !!(f && (a?.can("annotation.edit", f) || _)), O = !!(f && (a?.can("annotation.delete", f) || _)), k = async (I, D) => a?.can(I, D) ? D : !l || !await l({ kind: "mutation", action: I, annotationId: D.id }) ? null : se.getState().getAnnotation(D.id) ?? D, L = (I) => {
+  const M = f && De.find((N) => N.type === f.type)?.styleEditable, _ = !!l, B = !!(f && (a?.can("annotation.comment", f) || _)), V = !!(f && (a?.can("annotation.edit", f) || _)), O = !!(f && (a?.can("annotation.delete", f) || _)), k = async (N, D) => a?.can(N, D) ? D : !l || !await l({ kind: "mutation", action: N, annotationId: D.id }) ? null : se.getState().getAnnotation(D.id) ?? D, L = (N) => {
     !f || !a || k("annotation.edit", f).then((D) => {
-      D && a.updateAnnotationStyle(D, I);
+      D && a.updateAnnotationStyle(D, N);
     });
   }, Y = () => {
-    !f || !a || k("annotation.delete", f).then((I) => {
-      I && a.delete(I.id, !0);
+    !f || !a || k("annotation.delete", f).then((N) => {
+      N && a.delete(N.id, !0);
     });
-  }, G = (I) => {
-    if (a?.can("annotation.comment", I)) {
-      r("annotator-sidebar-toggle"), se.getState().setSelectedAnnotation(I, Qe.CANVAS);
+  }, G = (N) => {
+    if (a?.can("annotation.comment", N)) {
+      r("annotator-sidebar-toggle"), se.getState().setSelectedAnnotation(N, Qe.CANVAS);
       return;
     }
-    k("annotation.comment", I).then((D) => {
+    k("annotation.comment", N).then((D) => {
       D && (r("annotator-sidebar-toggle"), se.getState().setSelectedAnnotation(D, Qe.CANVAS));
     });
   };
@@ -7091,11 +7091,11 @@ const Ua = en(function(e, t) {
             variant: "ghost",
             color: "gray",
             highContrast: !0,
-            onMouseDown: (I) => {
-              I.preventDefault(), S(!1);
+            onMouseDown: (N) => {
+              N.preventDefault(), S(!1);
             },
             children: [
-              /* @__PURE__ */ c(Ir, {}),
+              /* @__PURE__ */ c(Nr, {}),
               n("back")
             ]
           }
@@ -7105,8 +7105,8 @@ const Ua = en(function(e, t) {
           Et,
           {
             value: f.color ?? void 0,
-            onChange: (I) => {
-              L({ color: I });
+            onChange: (N) => {
+              L({ color: N });
             },
             popover: !1,
             custom: !1,
@@ -7131,8 +7131,8 @@ const Ua = en(function(e, t) {
                   min: 1,
                   max: 20,
                   defaultValue: [g || 1],
-                  onValueChange: (I) => {
-                    L({ strokeWidth: I[0] }), v(I[0]);
+                  onValueChange: (N) => {
+                    L({ strokeWidth: N[0] }), v(N[0]);
                   }
                 }
               )
@@ -7152,8 +7152,8 @@ const Ua = en(function(e, t) {
                   min: 1,
                   max: 100,
                   defaultValue: [y || 100],
-                  onValueChange: (I) => {
-                    L({ opacity: I[0] / 100 }), b(I[0]);
+                  onValueChange: (N) => {
+                    L({ opacity: N[0] / 100 }), b(N[0]);
                   }
                 }
               )
@@ -7408,7 +7408,7 @@ const so = "inklayer-annotator", ao = "annotator-sidebar-toggle", mc = ({
     isSidebarCollapsed: f,
     activeSidebarPanel: p,
     openSidebar: g
-  } = Fe(), { user: v } = Ro(), { refreshPainter: y, setPainter: b } = nt(), { defaultOptions: w, primaryColor: S } = It(), A = se((I) => I.clearAnnotations), E = W({
+  } = Fe(), { user: v } = Ro(), { refreshPainter: y, setPainter: b } = nt(), { defaultOptions: w, primaryColor: S } = Nt(), A = se((N) => N.clearAnnotations), E = W({
     annotations: e ?? [],
     enableNativeAnnotations: o,
     onLoad: r,
@@ -7432,10 +7432,10 @@ const so = "inklayer-annotator", ao = "annotator-sidebar-toggle", mc = ({
     Ha(
       () => {
         _.current?.close(), M.current?.close();
-        const I = document.querySelector(`#${Fo}`);
-        if (I?.parentNode)
+        const N = document.querySelector(`#${Fo}`);
+        if (N?.parentNode)
           try {
-            I.parentNode.removeChild(I);
+            N.parentNode.removeChild(N);
           } catch {
           }
       },
@@ -7447,7 +7447,7 @@ const so = "inklayer-annotator", ao = "annotator-sidebar-toggle", mc = ({
   }, [Y]);
   return ne(() => {
     if (A(), !u || !d || !h || !V.current) return;
-    let I = !1, D = !1, q = null;
+    let N = !1, D = !1, q = null;
     const X = new Pa({
       primaryColor: S,
       defaultOptions: w,
@@ -7485,17 +7485,17 @@ const so = "inklayer-annotator", ao = "annotator-sidebar-toggle", mc = ({
     };
     h.on("pagerendered", T), h._on("updateviewarea", G), X.initWebSelection(d.viewer);
     const U = async () => {
-      if (!(I || D)) {
+      if (!(N || D)) {
         D = !0;
         try {
           const { annotations: z, enableNativeAnnotations: P } = E.current;
           await X.initAnnotationsOnce(z, P);
         } catch (z) {
-          I || console.error("[Annotator] Failed to initialize annotations", z);
+          N || console.error("[Annotator] Failed to initialize annotations", z);
           return;
         }
-        I || (q = setTimeout(() => {
-          if (q = null, !I)
+        N || (q = setTimeout(() => {
+          if (q = null, !N)
             for (let z = 0; z < d.pagesCount; z++) {
               const P = d.getPageView(z);
               if (P && P.div && P.canvas) {
@@ -7507,13 +7507,13 @@ const so = "inklayer-annotator", ao = "annotator-sidebar-toggle", mc = ({
       }
     };
     return d.pdfDocument ? U() : h.on("documentloaded", U), () => {
-      I = !0, q && (clearTimeout(q), q = null), h.off("pagerendered", T), h.off("updateviewarea", G), h.off("documentloaded", U), X.destroy(), B.current === X && (B.current = null), b(null);
+      N = !0, q && (clearTimeout(q), q = null), h.off("pagerendered", T), h.off("updateviewarea", G), h.off("documentloaded", U), X.destroy(), B.current === X && (B.current = null), b(null);
     };
   }, [A, w, h, G, u, d, S, b]), ct(() => {
     V.current && (_.current?.close(), B.current?.setPermissionContext(V.current, O.current), B.current && y());
   }, [t, y, v]), ne(() => {
     if (!h) return;
-    const I = (q) => {
+    const N = (q) => {
       const X = /* @__PURE__ */ new Map();
       q.forEach((T) => {
         X.set(T.pageNumber, (X.get(T.pageNumber) ?? 0) + 1);
@@ -7522,9 +7522,9 @@ const so = "inklayer-annotator", ao = "annotator-sidebar-toggle", mc = ({
         markers: X
       });
     };
-    I(se.getState().annotations);
+    N(se.getState().annotations);
     const D = se.subscribe((q, X) => {
-      q.annotations !== X.annotations && I(q.annotations);
+      q.annotations !== X.annotations && N(q.annotations);
     });
     return () => {
       D(), h.dispatch(Yt, {
@@ -7535,7 +7535,7 @@ const so = "inklayer-annotator", ao = "annotator-sidebar-toggle", mc = ({
   }, [h]), ne(() => {
     G();
   }, [G, f]), /* @__PURE__ */ x(Ce, { children: [
-    /* @__PURE__ */ c(Na, { ref: M }),
+    /* @__PURE__ */ c(Ia, { ref: M }),
     /* @__PURE__ */ c(Ua, { ref: _ }),
     /* @__PURE__ */ c(gc, {})
   ] });
@@ -8090,7 +8090,7 @@ const xt = en(({
           size: "1",
           disabled: d()
         },
-        icon: /* @__PURE__ */ c(Nr, {}),
+        icon: /* @__PURE__ */ c(Ir, {}),
         onClick: l
       }
     ),
@@ -8136,7 +8136,7 @@ const xt = en(({
   toolbarDark: Rc,
   SignaturePop: Pc
 }, Jt = /* @__PURE__ */ new Set();
-function Ic(o) {
+function Nc(o) {
   if (!o.external || !o.url || Jt.has(o.value)) return;
   const e = document.createElement("style");
   e.innerHTML = `
@@ -8148,17 +8148,17 @@ function Ic(o) {
     }
     `, document.head.appendChild(e), Jt.add(o.value);
 }
-async function Nc(o) {
+async function Ic(o) {
   if (!(!o.external || !o.url || Jt.has(o.value)))
     try {
       const e = new FontFace(o.value, `url(${o.url})`);
       await e.load(), document.fonts.add(e), Jt.add(o.value);
     } catch {
-      Ic(o);
+      Nc(o);
     }
 }
 const zt = 80, Mc = ({ annotation: o, disabled: e = !1, onAdd: t, default_signatures: n, presentation: r = "toolbar-icon", label: s, selected: i, onIntent: a }) => {
-  const { defaultOptions: l } = It(), u = l.signature.colors, d = 420, h = 200, f = l.signature.type, p = l.signature.maxSize, g = l.signature.accept, v = 600, y = l.signature.defaultFont, { t: b } = ve(["common", "annotator"], { useSuspense: !1 }), w = W(null), S = W(null), A = W(u[0]), E = W(null), [M, _] = K(!1), [B, V] = K(A.current), [O, k] = K(!0), [L, Y] = K([]), [G, I] = K(null), [D, q] = K(""), [X, T] = K(y[0]?.value || "Arial"), [U, z] = K(null), [P, Z] = K(!1), { appearance: de } = tn(), le = n ?? l.signature.defaultSignature, H = p;
+  const { defaultOptions: l } = Nt(), u = l.signature.colors, d = 420, h = 200, f = l.signature.type, p = l.signature.maxSize, g = l.signature.accept, v = 600, y = l.signature.defaultFont, { t: b } = ve(["common", "annotator"], { useSuspense: !1 }), w = W(null), S = W(null), A = W(u[0]), E = W(null), [M, _] = K(!1), [B, V] = K(A.current), [O, k] = K(!0), [L, Y] = K([]), [G, N] = K(null), [D, q] = K(""), [X, T] = K(y[0]?.value || "Arial"), [U, z] = K(null), [P, Z] = K(!1), { appearance: de } = tn(), le = n ?? l.signature.defaultSignature, H = p;
   ne(() => {
     A.current = B;
   }, [B]);
@@ -8166,7 +8166,7 @@ const zt = 80, Mc = ({ annotation: o, disabled: e = !1, onAdd: t, default_signat
     t(m);
   }, ce = async (m) => {
     const C = y.find((F) => F.value === m);
-    C && C.external && await Nc(C), T(m);
+    C && C.external && await Ic(C), T(m);
   }, fe = W({ fontFamily: X, signatureTypeDefault: f, loadFont: ce });
   fe.current = { fontFamily: X, signatureTypeDefault: f, loadFont: ce };
   const Ae = () => {
@@ -8199,17 +8199,17 @@ const zt = 80, Mc = ({ annotation: o, disabled: e = !1, onAdd: t, default_signat
     m && (m.clear(), m.getLayers().forEach((C) => C.destroyChildren()), k(!0)), q(""), z(null);
   }, He = () => {
     if (!w.current) return;
-    const m = new N.Stage({
+    const m = new I.Stage({
       container: w.current,
       width: d,
       height: h
-    }), C = new N.Layer();
+    }), C = new I.Layer();
     m.add(C), S.current = m;
     let F = !1, $ = null;
     const ue = () => {
       F = !0;
       const Se = m.getPointerPosition();
-      Se && ($ = new N.Line({
+      Se && ($ = new I.Line({
         stroke: A.current,
         strokeWidth: 3,
         globalCompositeOperation: "source-over",
@@ -8261,7 +8261,7 @@ const zt = 80, Mc = ({ annotation: o, disabled: e = !1, onAdd: t, default_signat
   }, [D]), ne(() => {
     if (M) {
       const m = fe.current;
-      m.loadFont(m.fontFamily), q(""), z(null), I(m.signatureTypeDefault);
+      m.loadFont(m.fontFamily), q(""), z(null), N(m.signatureTypeDefault);
     }
   }, [M]), ne(() => {
     M && G === "Draw" ? setTimeout(() => {
@@ -8298,7 +8298,7 @@ const zt = 80, Mc = ({ annotation: o, disabled: e = !1, onAdd: t, default_signat
     ] }),
     /* @__PURE__ */ c(at.Root, { open: M, onOpenChange: _, children: /* @__PURE__ */ x(at.Content, { style: { width: "550px" }, children: [
       /* @__PURE__ */ c(at.Title, { children: b("annotator:common.createSignature") }),
-      /* @__PURE__ */ c(Q, { as: "span", justify: "center", mb: "4", children: /* @__PURE__ */ x(gt.Root, { size: "3", defaultValue: f, onValueChange: (m) => I(m), radius: "full", children: [
+      /* @__PURE__ */ c(Q, { as: "span", justify: "center", mb: "4", children: /* @__PURE__ */ x(gt.Root, { size: "3", defaultValue: f, onValueChange: (m) => N(m), radius: "full", children: [
         /* @__PURE__ */ c(gt.Item, { value: "Enter", children: b("enter") }),
         /* @__PURE__ */ c(gt.Item, { value: "Draw", children: b("draw") }),
         /* @__PURE__ */ c(gt.Item, { value: "Upload", children: b("annotator:editor.signature.upload") })
@@ -8430,7 +8430,7 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
     ]
   }
 ], zc = ({ annotation: o, disabled: e = !1, default_stamps: t, onAdd: n, presentation: r = "toolbar-icon", label: s, selected: i, onIntent: a }) => {
-  const { defaultOptions: l } = It(), u = l.stamp.maxSize, d = l.stamp.accept, h = 600, f = l.stamp.editor.defaultFont, p = l.stamp.editor.defaultTextColor, g = l.stamp.editor.defaultBorderStyle, v = l.stamp.editor.defaultBackgroundColor, y = l.stamp.editor.defaultBorderColor, b = l.colors, { t: w } = ve(["common", "annotator"]), S = W(null), A = W(null), E = W(null), { user: M } = Ro(), [_, B] = K([]), { appearance: V } = tn(), O = t ?? l.stamp.defaultStamp, [k, L] = K(!1), [Y, G] = K(O.length === 0 ? "custom" : "default"), [I, D] = K({
+  const { defaultOptions: l } = Nt(), u = l.stamp.maxSize, d = l.stamp.accept, h = 600, f = l.stamp.editor.defaultFont, p = l.stamp.editor.defaultTextColor, g = l.stamp.editor.defaultBorderStyle, v = l.stamp.editor.defaultBackgroundColor, y = l.stamp.editor.defaultBorderColor, b = l.colors, { t: w } = ve(["common", "annotator"]), S = W(null), A = W(null), E = W(null), { user: M } = Ro(), [_, B] = K([]), { appearance: V } = tn(), O = t ?? l.stamp.defaultStamp, [k, L] = K(!1), [Y, G] = K(O.length === 0 ? "custom" : "default"), [N, D] = K({
     stampText: w("annotator:editor.stamp.defaultText"),
     fontStyle: [],
     fontFamily: f[0].value,
@@ -8487,7 +8487,7 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
     }, Ae.readAsDataURL(fe);
   }, P = (H, te) => {
     const ce = {
-      ...I,
+      ...N,
       [H]: te
     };
     D(ce), X(ce), Z(ce);
@@ -8495,11 +8495,11 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
     if (!S.current) return;
     const { stampText: te, fontStyle: ce, textColor: fe, backgroundColor: Ae, borderColor: Je, borderStyle: Ve, timestamp: He, dateFormat: je, fontFamily: $e } = H;
     A.current?.destroy();
-    const m = new N.Stage({
+    const m = new I.Stage({
       container: S.current,
       width: Ft,
       height: Dt
-    }), C = new N.Layer(), F = [];
+    }), C = new I.Layer(), F = [];
     ce.includes("italic") && F.push("italic"), ce.includes("bold") && F.push("bold");
     const $ = F.join(" ") || "normal", ue = ce.includes("underline"), he = ce.includes("strikeout"), pe = To(), Se = M?.name, We = je ? pe.format(je) : "", ht = H.customTimestampText?.trim(), Oe = [
       He.includes("username") ? Se : null,
@@ -8507,16 +8507,16 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
       ht || null
     ].filter(Boolean).join(" · ");
     let Ge = 30;
-    const vt = 16, wt = 10, Gt = new N.Text({
+    const vt = 16, wt = 10, Gt = new I.Text({
       text: te,
       fontSize: Ge,
       fontStyle: $,
       fontFamily: $e
-    }), on = new N.Text({
+    }), on = new I.Text({
       text: Oe,
       fontSize: vt,
       fontFamily: $e
-    }), rn = Math.max(Gt.width(), on.width()) + 60, we = Ge + wt + vt + 25, pt = Math.max(rn, 180), yt = Math.max(we, 60), ot = new N.Rect({
+    }), rn = Math.max(Gt.width(), on.width()) + 60, we = Ge + wt + vt + 25, pt = Math.max(rn, 180), yt = Math.max(we, 60), ot = new I.Rect({
       name: co,
       width: pt,
       height: yt,
@@ -8531,7 +8531,7 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
     C.add(ot), Oe || (Ge = Ge * 1.2);
     let rt;
     Oe ? rt = (Dt - yt) / 2 + 15 : rt = (Dt - yt) / 2 + yt / 2 - Ge / 2;
-    const sn = new N.Text({
+    const sn = new I.Text({
       text: te,
       x: 0,
       y: rt,
@@ -8543,22 +8543,22 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
       fill: fe
     });
     if (C.add(sn), ue) {
-      const Nt = sn.y() + Ge + 4, an = new N.Line({
-        points: [ot.x(), Nt, ot.x() + ot.width(), Nt],
+      const It = sn.y() + Ge + 4, an = new I.Line({
+        points: [ot.x(), It, ot.x() + ot.width(), It],
         stroke: fe,
         strokeWidth: 2
       });
       C.add(an);
     }
     if (he) {
-      const Nt = sn.y() + Ge / 2, an = new N.Line({
-        points: [ot.x(), Nt, ot.x() + ot.width(), Nt],
+      const It = sn.y() + Ge / 2, an = new I.Line({
+        points: [ot.x(), It, ot.x() + ot.width(), It],
         stroke: fe,
         strokeWidth: 2
       });
       C.add(an);
     }
-    const dr = new N.Text({
+    const dr = new I.Text({
       text: Oe,
       x: 0,
       y: rt + Ge + wt,
@@ -8569,8 +8569,8 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
       fill: fe
     });
     Oe && C.add(dr), m.add(C), A.current = m;
-  }, de = W(I);
-  de.current = q ?? I;
+  }, de = W(N);
+  de.current = q ?? N;
   const le = W(Z);
   return le.current = Z, ct(() => {
     if (k) {
@@ -8681,7 +8681,7 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
           /* @__PURE__ */ x(Wt, { align: "center", columns: "22", gap: "5", mt: "3", children: [
             /* @__PURE__ */ c(Q, { direction: "column", gridColumn: "span 22", children: /* @__PURE__ */ x(ae, { as: "label", size: "2", children: [
               w("annotator:editor.stamp.stampText"),
-              /* @__PURE__ */ c(kt.Root, { value: I.stampText, onChange: (H) => P("stampText", H.target.value) })
+              /* @__PURE__ */ c(kt.Root, { value: N.stampText, onChange: (H) => P("stampText", H.target.value) })
             ] }) }),
             /* @__PURE__ */ x(Q, { direction: "column", gridColumn: "span 9", children: [
               /* @__PURE__ */ c(ae, { size: "2", children: w("annotator:editor.stamp.textColor") }),
@@ -8689,7 +8689,7 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
                 Et,
                 {
                   transparent: !0,
-                  value: I.textColor,
+                  value: N.textColor,
                   onChange: (H) => P("textColor", H),
                   presets: b,
                   popover: !0
@@ -8701,7 +8701,7 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
               /* @__PURE__ */ c("div", { className: Ue.formItem, children: /* @__PURE__ */ c(
                 Et,
                 {
-                  value: I.backgroundColor,
+                  value: N.backgroundColor,
                   onChange: (H) => P("backgroundColor", H),
                   presets: b,
                   popover: !0,
@@ -8714,7 +8714,7 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
               /* @__PURE__ */ c("div", { className: Ue.formItem, children: /* @__PURE__ */ c(
                 Et,
                 {
-                  value: I.borderColor,
+                  value: N.borderColor,
                   onChange: (H) => P("borderColor", H),
                   presets: b,
                   transparent: !0,
@@ -8727,7 +8727,7 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
               /* @__PURE__ */ c("div", { className: Ue.formItem, children: /* @__PURE__ */ c(
                 bt.Root,
                 {
-                  value: I.fontStyle,
+                  value: N.fontStyle,
                   onValueChange: (H) => P("fontStyle", H),
                   children: /* @__PURE__ */ x(Q, { direction: "row", gap: "2", children: [
                     /* @__PURE__ */ c(bt.Item, { value: "bold", children: /* @__PURE__ */ c(Lr, {}) }),
@@ -8740,7 +8740,7 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
             ] }),
             /* @__PURE__ */ x(Q, { direction: "column", gridColumn: "span 8", children: [
               /* @__PURE__ */ c(ae, { size: "2", children: w("annotator:editor.stamp.fontFamily") }),
-              /* @__PURE__ */ c("div", { className: Ue.formItem, children: /* @__PURE__ */ x(Re.Root, { value: I.fontFamily, onValueChange: (H) => P("fontFamily", H), children: [
+              /* @__PURE__ */ c("div", { className: Ue.formItem, children: /* @__PURE__ */ x(Re.Root, { value: N.fontFamily, onValueChange: (H) => P("fontFamily", H), children: [
                 /* @__PURE__ */ c(Re.Trigger, {}),
                 /* @__PURE__ */ c(Re.Content, { children: f.map((H) => /* @__PURE__ */ c(Re.Item, { value: H.value, children: H.label }, H.value)) })
               ] }) })
@@ -8750,7 +8750,7 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
               /* @__PURE__ */ c("div", { className: Ue.formItem, children: /* @__PURE__ */ x(
                 Re.Root,
                 {
-                  value: I.borderStyle,
+                  value: N.borderStyle,
                   onValueChange: (H) => P("borderStyle", H),
                   children: [
                     /* @__PURE__ */ c(Re.Trigger, {}),
@@ -8771,7 +8771,7 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
               /* @__PURE__ */ c("div", { className: Ue.formItem, children: /* @__PURE__ */ c(
                 bt.Root,
                 {
-                  value: I.timestamp,
+                  value: N.timestamp,
                   onValueChange: (H) => P("timestamp", H),
                   children: /* @__PURE__ */ x(Q, { direction: "row", gap: "2", children: [
                     /* @__PURE__ */ c(bt.Item, { value: "username", children: w("annotator:editor.stamp.username") }),
@@ -8782,7 +8782,7 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
             ] }),
             /* @__PURE__ */ x(Q, { direction: "column", children: [
               /* @__PURE__ */ c(ae, { size: "2", children: w("annotator:editor.stamp.dateFormat") }),
-              /* @__PURE__ */ c("div", { className: Ue.formItem, children: /* @__PURE__ */ x(Re.Root, { value: I.dateFormat, onValueChange: (H) => P("dateFormat", H), children: [
+              /* @__PURE__ */ c("div", { className: Ue.formItem, children: /* @__PURE__ */ x(Re.Root, { value: N.dateFormat, onValueChange: (H) => P("dateFormat", H), children: [
                 /* @__PURE__ */ c(Re.Trigger, {}),
                 /* @__PURE__ */ c(Re.Content, { children: Uc?.map((H) => /* @__PURE__ */ x(Re.Group, { children: [
                   /* @__PURE__ */ c(Re.Label, { children: H.label }),
@@ -8796,7 +8796,7 @@ const co = "StampGroup", Ft = 470, Dt = 120, Uc = [
             /* @__PURE__ */ c(
               kt.Root,
               {
-                value: I.customTimestampText,
+                value: N.customTimestampText,
                 onChange: (H) => P("customTimestampText", H.target.value)
               }
             )
@@ -8846,7 +8846,7 @@ const En = ({
   default_signatures: r,
   default_stamps: s
 }) => {
-  const { t: i } = ve(["annotator"], { useSuspense: !1 }), { defaultOptions: a } = It(), { painter: l, requestWrite: u } = nt(), d = se((D) => D.currentAnnotationType), h = xe(() => Fc(o), [o]), f = l?.can("annotation.create") ?? !1, p = d?.type === h.type, g = t ?? i(`annotator:tool.${h.name}`), v = On(e), y = n && e === "toolbar-icon" && p && !!h.styleEditable?.color, [b, w] = K(!1), S = W(null), A = W(null), E = W(null), M = W(!1), _ = J(() => {
+  const { t: i } = ve(["annotator"], { useSuspense: !1 }), { defaultOptions: a } = Nt(), { painter: l, requestWrite: u } = nt(), d = se((D) => D.currentAnnotationType), h = xe(() => Fc(o), [o]), f = l?.can("annotation.create") ?? !1, p = d?.type === h.type, g = t ?? i(`annotator:tool.${h.name}`), v = On(e), y = n && e === "toolbar-icon" && p && !!h.styleEditable?.color, [b, w] = K(!1), S = W(null), A = W(null), E = W(null), M = W(!1), _ = J(() => {
     S.current !== null && (window.clearTimeout(S.current), S.current = null);
   }, []), B = J(() => {
     _(), M.current = !0, y && w(!0);
@@ -8908,7 +8908,7 @@ const En = ({
         onIntent: G
       }
     );
-  const I = /* @__PURE__ */ c(
+  const N = /* @__PURE__ */ c(
     xt,
     {
       disabled: o !== "select" && !Y,
@@ -8953,11 +8953,11 @@ const En = ({
       onContentPointerEnter: B,
       onContentPointerLeave: k,
       onPointerDownOutside: V,
-      trigger: I
+      trigger: N
     }
-  ) : I;
+  ) : N;
 }, tr = ({ presentation: o = "toolbar-icon" }) => {
-  const { defaultOptions: e } = It(), { painter: t, requestWrite: n } = nt(), r = se((l) => l.currentAnnotationType), s = !r?.styleEditable?.color, i = On(o), a = (l) => {
+  const { defaultOptions: e } = Nt(), { painter: t, requestWrite: n } = nt(), r = se((l) => l.currentAnnotationType), s = !r?.styleEditable?.color, i = On(o), a = (l) => {
     if (!r) return;
     const u = {
       ...r,
@@ -9262,7 +9262,7 @@ const bl = new Map(
     }
   );
   return r ? /* @__PURE__ */ c(Rt, { content: e, children: i }) : i;
-}, Sl = "_referenceInput_dfggt_1", wl = "_editor_dfggt_5", Cl = "_referenceMenu_dfggt_9", xl = "_referenceOption_dfggt_17", Al = "_referenceOptionHeader_dfggt_49", Tl = "_referenceTypeIcon_dfggt_53", kl = "_referencePage_dfggt_71", El = "_referenceSummary_dfggt_77", Rl = "_referenceMeta_dfggt_87", Pl = "_referenceAuthor_dfggt_97", Il = "_referenceDate_dfggt_103", Nl = "_referenceEmpty_dfggt_107", Ml = "_submit_dfggt_112", Be = {
+}, Sl = "_referenceInput_dfggt_1", wl = "_editor_dfggt_5", Cl = "_referenceMenu_dfggt_9", xl = "_referenceOption_dfggt_17", Al = "_referenceOptionHeader_dfggt_49", Tl = "_referenceTypeIcon_dfggt_53", kl = "_referencePage_dfggt_71", El = "_referenceSummary_dfggt_77", Rl = "_referenceMeta_dfggt_87", Pl = "_referenceAuthor_dfggt_97", Nl = "_referenceDate_dfggt_103", Il = "_referenceEmpty_dfggt_107", Ml = "_submit_dfggt_112", Be = {
   referenceInput: Sl,
   editor: wl,
   referenceMenu: Cl,
@@ -9273,8 +9273,8 @@ const bl = new Map(
   referenceSummary: El,
   referenceMeta: Rl,
   referenceAuthor: Pl,
-  referenceDate: Il,
-  referenceEmpty: Nl,
+  referenceDate: Nl,
+  referenceEmpty: Il,
   submit: Ml
 }, Dl = /^[\s.,!?;:'"<>/\\，。！？；：、“”‘’《》（）()[\]{}]/, Ll = new Map(
   De.map((o) => [o.type, o.name])
@@ -9330,7 +9330,7 @@ const yn = ({
   }, G = (T) => {
     const U = T.target.value;
     h(U), p(Zt(U, f) ?? []), M.current || Y(U, T.target.selectionStart);
-  }, I = (T) => {
+  }, N = (T) => {
     if (!g || T.referenceNumber === void 0) return;
     const U = `#${T.referenceNumber}`, z = d.slice(0, g.start), P = d.slice(g.end), Z = P.length === 0 || !Dl.test(P) ? " " : "", de = `${z}${U}${Z}${P}`, le = [
       ...f.filter((H) => H.label !== U),
@@ -9361,7 +9361,7 @@ const yn = ({
         if (T.key === "Enter") {
           T.preventDefault();
           const U = O[L];
-          U && I(U);
+          U && N(U);
           return;
         }
         if (T.key === "Escape") {
@@ -9457,7 +9457,7 @@ const yn = ({
                         className: Be.referenceOption,
                         onMouseEnter: () => b(U),
                         onMouseDown: (le) => le.preventDefault(),
-                        onClick: () => I(T),
+                        onClick: () => N(T),
                         children: [
                           /* @__PURE__ */ x(Q, { align: "center", gap: "2", className: Be.referenceOptionHeader, children: [
                             /* @__PURE__ */ x(Er, { size: "1", radius: "full", variant: "soft", children: [
@@ -9762,7 +9762,7 @@ const uo = new Map(
     f((C) => C.includes(m) ? C.filter((F) => F !== m) : [...C, m]);
   }, G = (m) => {
     g((C) => C.includes(m) ? C.filter((F) => F !== m) : [...C, m]);
-  }, I = /* @__PURE__ */ x("div", { className: ge.filter, children: [
+  }, N = /* @__PURE__ */ x("div", { className: ge.filter, children: [
     /* @__PURE__ */ c(ae, { as: "div", children: E("author") }),
     /* @__PURE__ */ c("ul", { children: B.map(([m, C]) => /* @__PURE__ */ c("li", { children: /* @__PURE__ */ c(ae, { as: "label", size: "2", children: /* @__PURE__ */ x(Q, { gap: "2", children: [
       /* @__PURE__ */ c($t, { checked: h.includes(m), onCheckedChange: () => Y(m) }),
@@ -10235,7 +10235,7 @@ const uo = new Map(
           children: /* @__PURE__ */ c(Ur, {})
         }
       ) }),
-      /* @__PURE__ */ c(ke.Content, { children: I })
+      /* @__PURE__ */ c(ke.Content, { children: N })
     ] }) }),
     /* @__PURE__ */ c("div", { className: ge.list, children: $e })
   ] });
@@ -10580,7 +10580,7 @@ class Jl extends qe {
       a.map((V) => {
         const O = V.attrs?.points ?? [], k = [];
         for (let L = 0; L < O.length; L += 2) {
-          const Y = l + O[L] * d, G = u + O[L + 1] * h, I = Y * f.scale, D = G * f.scale, [q, X] = f.convertToPdfPoint(I, D);
+          const Y = l + O[L] * d, G = u + O[L + 1] * h, N = Y * f.scale, D = G * f.scale, [q, X] = f.convertToPdfPoint(N, D);
           k.push(q, X);
         }
         return s.obj(k);
@@ -10853,7 +10853,7 @@ class ad extends qe {
       a.map((V) => {
         const O = sd(V.attrs?.data ?? ""), k = [];
         for (let L = 0; L < O.length; L += 2) {
-          const Y = l + O[L] * d, G = u + O[L + 1] * h, I = Y * f.scale, D = G * f.scale, [q, X] = f.convertToPdfPoint(I, D);
+          const Y = l + O[L] * d, G = u + O[L + 1] * h, N = Y * f.scale, D = G * f.scale, [q, X] = f.convertToPdfPoint(N, D);
           k.push(q, X);
         }
         return s.obj(k);
@@ -11267,12 +11267,12 @@ function Cd({ pdfViewer: o }) {
           let V = 0;
           const O = 60, k = 200;
           let L = null, Y = !1, G = null;
-          const I = () => {
+          const N = () => {
             L && (clearTimeout(L), L = null), o.eventBus.off("updatefindcontrolstate", T);
           }, D = (U) => {
-            Y || (Y = !0, I(), M(U));
+            Y || (Y = !0, N(), M(U));
           }, q = (U) => {
-            Y || (Y = !0, I(), _(U));
+            Y || (Y = !0, N(), _(U));
           }, X = async () => {
             if (Y || S !== h.current) {
               D(null);
@@ -11484,11 +11484,11 @@ const Ad = ({ text: o, query: e, caseSensitive: t }) => /* @__PURE__ */ c(Ce, { 
         ")"
       ] }),
       L.matches.map((Y) => {
-        const G = h && h.pageNumber === L.pageNumber && h.matchIndex === Y.matchIndex, I = `${L.pageNumber}-${Y.matchIndex}`;
+        const G = h && h.pageNumber === L.pageNumber && h.matchIndex === Y.matchIndex, N = `${L.pageNumber}-${Y.matchIndex}`;
         return /* @__PURE__ */ c(lt, { mt: "2", pl: "0", children: /* @__PURE__ */ c(
           ye,
           {
-            ref: (D) => p.current[I] = D,
+            ref: (D) => p.current[N] = D,
             variant: G ? "soft" : "outline",
             color: G ? void 0 : "gray",
             type: "button",
@@ -11526,7 +11526,7 @@ const Ad = ({ text: o, query: e, caseSensitive: t }) => /* @__PURE__ */ c(Ce, { 
           "aria-label": l("viewer:search.placeholder"),
           mt: "3",
           children: [
-            /* @__PURE__ */ c(kt.Slot, { children: /* @__PURE__ */ c(Nn, {}) }),
+            /* @__PURE__ */ c(kt.Slot, { children: /* @__PURE__ */ c(In, {}) }),
             /* @__PURE__ */ c(kt.Slot, { children: e.trim() && /* @__PURE__ */ c(
               et,
               {
@@ -11660,7 +11660,7 @@ const Ad = ({ text: o, query: e, caseSensitive: t }) => /* @__PURE__ */ c(Ce, { 
     const v = n.current.getBoundingClientRect(), y = v.width > 0 && v.height > 0, b = /* @__PURE__ */ new Set();
     for (let S = 0; S < g; S += 1) {
       const E = e.getPageView(S)?.div?.getBoundingClientRect();
-      !E || E.width <= 0 || E.height <= 0 || (!y || E.bottom >= v.top && E.top <= v.bottom) && b.add(S + 1);
+      !E || E.width <= 0 || E.height <= 0 || y && E.bottom >= v.top && E.top <= v.bottom && b.add(S + 1);
     }
     if (b.size === 0) {
       const S = Math.max(1, Math.min(g, e.currentPageNumber || 1));
@@ -11704,7 +11704,7 @@ const Ad = ({ text: o, query: e, caseSensitive: t }) => /* @__PURE__ */ c(Ce, { 
     const v = e.getPageView(g - 1), y = a.get(g);
     if (!v?.div || !y) return [];
     const b = v.viewport;
-    return !b || y.dimensions.width <= 0 || y.dimensions.height <= 0 ? [] : [{
+    return !b || ![b.width, b.height, y.dimensions.width, y.dimensions.height].every(Number.isFinite) || b.width <= 0 || b.height <= 0 || y.dimensions.width <= 0 || y.dimensions.height <= 0 ? [] : [{
       pageNumber: g,
       div: v.div,
       scaleX: b.width / y.dimensions.width,
@@ -11715,7 +11715,7 @@ const Ad = ({ text: o, query: e, caseSensitive: t }) => /* @__PURE__ */ c(Ce, { 
     const v = a.get(g.pageNumber);
     return v ? ri(
       /* @__PURE__ */ c("div", { className: lr.positionedTextLayer, "data-inklayer-positioned-text-page": g.pageNumber, children: v.spans.map((y) => /* @__PURE__ */ c(
-        Id,
+        Nd,
         {
           span: y,
           scaleX: g.scaleX,
@@ -11728,7 +11728,7 @@ const Ad = ({ text: o, query: e, caseSensitive: t }) => /* @__PURE__ */ c(Ce, { 
     ) : null;
   }) });
 };
-function Id({
+function Nd({
   span: o,
   scaleX: e,
   scaleY: t
@@ -11789,7 +11789,7 @@ const nu = ({
   ), Y = xe(
     () => ({ textLayerMode: k ? 0 : 1, annotationMode: 0, externalLinkTarget: 0, enableRange: e, pdfjsOptions: a }),
     [e, a, k]
-  ), { t: G } = ve(["annotator", "common"], { useSuspense: !1 }), I = xe(() => Zo(Bc, f || {}), [f]), [D, q] = K(() => to()), X = cr(), T = o === "auto" ? X : o;
+  ), { t: G } = ve(["annotator", "common"], { useSuspense: !1 }), N = xe(() => Zo(Bc, f || {}), [f]), [D, q] = K(() => to()), X = cr(), T = o === "auto" ? X : o;
   ne(() => {
     const z = setTimeout(() => {
       const P = to();
@@ -11865,7 +11865,7 @@ const nu = ({
     Jo.Provider,
     {
       value: {
-        defaultOptions: I,
+        defaultOptions: N,
         primaryColor: D
       },
       children: /* @__PURE__ */ x(
@@ -11885,7 +11885,7 @@ const nu = ({
             {
               key: "search-sidebar",
               title: G("viewer:search.search"),
-              icon: /* @__PURE__ */ c(Nn, { style: { width: 18, height: 18 } }),
+              icon: /* @__PURE__ */ c(In, { style: { width: 18, height: 18 } }),
               render: (z) => /* @__PURE__ */ c(ar, { pdfViewer: z.pdfViewer })
             },
             {
@@ -11931,7 +11931,7 @@ const nu = ({
       )
     }
   ) }) });
-}, Nd = ({
+}, Id = ({
   onDocumentLoaded: o,
   onEventBusReady: e
 }) => {
@@ -11949,7 +11949,7 @@ const nu = ({
     r && n && r.dispatch("updateviewarea", { pdfViewer: n });
   }, [s, r, n]), /* @__PURE__ */ c(Ce, {});
 }, Md = () => {
-  const { t: o } = ve("common", { useSuspense: !1 }), { pdfDocument: e } = Fe(), { printClean: t } = No(e);
+  const { t: o } = ve("common", { useSuspense: !1 }), { pdfDocument: e } = Fe(), { printClean: t } = Io(e);
   return /* @__PURE__ */ c(Rt, { content: o("common:print"), children: /* @__PURE__ */ c(
     ye,
     {
@@ -12017,7 +12017,7 @@ const nu = ({
       sidebar: [{
         key: "search-sidebar",
         title: w("viewer:search.search"),
-        icon: /* @__PURE__ */ c(Nn, { style: { width: 18, height: 18 } }),
+        icon: /* @__PURE__ */ c(In, { style: { width: 18, height: 18 } }),
         render: (M) => /* @__PURE__ */ c(ar, { pdfViewer: M.pdfViewer })
       }, ...h || []],
       defaultActiveSidebarKey: v,
@@ -12026,7 +12026,7 @@ const nu = ({
       ...S,
       style: l,
       actions: /* @__PURE__ */ c(Dd, { actions: d }),
-      children: /* @__PURE__ */ c(Nd, { onEventBusReady: b, onDocumentLoaded: y })
+      children: /* @__PURE__ */ c(Id, { onEventBusReady: b, onDocumentLoaded: y })
     }
   ) });
 };
