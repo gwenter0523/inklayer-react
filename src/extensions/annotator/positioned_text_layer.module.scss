@@ -5,7 +5,9 @@
     overflow: hidden;
     // Keep the transparent span owner above PDF.js/Konva painter canvases;
     // pointer-events:none on the parent still lets blank regions fall through.
-    z-index: 100;
+    // The painter wrapper raises itself to 999 while a writer is armed, so
+    // processed text must remain the selectable owner in that state too.
+    z-index: 1001;
     pointer-events: none;
     user-select: text;
     -webkit-user-select: text;
