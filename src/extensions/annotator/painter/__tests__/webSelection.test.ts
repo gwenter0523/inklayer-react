@@ -23,6 +23,8 @@ jest.mock('web-highlighter', () => ({
 interface MockHighlighter {
     off: jest.Mock
     dispose: jest.Mock
+    getDoms: jest.Mock
+    on: jest.Mock
 }
 
 const getHighlighterInstance = (index: number) =>
@@ -133,5 +135,31 @@ describe('WebSelection', () => {
         root.remove()
         input.remove()
         getSelection.mockRestore()
+    })
+
+    it('resolves page numbers from positioned text layers mounted outside PDF.js pages', () => {
+        const onHighlight = jest.fn()
+        const webSelection = new WebSelection({ onSelect: jest.fn(), onHighlight })
+        const root = document.createElement('div')
+        document.body.append(root)
+        webSelection.create(root)
+
+        const highlighter = getHighlighterInstance(0)
+        const positionedLayer = document.createElement('div')
+        positionedLayer.setAttribute('data-inklayer-positioned-text-page', '7')
+        const span = document.createElement('span')
+        positionedLayer.append(span)
+        root.append(positionedLayer)
+        highlighter.getDoms.mockReturnValue([span])
+
+        const selectionCreate = highlighter.on.mock.calls.find(([event]) => event === 'selection:create')?.[1] as
+            | ((data: { sources: Array<{ id: string }> }) => void)
+            | undefined
+        expect(selectionCreate).toBeDefined()
+        selectionCreate?.({ sources: [{ id: 'source-1' }] })
+
+        expect(onHighlight).toHaveBeenCalledWith({ '7': [span] })
+        webSelection.destroy()
+        root.remove()
     })
 })

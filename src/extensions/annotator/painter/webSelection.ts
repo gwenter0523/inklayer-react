@@ -54,7 +54,13 @@ export class WebSelection {
 
         const allSourcesSpan = data.sources.flatMap((source) => highlighter.getDoms(source.id))
         const pageSelection = allSourcesSpan.reduce<Record<string, HTMLElement[]>>((acc, span) => {
-            const page = span.closest('.page')?.getAttribute('data-page-number') ?? '-1'
+            // Positioned text is mounted in the viewer host rather than inside
+            // PDF.js's page div so that PDF.js page rerenders cannot remove the
+            // external selectable layer. Resolve its explicit page marker
+            // before falling back to the native page wrapper.
+            const page = span.closest('[data-inklayer-positioned-text-page]')?.getAttribute('data-inklayer-positioned-text-page')
+                ?? span.closest('.page')?.getAttribute('data-page-number')
+                ?? '-1'
             ;(acc[page] ||= []).push(span)
             return acc
         }, {})
