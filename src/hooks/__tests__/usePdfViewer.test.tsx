@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 
 import { act, renderHook, waitFor } from '@testing-library/react'
+import { MessageChannel } from 'node:worker_threads'
 import type { PDFDocumentProxy } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { usePdfViewer } from '../usePdfViewer'
@@ -117,6 +118,52 @@ describe('usePdfViewer', () => {
             useSystemFonts: false
         }))
 
+        unmount()
+    })
+
+    it('does not reuse a PDF data buffer after PDF.js transfers it during a viewer reload', async () => {
+        const firstTask = createDeferredTask()
+        const secondTask = createDeferredTask()
+        const getDocumentMock = jest.mocked(getDocument)
+        const dataLengths: number[] = []
+        getDocumentMock.mockImplementation((options: { data?: unknown }) => {
+            const data = options.data as Uint8Array
+            dataLengths.push(data.byteLength)
+            if (data.byteLength === 0) {
+                throw new DOMException(
+                    "Failed to execute 'postMessage' on 'Worker': An ArrayBuffer is detached and could not be cloned.",
+                    'DataCloneError'
+                )
+            }
+            const transferChannel = new MessageChannel()
+            transferChannel.port1.postMessage(data.buffer, [data.buffer])
+            transferChannel.port1.close()
+            transferChannel.port2.close()
+            return (dataLengths.length === 1 ? firstTask : secondTask) as never
+        })
+        const containerRef = { current: document.createElement('div') }
+        const source = new Uint8Array([37, 80, 68, 70])
+        const onLoadError = jest.fn()
+
+        const { result, rerender, unmount } = renderHook(
+            ({ textLayerMode }) => usePdfViewer(containerRef, {
+                data: source,
+                enableRange: false,
+                textLayerMode,
+                onLoadError
+            }),
+            { initialProps: { textLayerMode: 0 } }
+        )
+
+        await waitFor(() => expect(getDocumentMock).toHaveBeenCalledTimes(1))
+        rerender({ textLayerMode: 1 })
+        await waitFor(() => expect(getDocumentMock).toHaveBeenCalledTimes(2))
+        await waitFor(() => expect(onLoadError).not.toHaveBeenCalled())
+        expect(dataLengths).toEqual([4, 4])
+        expect(result.current.loadError).toBeNull()
+
+        firstTask.resolve(createDocument('first'))
+        secondTask.resolve(createDocument('second'))
         unmount()
     })
 

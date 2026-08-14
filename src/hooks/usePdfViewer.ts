@@ -50,6 +50,17 @@ function isRangeFailure(error: unknown) {
     return msg.includes('range') || msg.includes('content-length') || msg.includes('unexpected server response') || msg.includes('cors')
 }
 
+function clonePdfData(data: UseViewerOptions['data']): UseViewerOptions['data'] {
+    if (data === undefined || typeof data === 'string' || Array.isArray(data)) return data
+    if (data instanceof ArrayBuffer) return data.slice(0)
+    if (ArrayBuffer.isView(data)) {
+        const copy = new Uint8Array(data.byteLength)
+        copy.set(new Uint8Array(data.buffer, data.byteOffset, data.byteLength))
+        return copy
+    }
+    return data
+}
+
 export function usePdfViewer(containerRef: React.RefObject<HTMLDivElement>, options: UseViewerOptions) {
     const {
         url,
@@ -152,7 +163,10 @@ export function usePdfViewer(containerRef: React.RefObject<HTMLDivElement>, opti
                 // 如果提供了 data，则直接使用数据
                 return getDocument({
                     ...pdfjsOptions,
-                    data: data,
+                    // PDF.js transfers the input buffer to its worker. Keep
+                    // the caller-owned bytes reusable when a viewer reloads
+                    // (for example after a text-layer mode change).
+                    data: clonePdfData(data),
                     disableRange: true,
                     disableStream: true
                 })
