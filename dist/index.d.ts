@@ -828,7 +828,7 @@ declare interface PdfPoint {
  * separate from selectable text spans because a block bbox does not imply
  * line- or glyph-level text geometry.
  */
-declare interface PdfPositionedTextBlock {
+export declare interface PdfPositionedTextBlock {
     /** Stable source identity for the layout block. */
     readonly id: string;
     readonly blockId?: string;

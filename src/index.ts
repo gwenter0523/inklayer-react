@@ -17,6 +17,7 @@ export type {
   PdfAnnotatorWriteIntent,
   PdfPositionedTextGeometry,
   PdfPositionedTextPoint,
+  PdfPositionedTextBlock,
   PdfPositionedTextSpan,
   PdfPositionedTextPage,
   PdfPositionedTextSource,
