@@ -137,11 +137,26 @@ export interface PdfPositionedTextSpan {
     readonly geometry: PdfPositionedTextGeometry
 }
 
+/**
+ * Layout-only block geometry supplied by a host parser. This seam is kept
+ * separate from selectable text spans because a block bbox does not imply
+ * line- or glyph-level text geometry.
+ */
+export interface PdfPositionedTextBlock {
+    /** Stable source identity for the layout block. */
+    readonly id: string
+    readonly blockId?: string
+    readonly kind?: string
+    readonly geometry: PdfPositionedTextGeometry
+}
+
 export interface PdfPositionedTextPage {
     /** One-based physical PDF page number. */
     readonly pageNumber: number
     /** Visual page dimensions matching the geometry coordinate space. */
     readonly dimensions: Readonly<{ width: number; height: number }>
+    /** Optional layout overlay rendered independently from selectable spans. */
+    readonly blocks?: readonly PdfPositionedTextBlock[]
     readonly spans: readonly PdfPositionedTextSpan[]
 }
 

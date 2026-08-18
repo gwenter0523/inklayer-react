@@ -68,6 +68,12 @@ describe('PositionedTextLayer', () => {
                 ? {
                     pageNumber: 1,
                     dimensions: { width: 600, height: 800 },
+                    blocks: [{
+                        id: 'block-a-layout',
+                        blockId: 'block-a',
+                        kind: 'paragraph',
+                        geometry: { kind: 'bbox', x: 50, y: 110, width: 200, height: 60 }
+                    }],
                     spans: [{
                         id: 'span-a',
                         blockId: 'block-a',
@@ -101,6 +107,16 @@ describe('PositionedTextLayer', () => {
         expect(span).toHaveAttribute('data-inklayer-positioned-text-block-id', 'block-a')
         expect(span).toHaveStyle({ left: '60px', top: '120px', width: '180px', height: '32px' })
         expect(span).toHaveStyle({ transform: 'matrix(1,0,0,1,0,0)' })
+        const block = viewerContainer.querySelector('[data-inklayer-positioned-text-block="block-a-layout"]')
+        expect(block).toBeInTheDocument()
+        expect(block).toHaveAttribute('data-inklayer-positioned-text-block-kind', 'paragraph')
+        expect(block).toHaveStyle({
+            left: '50px',
+            top: '110px',
+            width: '200px',
+            height: '60px',
+            pointerEvents: 'none'
+        })
         expect(eventBus.on).toHaveBeenCalledWith('scalechanging', expect.any(Function))
         host.remove()
     })

@@ -824,6 +824,19 @@ declare interface PdfPoint {
 }
 
 /**
+ * Layout-only block geometry supplied by a host parser. This seam is kept
+ * separate from selectable text spans because a block bbox does not imply
+ * line- or glyph-level text geometry.
+ */
+declare interface PdfPositionedTextBlock {
+    /** Stable source identity for the layout block. */
+    readonly id: string;
+    readonly blockId?: string;
+    readonly kind?: string;
+    readonly geometry: PdfPositionedTextGeometry;
+}
+
+/**
  * Provider-neutral geometry for an externally supplied selectable text span.
  * Coordinates are expressed in the page's visual top-left coordinate space.
  * Polygon points are ordered around the text quad, beginning at its top-left
@@ -848,6 +861,8 @@ export declare interface PdfPositionedTextPage {
         width: number;
         height: number;
     }>;
+    /** Optional layout overlay rendered independently from selectable spans. */
+    readonly blocks?: readonly PdfPositionedTextBlock[];
     readonly spans: readonly PdfPositionedTextSpan[];
 }
 

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { usePdfViewerContext } from '@/context/pdf_viewer_context'
 import type {
     PdfPositionedTextGeometry,
+    PdfPositionedTextBlock,
     PdfPositionedTextPage,
     PdfPositionedTextSource,
     PdfPositionedTextSpan
@@ -177,6 +178,14 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
                     data-inklayer-positioned-text-page={mount.pageNumber}
                     style={{ left: mount.left, top: mount.top, width: mount.width, height: mount.height }}
                 >
+                    {page.blocks?.map((block) => (
+                        <PositionedTextBlock
+                            key={block.id}
+                            block={block}
+                            scaleX={mount.scaleX}
+                            scaleY={mount.scaleY}
+                        />
+                    ))}
                     {page.spans.map((span) => (
                         <PositionedTextSpan
                             key={span.id}
@@ -191,6 +200,28 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
             )
         })}
     </>
+}
+
+function PositionedTextBlock({
+    block,
+    scaleX,
+    scaleY
+}: {
+    block: PdfPositionedTextBlock
+    scaleX: number
+    scaleY: number
+}): React.JSX.Element | null {
+    const style = positionedBlockStyle(block.geometry, scaleX, scaleY)
+    if (!style) return null
+
+    return <div
+        className={styles.positionedTextBlock}
+        data-inklayer-positioned-text-block={block.id}
+        data-inklayer-positioned-text-block-id={block.blockId}
+        data-inklayer-positioned-text-block-kind={block.kind}
+        aria-hidden="true"
+        style={style}
+    />
 }
 
 function PositionedTextSpan({
@@ -216,6 +247,39 @@ function PositionedTextSpan({
 }
 
 function positionedTextStyle(
+    geometry: PdfPositionedTextGeometry,
+    scaleX: number,
+    scaleY: number
+): React.CSSProperties | null {
+    const geometryStyle = positionedGeometryStyle(geometry, scaleX, scaleY)
+    if (!geometryStyle) return null
+    const height = typeof geometryStyle.height === 'number' ? geometryStyle.height : 0
+    return {
+        ...geometryStyle,
+        fontSize: Math.max(1, height),
+        lineHeight: `${Math.max(1, height)}px`,
+        zIndex: 1
+    }
+}
+
+function positionedBlockStyle(
+    geometry: PdfPositionedTextGeometry,
+    scaleX: number,
+    scaleY: number
+): React.CSSProperties | null {
+    const geometryStyle = positionedGeometryStyle(geometry, scaleX, scaleY)
+    if (!geometryStyle) return null
+    return {
+        ...geometryStyle,
+        boxSizing: 'border-box',
+        border: '1px solid rgba(37, 99, 235, 0.95)',
+        backgroundColor: 'rgba(37, 99, 235, 0.04)',
+        pointerEvents: 'none',
+        zIndex: 0
+    }
+}
+
+function positionedGeometryStyle(
     geometry: PdfPositionedTextGeometry,
     scaleX: number,
     scaleY: number
@@ -251,8 +315,6 @@ function positionedTextStyle(
         top: topLeft.y * scaleY,
         width: cssWidth,
         height: cssHeight,
-        fontSize: Math.max(1, cssHeight),
-        lineHeight: `${Math.max(1, cssHeight)}px`,
         transformOrigin: '0 0',
         transform: `matrix(${matrix.join(',')})`
     }

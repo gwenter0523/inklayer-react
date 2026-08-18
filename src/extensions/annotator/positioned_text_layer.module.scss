@@ -26,3 +26,12 @@
     -webkit-user-select: text;
     cursor: text;
 }
+
+.positionedTextBlock {
+    position: absolute;
+    display: block;
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
