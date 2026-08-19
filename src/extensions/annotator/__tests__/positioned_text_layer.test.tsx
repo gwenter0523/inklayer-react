@@ -109,7 +109,7 @@ describe('PositionedTextLayer', () => {
         expect(span).toHaveStyle({ left: '60px', top: '120px', width: '180px', height: '32px' })
         expect(span).toHaveStyle({ transform: 'matrix(1,0,0,1,0,0)' })
         expect(span?.firstElementChild).toHaveTextContent('可选择文字')
-        expect(span?.firstElementChild).toHaveStyle({ transform: 'scaleX(0.75)' })
+        expect(span?.firstElementChild).toHaveStyle({ letterSpacing: '-12px' })
         const block = viewerContainer.querySelector('[data-inklayer-positioned-text-block="block-a-layout"]')
         expect(block).toBeInTheDocument()
         expect(block).toHaveAttribute('data-inklayer-positioned-text-block-kind', 'paragraph')

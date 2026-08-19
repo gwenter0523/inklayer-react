@@ -243,20 +243,22 @@ function PositionedTextSpan({
         if (!content || targetWidth <= 0) return
 
         const fitTextToGeometry = () => {
+            content.style.letterSpacing = '0px'
             const naturalWidth = content.offsetWidth
             if (!Number.isFinite(naturalWidth) || naturalWidth <= 0) return
-            const inlineScale = targetWidth / naturalWidth
-            content.style.transform = `scaleX(${inlineScale})`
-            content.dataset.inklayerPositionedTextInlineScale = String(inlineScale)
+            const textUnitCount = Array.from(span.text).length
+            if (textUnitCount <= 0) return
+            const letterSpacing = (targetWidth - naturalWidth) / textUnitCount
+            content.style.letterSpacing = `${letterSpacing}px`
+            content.dataset.inklayerPositionedTextLetterSpacing = String(letterSpacing)
         }
 
         fitTextToGeometry()
-        void document.fonts?.ready.then(fitTextToGeometry)
-        const observer = typeof ResizeObserver === 'undefined'
-            ? null
-            : new ResizeObserver(fitTextToGeometry)
-        observer?.observe(content)
-        return () => observer?.disconnect()
+        let active = true
+        void document.fonts?.ready.then(() => {
+            if (active) fitTextToGeometry()
+        })
+        return () => { active = false }
     }, [span.text, style?.height, style?.width])
 
     if (!style || !span.text.trim()) return null

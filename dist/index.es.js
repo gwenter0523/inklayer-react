@@ -11662,7 +11662,7 @@ const kd = ({ text: n, query: e, caseSensitive: t }) => /* @__PURE__ */ c(Ce, { 
       actions: m
     }
   );
-}, Pd = "_positionedTextLayer_1s3c6_1", Nd = "_positionedTextSpan_1s3c6_12", Id = "_positionedTextContent_1s3c6_26", Md = "_positionedTextBlock_1s3c6_31", Qt = {
+}, Pd = "_positionedTextLayer_1h0to_1", Nd = "_positionedTextSpan_1h0to_12", Id = "_positionedTextContent_1h0to_26", Md = "_positionedTextBlock_1h0to_30", Qt = {
   positionedTextLayer: Pd,
   positionedTextSpan: Nd,
   positionedTextContent: Id,
@@ -11796,14 +11796,21 @@ function _d({
     const i = s.current, a = typeof r?.width == "number" ? r.width : 0;
     if (!i || a <= 0) return;
     const l = () => {
+      i.style.letterSpacing = "0px";
       const d = i.offsetWidth;
       if (!Number.isFinite(d) || d <= 0) return;
-      const h = a / d;
-      i.style.transform = `scaleX(${h})`, i.dataset.inklayerPositionedTextInlineScale = String(h);
+      const h = Array.from(n.text).length;
+      if (h <= 0) return;
+      const p = (a - d) / h;
+      i.style.letterSpacing = `${p}px`, i.dataset.inklayerPositionedTextLetterSpacing = String(p);
     };
-    l(), document.fonts?.ready.then(l);
-    const u = typeof ResizeObserver > "u" ? null : new ResizeObserver(l);
-    return u?.observe(i), () => u?.disconnect();
+    l();
+    let u = !0;
+    return document.fonts?.ready.then(() => {
+      u && l();
+    }), () => {
+      u = !1;
+    };
   }, [n.text, r?.height, r?.width]), !r || !n.text.trim() ? null : /* @__PURE__ */ c(
     "span",
     {
