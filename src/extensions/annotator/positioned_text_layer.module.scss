@@ -1,7 +1,6 @@
 .positionedTextLayer {
     position: absolute;
-    right: auto;
-    bottom: auto;
+    inset: 0;
     overflow: hidden;
     // Keep the transparent span owner above PDF.js/Konva painter canvases;
     // pointer-events:none on the parent still lets blank regions fall through.

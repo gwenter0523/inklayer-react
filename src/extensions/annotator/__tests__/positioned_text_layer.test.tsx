@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
 import '@testing-library/jest-dom'
-import { render, waitFor } from '@testing-library/react'
+import { act, render, waitFor } from '@testing-library/react'
 import React from 'react'
 import { PdfViewerContext, type PdfViewerContextValue } from '@/context/pdf_viewer_context'
 import { PositionedTextLayer } from '../positioned_text_layer'
@@ -101,16 +101,16 @@ describe('PositionedTextLayer', () => {
         await waitFor(() => expect(source.getPage).toHaveBeenCalledWith(1))
         expect(source.getPage).toHaveBeenCalledWith(2)
         expect(source.getPage).not.toHaveBeenCalledWith(3)
-        await waitFor(() => expect(viewerContainer.querySelector('[data-inklayer-positioned-text-id="span-a"]')).toBeInTheDocument())
+        await waitFor(() => expect(pageDivs[0].querySelector('[data-inklayer-positioned-text-id="span-a"]')).toBeInTheDocument())
 
-        const span = viewerContainer.querySelector('[data-inklayer-positioned-text-id="span-a"]')
+        const span = pageDivs[0].querySelector('[data-inklayer-positioned-text-id="span-a"]')
         expect(span).toHaveTextContent('可选择文字')
         expect(span).toHaveAttribute('data-inklayer-positioned-text-block-id', 'block-a')
         expect(span).toHaveStyle({ left: '60px', top: '120px', width: '180px', height: '32px' })
         expect(span).toHaveStyle({ transform: 'matrix(1,0,0,1,0,0)' })
         expect(span?.firstElementChild).toHaveTextContent('可选择文字')
-        expect(span?.firstElementChild).toHaveStyle({ letterSpacing: '-12px' })
-        const block = viewerContainer.querySelector('[data-inklayer-positioned-text-block="block-a-layout"]')
+        expect(span?.firstElementChild).toHaveStyle({ fontSize: '24px', lineHeight: '32px' })
+        const block = pageDivs[0].querySelector('[data-inklayer-positioned-text-block="block-a-layout"]')
         expect(block).toBeInTheDocument()
         expect(block).toHaveAttribute('data-inklayer-positioned-text-block-kind', 'paragraph')
         expect(block).toHaveStyle({
@@ -121,6 +121,17 @@ describe('PositionedTextLayer', () => {
             pointerEvents: 'none'
         })
         expect(eventBus.on).toHaveBeenCalledWith('scalechanging', expect.any(Function))
+
+        const firstLayer = pageDivs[0].querySelector('[data-inklayer-positioned-text-page="1"]')
+        firstLayer?.remove()
+        act(() => eventHandlers.get('pagerendered')?.())
+        await waitFor(() => {
+            const remountedLayer = pageDivs[0].querySelector('[data-inklayer-positioned-text-page="1"]')
+            expect(remountedLayer).toBeInTheDocument()
+            expect(remountedLayer).not.toBe(firstLayer)
+            expect(remountedLayer?.querySelector('[data-inklayer-positioned-text-id="span-a"]')).toHaveTextContent('可选择文字')
+        })
+
         offsetWidth.mockRestore()
         host.remove()
     })

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { usePdfViewerContext } from '@/context/pdf_viewer_context'
 import type {
@@ -17,10 +17,6 @@ interface PositionedTextLayerProps {
 interface PageMount {
     readonly pageNumber: number
     readonly host: HTMLDivElement
-    readonly left: number
-    readonly top: number
-    readonly width: number
-    readonly height: number
     readonly scaleX: number
     readonly scaleY: number
 }
@@ -37,6 +33,7 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
     const { pdfViewer, eventBus, viewerContainerRef, isReady } = usePdfViewerContext()
     const [visiblePageNumbers, setVisiblePageNumbers] = useState<readonly number[]>([])
     const [pages, setPages] = useState<ReadonlyMap<number, PdfPositionedTextPage>>(new Map())
+    const [, setPageRenderGeneration] = useState(0)
     const loadingPagesRef = useRef(new Set<number>())
     const generationRef = useRef(0)
 
@@ -88,6 +85,10 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
 
         refreshVisiblePages()
         const refresh = () => refreshVisiblePages()
+        const refreshRenderedPage = () => {
+            refreshVisiblePages()
+            setPageRenderGeneration((current) => current + 1)
+        }
         const delayedRefreshes = [0, 50, 200, 500].map((delay) => window.setTimeout(refresh, delay))
         const viewerContainer = viewerContainerRef.current
         const resizeObserver = typeof ResizeObserver === 'undefined' || !viewerContainer
@@ -98,7 +99,7 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
             viewerContainer.addEventListener('scroll', refresh, { passive: true })
         }
         eventBus.on('pagesloaded', refresh)
-        eventBus.on('pagerendered', refresh)
+        eventBus.on('pagerendered', refreshRenderedPage)
         eventBus.on('updateviewarea', refresh)
         eventBus.on('scalechanging', refresh)
         eventBus.on('rotationchanging', refresh)
@@ -107,12 +108,12 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
             resizeObserver?.disconnect()
             viewerContainer?.removeEventListener('scroll', refresh)
             eventBus.off('pagesloaded', refresh)
-            eventBus.off('pagerendered', refresh)
+            eventBus.off('pagerendered', refreshRenderedPage)
             eventBus.off('updateviewarea', refresh)
             eventBus.off('scalechanging', refresh)
             eventBus.off('rotationchanging', refresh)
         }
-    }, [eventBus, isReady, pdfViewer, refreshVisiblePages, source])
+    }, [eventBus, isReady, pdfViewer, refreshVisiblePages, source, viewerContainerRef])
 
     useEffect(() => {
         if (!pdfViewer || !visiblePageNumbers.length) return undefined
@@ -138,46 +139,31 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
         }
     }, [pages, pdfViewer, source, visiblePageNumbers])
 
-    const mountedPages = useMemo(() => {
-        if (!pdfViewer) return []
-        return visiblePageNumbers.flatMap((pageNumber): PageMount[] => {
+    const mountedPages = pdfViewer
+        ? visiblePageNumbers.flatMap((pageNumber): PageMount[] => {
             const pageView = pdfViewer.getPageView(pageNumber - 1)
             const page = pages.get(pageNumber)
-            const host = viewerContainerRef.current
-            if (!pageView?.div || !page || !host) return []
+            if (!pageView?.div || !page) return []
             const viewport = pageView.viewport
             if (!viewport ||
                 ![viewport.width, viewport.height, page.dimensions.width, page.dimensions.height].every(Number.isFinite) ||
                 viewport.width <= 0 || viewport.height <= 0 ||
                 page.dimensions.width <= 0 || page.dimensions.height <= 0) return []
-            const pageRect = pageView.div.getBoundingClientRect()
-            const hostRect = host.getBoundingClientRect()
-            const left = pageRect.left - hostRect.left + host.scrollLeft
-            const top = pageRect.top - hostRect.top + host.scrollTop
-            if (![left, top, pageRect.width, pageRect.height].every(Number.isFinite)) return []
             return [{
                 pageNumber,
-                host,
-                left,
-                top,
-                width: pageRect.width,
-                height: pageRect.height,
+                host: ensurePositionedTextHost(pageView.div, pageNumber),
                 scaleX: viewport.width / page.dimensions.width,
                 scaleY: viewport.height / page.dimensions.height
             }]
         })
-    }, [pages, pdfViewer, viewerContainerRef, visiblePageNumbers])
+        : []
 
     return <>
         {mountedPages.map((mount) => {
             const page = pages.get(mount.pageNumber)
             if (!page) return null
             return createPortal(
-                <div
-                    className={styles.positionedTextLayer}
-                    data-inklayer-positioned-text-page={mount.pageNumber}
-                    style={{ left: mount.left, top: mount.top, width: mount.width, height: mount.height }}
-                >
+                <>
                     {page.blocks?.map((block) => (
                         <PositionedTextBlock
                             key={block.id}
@@ -194,12 +180,22 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
                             scaleY={mount.scaleY}
                         />
                     ))}
-                </div>,
+                </>,
                 mount.host,
                 `positioned-text-${mount.pageNumber}`
             )
         })}
     </>
+}
+
+function ensurePositionedTextHost(pageDiv: HTMLDivElement, pageNumber: number): HTMLDivElement {
+    const existing = pageDiv.querySelector<HTMLDivElement>(`:scope > [data-inklayer-positioned-text-page="${pageNumber}"]`)
+    if (existing) return existing
+    const host = document.createElement('div')
+    host.className = styles.positionedTextLayer
+    host.dataset.inklayerPositionedTextPage = String(pageNumber)
+    pageDiv.append(host)
+    return host
 }
 
 function PositionedTextBlock({
@@ -240,17 +236,17 @@ function PositionedTextSpan({
     useLayoutEffect(() => {
         const content = contentRef.current
         const targetWidth = typeof style?.width === 'number' ? style.width : 0
-        if (!content || targetWidth <= 0) return
+        const targetHeight = typeof style?.height === 'number' ? style.height : 0
+        if (!content || targetWidth <= 0 || targetHeight <= 0) return
 
         const fitTextToGeometry = () => {
-            content.style.letterSpacing = '0px'
+            content.style.fontSize = `${targetHeight}px`
+            content.style.lineHeight = `${targetHeight}px`
             const naturalWidth = content.offsetWidth
             if (!Number.isFinite(naturalWidth) || naturalWidth <= 0) return
-            const textUnitCount = Array.from(span.text).length
-            if (textUnitCount <= 0) return
-            const letterSpacing = (targetWidth - naturalWidth) / textUnitCount
-            content.style.letterSpacing = `${letterSpacing}px`
-            content.dataset.inklayerPositionedTextLetterSpacing = String(letterSpacing)
+            const fontSize = targetHeight * targetWidth / naturalWidth
+            content.style.fontSize = `${fontSize}px`
+            content.dataset.inklayerPositionedTextFontSize = String(fontSize)
         }
 
         fitTextToGeometry()
