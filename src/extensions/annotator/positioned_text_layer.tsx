@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { usePdfViewerContext } from '@/context/pdf_viewer_context'
 import type {
@@ -235,6 +235,30 @@ function PositionedTextSpan({
 }): React.JSX.Element | null {
     const { geometry } = span
     const style = positionedTextStyle(geometry, scaleX, scaleY)
+    const contentRef = useRef<HTMLSpanElement>(null)
+
+    useLayoutEffect(() => {
+        const content = contentRef.current
+        const targetWidth = typeof style?.width === 'number' ? style.width : 0
+        if (!content || targetWidth <= 0) return
+
+        const fitTextToGeometry = () => {
+            const naturalWidth = content.offsetWidth
+            if (!Number.isFinite(naturalWidth) || naturalWidth <= 0) return
+            const inlineScale = targetWidth / naturalWidth
+            content.style.transform = `scaleX(${inlineScale})`
+            content.dataset.inklayerPositionedTextInlineScale = String(inlineScale)
+        }
+
+        fitTextToGeometry()
+        void document.fonts?.ready.then(fitTextToGeometry)
+        const observer = typeof ResizeObserver === 'undefined'
+            ? null
+            : new ResizeObserver(fitTextToGeometry)
+        observer?.observe(content)
+        return () => observer?.disconnect()
+    }, [span.text, style?.height, style?.width])
+
     if (!style || !span.text.trim()) return null
 
     return <span
@@ -243,7 +267,7 @@ function PositionedTextSpan({
         data-inklayer-positioned-text-block-id={span.blockId}
         data-inklayer-positioned-text-span-id={span.spanId}
         style={style}
-    >{span.text}</span>
+    ><span ref={contentRef} className={styles.positionedTextContent}>{span.text}</span></span>
 }
 
 function positionedTextStyle(

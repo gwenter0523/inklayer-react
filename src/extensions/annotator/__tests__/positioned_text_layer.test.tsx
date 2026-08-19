@@ -9,6 +9,7 @@ import type { PdfPositionedTextSource } from '../types/annotator'
 
 describe('PositionedTextLayer', () => {
     it('loads only visible pages plus one adjacent page and projects span geometry', async () => {
+        const offsetWidth = jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(240)
         const host = document.createElement('div')
         document.body.appendChild(host)
         const pageDivs = [1, 2, 3].map(() => document.createElement('div'))
@@ -107,6 +108,8 @@ describe('PositionedTextLayer', () => {
         expect(span).toHaveAttribute('data-inklayer-positioned-text-block-id', 'block-a')
         expect(span).toHaveStyle({ left: '60px', top: '120px', width: '180px', height: '32px' })
         expect(span).toHaveStyle({ transform: 'matrix(1,0,0,1,0,0)' })
+        expect(span?.firstElementChild).toHaveTextContent('可选择文字')
+        expect(span?.firstElementChild).toHaveStyle({ transform: 'scaleX(0.75)' })
         const block = viewerContainer.querySelector('[data-inklayer-positioned-text-block="block-a-layout"]')
         expect(block).toBeInTheDocument()
         expect(block).toHaveAttribute('data-inklayer-positioned-text-block-kind', 'paragraph')
@@ -118,6 +121,7 @@ describe('PositionedTextLayer', () => {
             pointerEvents: 'none'
         })
         expect(eventBus.on).toHaveBeenCalledWith('scalechanging', expect.any(Function))
+        offsetWidth.mockRestore()
         host.remove()
     })
 
