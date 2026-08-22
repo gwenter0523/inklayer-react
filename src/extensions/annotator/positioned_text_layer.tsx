@@ -151,7 +151,7 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
                 page.dimensions.width <= 0 || page.dimensions.height <= 0) return []
             return [{
                 pageNumber,
-                host: ensurePositionedTextHost(pageView.div, pageNumber),
+                host: ensurePositionedTextHost(pageView.div, pageNumber, source.sourceKey),
                 scaleX: viewport.width / page.dimensions.width,
                 scaleY: viewport.height / page.dimensions.height
             }]
@@ -176,6 +176,8 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
                         <PositionedTextSpan
                             key={span.id}
                             span={span}
+                            pageNumber={mount.pageNumber}
+                            sourceKey={source.sourceKey}
                             scaleX={mount.scaleX}
                             scaleY={mount.scaleY}
                         />
@@ -188,12 +190,16 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
     </>
 }
 
-function ensurePositionedTextHost(pageDiv: HTMLDivElement, pageNumber: number): HTMLDivElement {
+function ensurePositionedTextHost(pageDiv: HTMLDivElement, pageNumber: number, sourceKey?: string): HTMLDivElement {
     const existing = pageDiv.querySelector<HTMLDivElement>(`:scope > [data-inklayer-positioned-text-page="${pageNumber}"]`)
-    if (existing) return existing
+    if (existing) {
+        if (sourceKey) existing.dataset.inklayerPositionedTextSourceKey = sourceKey
+        return existing
+    }
     const host = document.createElement('div')
     host.className = styles.positionedTextLayer
     host.dataset.inklayerPositionedTextPage = String(pageNumber)
+    if (sourceKey) host.dataset.inklayerPositionedTextSourceKey = sourceKey
     pageDiv.append(host)
     return host
 }
@@ -222,10 +228,14 @@ function PositionedTextBlock({
 
 function PositionedTextSpan({
     span,
+    pageNumber,
+    sourceKey,
     scaleX,
     scaleY
 }: {
     span: PdfPositionedTextSpan
+    pageNumber: number
+    sourceKey?: string
     scaleX: number
     scaleY: number
 }): React.JSX.Element | null {
@@ -262,8 +272,12 @@ function PositionedTextSpan({
     return <span
         className={styles.positionedTextSpan}
         data-inklayer-positioned-text-id={span.id}
+        data-inklayer-positioned-text-page={pageNumber}
+        data-inklayer-positioned-text-source-key={sourceKey}
         data-inklayer-positioned-text-block-id={span.blockId}
         data-inklayer-positioned-text-span-id={span.spanId}
+        data-inklayer-positioned-text-logical-start={span.logicalRange?.start}
+        data-inklayer-positioned-text-logical-end={span.logicalRange?.end}
         style={style}
     ><span ref={contentRef} className={styles.positionedTextContent}>{span.text}</span></span>
 }

@@ -17,11 +17,15 @@ export type {
   PdfAnnotatorWriteIntent,
   PdfPositionedTextGeometry,
   PdfPositionedTextPoint,
+  PdfPositionedTextRange,
   PdfPositionedTextBlock,
   PdfPositionedTextSpan,
   PdfPositionedTextPage,
+  PdfPositionedTextSelection,
+  PdfPositionedTextSelectionSegment,
   PdfPositionedTextSource,
 } from './extensions/annotator/types/annotator';
+export { PdfPositionedTextSelectionResolver } from './extensions/annotator/painter/pdf_positioned_text_selection';
 export { PdfViewer } from './features/viewer';
 export type { PdfViewerProps } from './features/viewer';
 export type {

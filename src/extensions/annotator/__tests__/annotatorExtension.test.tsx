@@ -37,6 +37,7 @@ interface MockPainter {
     initAnnotationsOnce: jest.Mock
     reRenderAnnotations: jest.Mock
     setPermissionContext: jest.Mock
+    setPositionedTextSource: jest.Mock
     onAnnotationSelected?: (annotation: unknown, isClick: boolean, selectorRect: unknown) => void
 }
 
@@ -89,6 +90,7 @@ jest.mock('../painter', () => ({
         getKonvaCanvasStore = jest.fn(() => new Map([[1, {}]]))
         reRenderAnnotations = jest.fn()
         setPermissionContext = jest.fn()
+        setPositionedTextSource = jest.fn()
         onAnnotationSelected?: MockPainter['onAnnotationSelected']
 
         constructor(options: { onAnnotationSelected?: MockPainter['onAnnotationSelected'] }) {

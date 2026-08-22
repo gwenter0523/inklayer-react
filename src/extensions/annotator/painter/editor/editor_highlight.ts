@@ -38,7 +38,11 @@ export class EditorHighLight extends Editor {
      * @param elements HTMLSpanElement 数组，表示要绘制的元素
      * @param fixElement 用于修正计算的元素
      */
-    public convertTextSelection(elements: HTMLSpanElement[], fixElement: HTMLDivElement) {
+    public convertTextSelection(
+        elements: HTMLSpanElement[],
+        fixElement: HTMLDivElement,
+        selectedText?: string
+    ) {
         this.currentShapeGroup = this.createShapeGroup()
         this.getBgLayer().add(this.currentShapeGroup.konvaGroup)
 
@@ -63,7 +67,7 @@ export class EditorHighLight extends Editor {
             id: this.currentShapeGroup.id,
             contentsObj: {
                 text: '',
-                selectedText: this.getSelectedText(elements)
+                selectedText: selectedText ?? this.getSelectedText(elements)
             },
             color: this.currentAnnotation!.style!.color
         })

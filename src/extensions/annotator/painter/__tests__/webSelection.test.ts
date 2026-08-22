@@ -2,6 +2,7 @@
 
 import Highlighter from 'web-highlighter'
 import { WebSelection } from '../webSelection'
+import type { PdfPositionedTextSource } from '../../types/annotator'
 
 jest.mock('web-highlighter', () => ({
     __esModule: true,
@@ -29,6 +30,27 @@ interface MockHighlighter {
 
 const getHighlighterInstance = (index: number) =>
     jest.mocked(Highlighter).mock.results[index].value as unknown as MockHighlighter
+
+function logicalSource(sourceKey = 'source-key'): PdfPositionedTextSource {
+    return {
+        pageCount: 1,
+        sourceKey,
+        logicalText: '第一段。\n\n第二段。',
+        getPage: jest.fn(async () => null)
+    }
+}
+
+function appendLogicalSpan(root: HTMLElement, sourceKey = 'source-key') {
+    const span = document.createElement('span')
+    span.dataset.inklayerPositionedTextId = 'span-1'
+    span.dataset.inklayerPositionedTextPage = '1'
+    span.dataset.inklayerPositionedTextSourceKey = sourceKey
+    span.dataset.inklayerPositionedTextLogicalStart = '0'
+    span.dataset.inklayerPositionedTextLogicalEnd = '4'
+    span.textContent = '第一段。'
+    root.append(span)
+    return span
+}
 
 describe('WebSelection', () => {
     beforeEach(() => {
@@ -159,6 +181,129 @@ describe('WebSelection', () => {
         selectionCreate?.({ sources: [{ id: 'source-1' }] })
 
         expect(onHighlight).toHaveBeenCalledWith({ '7': [span] })
+        webSelection.destroy()
+        root.remove()
+    })
+
+    it('writes only resolver-owned logical text to text/plain on the current viewer root', () => {
+        const root = document.createElement('div')
+        const span = appendLogicalSpan(root)
+        document.body.append(root)
+        const webSelection = new WebSelection({
+            onSelect: jest.fn(),
+            onHighlight: jest.fn(),
+            positionedTextSource: logicalSource()
+        })
+        webSelection.create(root)
+
+        const range = document.createRange()
+        range.selectNodeContents(span.firstChild!)
+        const selection = window.getSelection()!
+        selection.removeAllRanges()
+        selection.addRange(range)
+        const setData = jest.fn()
+        const copyEvent = new Event('copy', { bubbles: true, cancelable: true })
+        Object.defineProperty(copyEvent, 'clipboardData', { value: { setData } })
+
+        root.dispatchEvent(copyEvent)
+
+        expect(setData).toHaveBeenCalledTimes(1)
+        expect(setData).toHaveBeenCalledWith('text/plain', '第一段。')
+        expect(copyEvent.defaultPrevented).toBe(true)
+        webSelection.destroy()
+        root.remove()
+        selection.removeAllRanges()
+    })
+
+    it('leaves the existing browser copy behavior untouched without a logical source', () => {
+        const root = document.createElement('div')
+        const text = document.createTextNode('native viewer text')
+        root.append(text)
+        document.body.append(root)
+        const webSelection = new WebSelection({ onSelect: jest.fn(), onHighlight: jest.fn() })
+        webSelection.create(root)
+
+        const range = document.createRange()
+        range.selectNodeContents(text)
+        const selection = window.getSelection()!
+        selection.removeAllRanges()
+        selection.addRange(range)
+        const copyEvent = new Event('copy', { bubbles: true, cancelable: true })
+        const setData = jest.fn()
+        Object.defineProperty(copyEvent, 'clipboardData', { value: { setData } })
+
+        root.dispatchEvent(copyEvent)
+
+        expect(copyEvent.defaultPrevented).toBe(false)
+        expect(setData).not.toHaveBeenCalled()
+        webSelection.destroy()
+        root.remove()
+        selection.removeAllRanges()
+    })
+
+    it('does not hijack copy outside the current viewer and clears stale source selections', () => {
+        const root = document.createElement('div')
+        const span = appendLogicalSpan(root)
+        const outside = document.createElement('div')
+        document.body.append(root, outside)
+        const webSelection = new WebSelection({
+            onSelect: jest.fn(),
+            onHighlight: jest.fn(),
+            positionedTextSource: logicalSource()
+        })
+        webSelection.create(root)
+
+        const range = document.createRange()
+        range.selectNodeContents(span.firstChild!)
+        const selection = window.getSelection()!
+        selection.removeAllRanges()
+        selection.addRange(range)
+        const outsideCopy = new Event('copy', { bubbles: true, cancelable: true })
+        const outsideSetData = jest.fn()
+        Object.defineProperty(outsideCopy, 'clipboardData', { value: { setData: outsideSetData } })
+        outside.dispatchEvent(outsideCopy)
+        expect(outsideCopy.defaultPrevented).toBe(false)
+        expect(outsideSetData).not.toHaveBeenCalled()
+
+        webSelection.setPositionedTextSource(logicalSource('new-source'))
+        const staleCopy = new Event('copy', { bubbles: true, cancelable: true })
+        const staleSetData = jest.fn()
+        Object.defineProperty(staleCopy, 'clipboardData', { value: { setData: staleSetData } })
+        root.dispatchEvent(staleCopy)
+        expect(staleCopy.defaultPrevented).toBe(false)
+        expect(staleSetData).not.toHaveBeenCalled()
+
+        webSelection.destroy()
+        root.remove()
+        outside.remove()
+        selection.removeAllRanges()
+    })
+
+    it('passes the same logical selection to resolver-driven annotation creation', () => {
+        const onHighlight = jest.fn()
+        const root = document.createElement('div')
+        const span = appendLogicalSpan(root)
+        document.body.append(root)
+        const webSelection = new WebSelection({
+            onSelect: jest.fn(),
+            onHighlight,
+            positionedTextSource: logicalSource()
+        })
+        webSelection.create(root)
+        const range = document.createRange()
+        range.selectNodeContents(span.firstChild!)
+        webSelection.highlight(range)
+
+        const highlighter = getHighlighterInstance(0)
+        const selectionCreate = highlighter.on.mock.calls.find(([event]) => event === 'selection:create')?.[1] as
+            | ((data: { sources: Array<{ id: string }> }) => void)
+            | undefined
+        selectionCreate?.({ sources: [] })
+
+        expect(onHighlight).toHaveBeenCalledWith(
+            {},
+            expect.objectContaining({ sourceKey: 'source-key', text: '第一段。' })
+        )
         webSelection.destroy()
         root.remove()
     })

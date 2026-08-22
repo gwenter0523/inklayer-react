@@ -21,7 +21,13 @@ import { Transform } from './transform/transform'
 import { EditorArrow } from './editor/editor_arrow'
 import { EditorCloud } from './editor/editor_cloud'
 import { IRect } from 'konva/lib/types'
-import { AnnotationPermissionAction, AnnotationPermissions, PdfAnnotatorOptions } from '../types/annotator'
+import {
+    AnnotationPermissionAction,
+    AnnotationPermissions,
+    PdfAnnotatorOptions,
+    PdfPositionedTextSelection,
+    PdfPositionedTextSource
+} from '../types/annotator'
 import { PageViewport } from 'pdfjs-dist/types/web/interfaces'
 import { PDFViewer } from 'pdfjs-dist/types/web/pdf_viewer'
 import { PDFPageView } from 'pdfjs-dist/types/web/pdf_page_view'
@@ -117,6 +123,7 @@ export class Painter {
         annotationPermissions,
         defaultShowAnnotationAuthorLabels,
         PDFViewerApplication,
+        positionedTextSource,
         onTextSelected,
         onAnnotationAdd,
         onAnnotationDelete,
@@ -130,6 +137,7 @@ export class Painter {
         annotationPermissions?: AnnotationPermissions
         defaultShowAnnotationAuthorLabels: boolean
         PDFViewerApplication: PDFViewer
+        positionedTextSource?: PdfPositionedTextSource
         onTextSelected: (range: Range | null) => void
         onAnnotationAdd: (annotationStore: IAnnotationStore, isOriginal: boolean, currentAnnotation: IAnnotationType | undefined) => void
         onAnnotationDelete: (id: string) => void
@@ -228,7 +236,8 @@ export class Painter {
             onSelect: (range) => {
                 this.onTextSelected(range)
             },
-            onHighlight: (selection) => {
+            positionedTextSource,
+            onHighlight: (selection, logicalSelection?: PdfPositionedTextSelection) => {
                 if (!this.can('annotation.create')) return
                 const highlightHistoryEntries: DeletedAnnotationEntry[] = []
                 this.activeHighlightHistoryEntries = highlightHistoryEntries
@@ -260,7 +269,7 @@ export class Painter {
                             )
                             this.editorStore.set(storeEditor.id, storeEditor)
                         }
-                        storeEditor.convertTextSelection(elements as HTMLSpanElement[], wrapper)
+                        storeEditor.convertTextSelection(elements as HTMLSpanElement[], wrapper, logicalSelection?.text)
                     }
                 })
                 this.activeHighlightHistoryEntries = null
@@ -1070,6 +1079,10 @@ export class Painter {
      */
     public initWebSelection(rootElement: HTMLDivElement): void {
         this.webSelection.create(rootElement)
+    }
+
+    public setPositionedTextSource(source?: PdfPositionedTextSource): void {
+        this.webSelection.setPositionedTextSource(source)
     }
 
     /**

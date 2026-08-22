@@ -65,6 +65,8 @@ describe('PositionedTextLayer', () => {
         }
         const source: PdfPositionedTextSource = {
             pageCount: 3,
+            sourceKey: 'source-key',
+            logicalText: '可选择文字',
             getPage: jest.fn(async (pageNumber: number) => pageNumber === 1
                 ? {
                     pageNumber: 1,
@@ -80,6 +82,7 @@ describe('PositionedTextLayer', () => {
                         blockId: 'block-a',
                         spanId: 'span-a',
                         text: '可选择文字',
+                        logicalRange: { start: 0, end: 5 },
                         geometry: { kind: 'bbox', x: 60, y: 120, width: 180, height: 32 }
                     }]
                 }
@@ -105,6 +108,10 @@ describe('PositionedTextLayer', () => {
 
         const span = pageDivs[0].querySelector('[data-inklayer-positioned-text-id="span-a"]')
         expect(span).toHaveTextContent('可选择文字')
+        expect(span).toHaveAttribute('data-inklayer-positioned-text-source-key', 'source-key')
+        expect(span).toHaveAttribute('data-inklayer-positioned-text-page', '1')
+        expect(span).toHaveAttribute('data-inklayer-positioned-text-logical-start', '0')
+        expect(span).toHaveAttribute('data-inklayer-positioned-text-logical-end', '5')
         expect(span).toHaveAttribute('data-inklayer-positioned-text-block-id', 'block-a')
         expect(span).toHaveStyle({ left: '60px', top: '120px', width: '180px', height: '32px' })
         expect(span).toHaveStyle({ transform: 'matrix(1,0,0,1,0,0)' })

@@ -872,11 +872,56 @@ export declare interface PdfPositionedTextPoint {
     readonly y: number;
 }
 
+/** UTF-16 offsets into the source's logical text string. */
+export declare interface PdfPositionedTextRange {
+    readonly start: number;
+    readonly end: number;
+}
+
+export declare interface PdfPositionedTextSelection {
+    readonly sourceKey: string;
+    readonly text: string;
+    readonly range: PdfPositionedTextRange;
+    readonly segments: readonly PdfPositionedTextSelectionSegment[];
+}
+
+/**
+ * Resolves a browser DOM selection against a provider-owned logical source.
+ *
+ * The resolver deliberately does not infer whitespace, paragraphs, tables, or
+ * reading order. The host supplies the authoritative logical text and each
+ * positioned span's UTF-16 range; this class only maps DOM boundaries to that
+ * source range.
+ */
+export declare class PdfPositionedTextSelectionResolver {
+    private readonly root;
+    private source;
+    constructor(root: HTMLElement, source: PdfPositionedTextSource);
+    setSource(source: PdfPositionedTextSource): void;
+    resolve(selectionOrRange: Selection | Range | null): PdfPositionedTextSelection | null;
+    private positionedSpansInRange;
+}
+
+export declare interface PdfPositionedTextSelectionSegment {
+    readonly id: string;
+    readonly pageNumber: number;
+    readonly range: PdfPositionedTextRange;
+    readonly blockId?: string;
+    readonly spanId?: string;
+}
+
 /**
  * Lazy external text provider owned by the host application.
  * InkLayer owns the page transform and selectable DOM projection.
  */
 export declare interface PdfPositionedTextSource {
+    /** Stable identity; changing it invalidates an existing DOM selection. */
+    readonly sourceKey?: string;
+    /**
+     * Host-normalized logical text. InkLayer never infers paragraph or table
+     * separators; it slices this value using span logical ranges.
+     */
+    readonly logicalText?: string;
     readonly pageCount: number;
     getPage(pageNumber: number): Promise<PdfPositionedTextPage | null>;
 }
@@ -888,6 +933,11 @@ export declare interface PdfPositionedTextSpan {
     readonly spanId?: string;
     readonly text: string;
     readonly geometry: PdfPositionedTextGeometry;
+    /**
+     * Optional logical source range. The host owns paragraph/table semantics;
+     * InkLayer only maps DOM boundaries back to these offsets.
+     */
+    readonly logicalRange?: PdfPositionedTextRange;
 }
 
 /** 四边形点，用于文本高亮等多段区域

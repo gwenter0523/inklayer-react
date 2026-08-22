@@ -228,6 +228,7 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
                             onAnnotationChanged={(store) => onAnnotationUpdated?.(storeToAnnotation(store))}
                             enableNativeAnnotations={enableNativeAnnotations}
                             annotations={effectiveAnnotations}
+                            positionedTextSource={positionedTextSource}
                             annotationPermissions={annotationPermissions}
                             defaultShowAnnotationAuthorLabels={defaultShowAnnotationAuthorLabels}
                         />

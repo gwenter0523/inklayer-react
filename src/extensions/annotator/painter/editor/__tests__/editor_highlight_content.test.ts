@@ -84,4 +84,46 @@ describe('EditorHighLight annotation content', () => {
 
         stage.destroy()
     })
+
+    it.each([
+        AnnotationType.HIGHLIGHT,
+        AnnotationType.UNDERLINE,
+        AnnotationType.STRIKEOUT
+    ])('uses the resolver logical text for type %s instead of DOM concatenation', (type) => {
+        const stage = createStage()
+        const onAdd = jest.fn<void, [IAnnotationStore]>()
+        const annotation = annotationDefinitions.find((definition) => definition.type === type)!
+        const options: IEditorOptions = {
+            primaryColor: '#6e56cf',
+            defaultOptions: {} as IEditorOptions['defaultOptions'],
+            currentUser: { id: 'alice', name: 'Alice' },
+            pdfViewerApplication: {} as IEditorOptions['pdfViewerApplication'],
+            konvaStage: stage,
+            pageNumber: 1,
+            annotation,
+            onAdd,
+            onChange: jest.fn()
+        }
+        const editor = new EditorHighLight(options, type)
+        const wrapper = document.createElement('div')
+        const first = document.createElement('span')
+        const second = document.createElement('span')
+        first.textContent = '第一段。'
+        second.textContent = '第二段。'
+        setRect(wrapper, { x: 0, y: 0, width: 600, height: 800 })
+        setRect(first, { x: 20, y: 30, width: 100, height: 16 })
+        setRect(second, { x: 20, y: 50, width: 100, height: 16 })
+
+        editor.convertTextSelection([first, second], wrapper, '第一段。\n\n第二段。')
+
+        expect(onAdd).toHaveBeenCalledWith(expect.objectContaining({
+            type,
+            contentsObj: {
+                text: '',
+                selectedText: '第一段。\n\n第二段。'
+            }
+        }))
+
+        stage.destroy()
+    })
 })

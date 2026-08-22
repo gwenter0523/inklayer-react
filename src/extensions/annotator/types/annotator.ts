@@ -128,6 +128,12 @@ export type PdfPositionedTextGeometry =
         readonly points: readonly PdfPositionedTextPoint[]
     }>
 
+/** UTF-16 offsets into the source's logical text string. */
+export interface PdfPositionedTextRange {
+    readonly start: number
+    readonly end: number
+}
+
 export interface PdfPositionedTextSpan {
     /** Stable source identity for the supplied span. */
     readonly id: string
@@ -135,6 +141,11 @@ export interface PdfPositionedTextSpan {
     readonly spanId?: string
     readonly text: string
     readonly geometry: PdfPositionedTextGeometry
+    /**
+     * Optional logical source range. The host owns paragraph/table semantics;
+     * InkLayer only maps DOM boundaries back to these offsets.
+     */
+    readonly logicalRange?: PdfPositionedTextRange
 }
 
 /**
@@ -160,11 +171,33 @@ export interface PdfPositionedTextPage {
     readonly spans: readonly PdfPositionedTextSpan[]
 }
 
+export interface PdfPositionedTextSelectionSegment {
+    readonly id: string
+    readonly pageNumber: number
+    readonly range: PdfPositionedTextRange
+    readonly blockId?: string
+    readonly spanId?: string
+}
+
+export interface PdfPositionedTextSelection {
+    readonly sourceKey: string
+    readonly text: string
+    readonly range: PdfPositionedTextRange
+    readonly segments: readonly PdfPositionedTextSelectionSegment[]
+}
+
 /**
  * Lazy external text provider owned by the host application.
  * InkLayer owns the page transform and selectable DOM projection.
  */
 export interface PdfPositionedTextSource {
+    /** Stable identity; changing it invalidates an existing DOM selection. */
+    readonly sourceKey?: string
+    /**
+     * Host-normalized logical text. InkLayer never infers paragraph or table
+     * separators; it slices this value using span logical ranges.
+     */
+    readonly logicalText?: string
     readonly pageCount: number
     getPage(pageNumber: number): Promise<PdfPositionedTextPage | null>
 }

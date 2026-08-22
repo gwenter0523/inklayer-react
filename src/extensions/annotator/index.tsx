@@ -12,7 +12,7 @@ import { IAnnotationStore } from './const/definitions'
 import { FREE_TEXT_EDITOR } from './painter/const'
 import { useAnnotationStore } from './store'
 import { debounce } from '@/utils'
-import type { AnnotationPermissions } from './types/annotator'
+import type { AnnotationPermissions, PdfPositionedTextSource } from './types/annotator'
 import {
     NAVIGATION_PAGE_MARKERS_CHANGED_EVENT,
     type NavigationPageMarkersChangedEvent,
@@ -26,6 +26,7 @@ interface AnnotatorExtensionProps {
     enableNativeAnnotations: boolean
     annotations?: IAnnotationStore[]
     annotationPermissions?: AnnotationPermissions
+    positionedTextSource?: PdfPositionedTextSource
     defaultShowAnnotationAuthorLabels?: boolean
 
     onLoad: () => void
@@ -40,6 +41,7 @@ export const AnnotatorExtension: React.FC<AnnotatorExtensionProps> = ({
     enableNativeAnnotations,
     annotations,
     annotationPermissions,
+    positionedTextSource,
     defaultShowAnnotationAuthorLabels = false,
     onLoad,
     onAnnotationAdd,
@@ -89,9 +91,11 @@ export const AnnotatorExtension: React.FC<AnnotatorExtensionProps> = ({
     const latestPermissionsRef = useRef(annotationPermissions)
     const sidebarContextRef = useRef({ activeSidebarPanel, openSidebar })
     const defaultShowAnnotationAuthorLabelsRef = useRef(defaultShowAnnotationAuthorLabels)
+    const positionedTextSourceRef = useRef(positionedTextSource)
     latestUserRef.current = user
     latestPermissionsRef.current = annotationPermissions
     sidebarContextRef.current = { activeSidebarPanel, openSidebar }
+    positionedTextSourceRef.current = positionedTextSource
 
     const debouncedViewAreaChanged = useRef(
         debounce(
@@ -133,6 +137,7 @@ export const AnnotatorExtension: React.FC<AnnotatorExtensionProps> = ({
             annotationPermissions: latestPermissionsRef.current,
             defaultShowAnnotationAuthorLabels: defaultShowAnnotationAuthorLabelsRef.current,
             PDFViewerApplication: pdfViewer,
+            positionedTextSource: positionedTextSourceRef.current,
 
             onTextSelected: (range) => {
                 selectionBarRef.current?.open(range)
@@ -248,7 +253,11 @@ export const AnnotatorExtension: React.FC<AnnotatorExtensionProps> = ({
             setPainter(null)
         }
 
-    }, [clearAnnotations, defaultOptions, eventBus, handleViewAreaChanged, isReady, pdfViewer, primaryColor, setPainter])
+    }, [clearAnnotations, defaultOptions, eventBus, handleViewAreaChanged, isReady, pdfViewer, primaryColor, setPainter, viewerContainerRef])
+
+    useEffect(() => {
+        painterRef.current?.setPositionedTextSource(positionedTextSource)
+    }, [positionedTextSource])
 
     useLayoutEffect(() => {
         if (latestUserRef.current) {
