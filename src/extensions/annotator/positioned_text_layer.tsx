@@ -5,6 +5,7 @@ import type {
     PdfPositionedTextGeometry,
     PdfPositionedTextBlock,
     PdfPositionedTextPage,
+    PdfPositionedTextSearchHit,
     PdfPositionedTextSource,
     PdfPositionedTextSpan
 } from './types/annotator'
@@ -12,6 +13,7 @@ import styles from './positioned_text_layer.module.scss'
 
 interface PositionedTextLayerProps {
     source: PdfPositionedTextSource
+    searchHit?: PdfPositionedTextSearchHit | null
 }
 
 interface PageMount {
@@ -29,7 +31,7 @@ const VIEWPORT_MARGIN_PAGES = 1
  * places transparent selectable spans in the provider-owned page coordinate
  * system and never reads PDF.js private text state.
  */
-export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source }) => {
+export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source, searchHit }) => {
     const { pdfViewer, eventBus, viewerContainerRef, isReady } = usePdfViewerContext()
     const [visiblePageNumbers, setVisiblePageNumbers] = useState<readonly number[]>([])
     const [pages, setPages] = useState<ReadonlyMap<number, PdfPositionedTextPage>>(new Map())
@@ -178,6 +180,7 @@ export const PositionedTextLayer: React.FC<PositionedTextLayerProps> = ({ source
                             span={span}
                             pageNumber={mount.pageNumber}
                             sourceKey={source.sourceKey}
+                            searchHit={searchHit}
                             scaleX={mount.scaleX}
                             scaleY={mount.scaleY}
                         />
@@ -230,12 +233,14 @@ function PositionedTextSpan({
     span,
     pageNumber,
     sourceKey,
+    searchHit,
     scaleX,
     scaleY
 }: {
     span: PdfPositionedTextSpan
     pageNumber: number
     sourceKey?: string
+    searchHit?: PdfPositionedTextSearchHit | null
     scaleX: number
     scaleY: number
 }): React.JSX.Element | null {
@@ -269,6 +274,8 @@ function PositionedTextSpan({
 
     if (!style || !span.text.trim()) return null
 
+    const searchFragment = positionedTextSearchFragment(span, sourceKey, searchHit)
+
     return <span
         className={styles.positionedTextSpan}
         data-inklayer-positioned-text-id={span.id}
@@ -279,7 +286,38 @@ function PositionedTextSpan({
         data-inklayer-positioned-text-logical-start={span.logicalRange?.start}
         data-inklayer-positioned-text-logical-end={span.logicalRange?.end}
         style={style}
-    ><span ref={contentRef} className={styles.positionedTextContent}>{span.text}</span></span>
+    ><span ref={contentRef} className={styles.positionedTextContent}>
+        {searchFragment
+            ? <>
+                {span.text.slice(0, searchFragment.start)}
+                <mark
+                    className={styles.positionedTextSearchHit}
+                    data-inklayer-positioned-text-search-hit="active"
+                >{span.text.slice(searchFragment.start, searchFragment.end)}</mark>
+                {span.text.slice(searchFragment.end)}
+            </>
+            : span.text}
+    </span></span>
+}
+
+function positionedTextSearchFragment(
+    span: PdfPositionedTextSpan,
+    sourceKey: string | undefined,
+    searchHit: PdfPositionedTextSearchHit | null | undefined
+): { start: number; end: number } | null {
+    const spanRange = span.logicalRange
+    if (!sourceKey || !searchHit || searchHit.sourceKey !== sourceKey || !spanRange) return null
+    if (![spanRange.start, spanRange.end, searchHit.range.start, searchHit.range.end].every(Number.isInteger)) return null
+    if (spanRange.start < 0 || spanRange.end <= spanRange.start || searchHit.range.start < 0 || searchHit.range.end <= searchHit.range.start) return null
+    if (spanRange.end - spanRange.start !== span.text.length) return null
+
+    const start = Math.max(spanRange.start, searchHit.range.start)
+    const end = Math.min(spanRange.end, searchHit.range.end)
+    if (end <= start) return null
+    return {
+        start: start - spanRange.start,
+        end: end - spanRange.start
+    }
 }
 
 function positionedTextStyle(

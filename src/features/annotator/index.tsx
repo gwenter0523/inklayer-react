@@ -51,7 +51,8 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
     actions,
     chrome,
     searchAvailable = true,
-    positionedTextSource
+    positionedTextSource,
+    positionedTextSearchHit
 }) => {
     // Annotation[] → IAnnotationStore[]（组件内部格式转换）
     const effectiveAnnotations = useMemo(
@@ -207,7 +208,12 @@ export const PdfAnnotator: React.FC<PdfAnnotatorProps> = ({
                         actions={chrome ? undefined : <ActionsButtons />}
                         style={layoutStyle}
                     >
-                        {positionedTextSource && <PositionedTextLayer source={positionedTextSource} />}
+                        {positionedTextSource && (
+                            <PositionedTextLayer
+                                source={positionedTextSource}
+                                searchHit={positionedTextSearchHit}
+                            />
+                        )}
                         {chrome ? (
                                 <PdfAnnotatorChromeBridge
                                     Chrome={chrome}

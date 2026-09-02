@@ -187,6 +187,16 @@ export interface PdfPositionedTextSelection {
 }
 
 /**
+ * Active current-document search hit in the same UTF-16 logical text space as
+ * the positioned text source. InkLayer renders only the intersecting text
+ * fragments and ignores hits for another source identity.
+ */
+export interface PdfPositionedTextSearchHit {
+    readonly sourceKey: string
+    readonly range: PdfPositionedTextRange
+}
+
+/**
  * Lazy external text provider owned by the host application.
  * InkLayer owns the page transform and selectable DOM projection.
  */
@@ -410,6 +420,9 @@ export interface PdfAnnotatorProps extends PdfBaseProps {
      * as the single selectable text owner over the original PDF visuals.
      */
     positionedTextSource?: PdfPositionedTextSource
+
+    /** Controlled active search hit for an external positioned text source. */
+    positionedTextSearchHit?: PdfPositionedTextSearchHit | null
 
     /**
      * 当前用户信息，用于标注作者标识

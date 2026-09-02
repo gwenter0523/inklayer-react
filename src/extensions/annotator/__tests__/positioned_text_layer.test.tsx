@@ -5,7 +5,7 @@ import { act, render, waitFor } from '@testing-library/react'
 import React from 'react'
 import { PdfViewerContext, type PdfViewerContextValue } from '@/context/pdf_viewer_context'
 import { PositionedTextLayer } from '../positioned_text_layer'
-import type { PdfPositionedTextSource } from '../types/annotator'
+import type { PdfPositionedTextSearchHit, PdfPositionedTextSource } from '../types/annotator'
 
 describe('PositionedTextLayer', () => {
     it('loads only visible pages plus one adjacent page and projects span geometry', async () => {
@@ -66,7 +66,7 @@ describe('PositionedTextLayer', () => {
         const source: PdfPositionedTextSource = {
             pageCount: 3,
             sourceKey: 'source-key',
-            logicalText: '可选择文字',
+            logicalText: '可选择文字\n目标文字',
             getPage: jest.fn(async (pageNumber: number) => pageNumber === 1
                 ? {
                     pageNumber: 1,
@@ -86,6 +86,17 @@ describe('PositionedTextLayer', () => {
                         geometry: { kind: 'bbox', x: 60, y: 120, width: 180, height: 32 }
                     }]
                 }
+                : pageNumber === 3
+                    ? {
+                        pageNumber: 3,
+                        dimensions: { width: 600, height: 800 },
+                        spans: [{
+                            id: 'span-target',
+                            text: '目标文字',
+                            logicalRange: { start: 6, end: 10 },
+                            geometry: { kind: 'bbox', x: 80, y: 160, width: 120, height: 30 }
+                        }]
+                    }
                 : { pageNumber, dimensions: { width: 600, height: 800 }, spans: [] })
         }
         const contextValue = {
@@ -97,7 +108,10 @@ describe('PositionedTextLayer', () => {
 
         render(
             <PdfViewerContext.Provider value={contextValue}>
-                <PositionedTextLayer source={source} />
+                <PositionedTextLayer
+                    source={source}
+                    searchHit={{ sourceKey: 'source-key', range: { start: 6, end: 8 } }}
+                />
             </PdfViewerContext.Provider>
         )
 
@@ -137,6 +151,17 @@ describe('PositionedTextLayer', () => {
             expect(remountedLayer).toBeInTheDocument()
             expect(remountedLayer).not.toBe(firstLayer)
             expect(remountedLayer?.querySelector('[data-inklayer-positioned-text-id="span-a"]')).toHaveTextContent('可选择文字')
+        })
+
+        pdfViewer.currentPageNumber = 3
+        pageRects[0] = { top: -1632, bottom: -832 }
+        pageRects[1] = { top: -816, bottom: -16 }
+        pageRects[2] = { top: 0, bottom: 800 }
+        act(() => eventHandlers.get('updateviewarea')?.())
+        await waitFor(() => expect(source.getPage).toHaveBeenCalledWith(3))
+        await waitFor(() => {
+            const activeHit = pageDivs[2].querySelector('[data-inklayer-positioned-text-search-hit="active"]')
+            expect(activeHit).toHaveTextContent('目标')
         })
 
         offsetWidth.mockRestore()
@@ -196,6 +221,92 @@ describe('PositionedTextLayer', () => {
             top: '100px',
             transform: 'matrix(0,1,-1,0,0,0)'
         })
+        host.remove()
+    })
+
+    it('renders and clears an exact controlled search hit across positioned spans', async () => {
+        const offsetWidth = jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(240)
+        const pageDiv = document.createElement('div')
+        const host = document.createElement('div')
+        host.appendChild(pageDiv)
+        document.body.appendChild(host)
+        Object.defineProperty(pageDiv, 'getBoundingClientRect', {
+            configurable: true,
+            value: () => ({ top: 0, bottom: 800, left: 0, right: 600, width: 600, height: 800, x: 0, y: 0, toJSON: () => ({}) })
+        })
+        Object.defineProperty(host, 'getBoundingClientRect', {
+            configurable: true,
+            value: () => ({ top: 0, bottom: 800, left: 0, right: 600, width: 600, height: 800, x: 0, y: 0, toJSON: () => ({}) })
+        })
+        const eventBus = { on: jest.fn(), off: jest.fn() }
+        const pdfViewer = {
+            pagesCount: 1,
+            currentPageNumber: 1,
+            getPageView: jest.fn(() => ({ div: pageDiv, viewport: { width: 600, height: 800 } }))
+        }
+        const source: PdfPositionedTextSource = {
+            pageCount: 1,
+            sourceKey: 'source-key',
+            logicalText: 'before target after',
+            getPage: jest.fn(async () => ({
+                pageNumber: 1,
+                dimensions: { width: 600, height: 800 },
+                spans: [
+                    {
+                        id: 'span-a',
+                        text: 'before tar',
+                        logicalRange: { start: 0, end: 10 },
+                        geometry: { kind: 'bbox', x: 40, y: 100, width: 160, height: 24 }
+                    },
+                    {
+                        id: 'span-b',
+                        text: 'get after',
+                        logicalRange: { start: 10, end: 19 },
+                        geometry: { kind: 'bbox', x: 200, y: 100, width: 144, height: 24 }
+                    }
+                ]
+            }))
+        }
+        const contextValue = {
+            pdfViewer,
+            eventBus,
+            viewerContainerRef: { current: host },
+            isReady: true,
+        } as unknown as PdfViewerContextValue
+        const hit: PdfPositionedTextSearchHit = {
+            sourceKey: 'source-key',
+            range: { start: 7, end: 13 }
+        }
+
+        const { rerender } = render(
+            <PdfViewerContext.Provider value={contextValue}>
+                <PositionedTextLayer source={source} searchHit={hit} />
+            </PdfViewerContext.Provider>
+        )
+
+        await waitFor(() => expect(pageDiv.querySelectorAll('[data-inklayer-positioned-text-search-hit="active"]')).toHaveLength(2))
+        const fragments = pageDiv.querySelectorAll('[data-inklayer-positioned-text-search-hit="active"]')
+        expect(fragments[0]).toHaveTextContent('tar')
+        expect(fragments[1]).toHaveTextContent('get')
+
+        rerender(
+            <PdfViewerContext.Provider value={contextValue}>
+                <PositionedTextLayer source={source} searchHit={null} />
+            </PdfViewerContext.Provider>
+        )
+        await waitFor(() => expect(pageDiv.querySelector('[data-inklayer-positioned-text-search-hit="active"]')).not.toBeInTheDocument())
+
+        rerender(
+            <PdfViewerContext.Provider value={contextValue}>
+                <PositionedTextLayer
+                    source={source}
+                    searchHit={{ sourceKey: 'stale-source', range: { start: 7, end: 13 } }}
+                />
+            </PdfViewerContext.Provider>
+        )
+        expect(pageDiv.querySelector('[data-inklayer-positioned-text-search-hit="active"]')).not.toBeInTheDocument()
+
+        offsetWidth.mockRestore()
         host.remove()
     })
 })

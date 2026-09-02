@@ -30,6 +30,12 @@
     display: inline-block;
 }
 
+.positionedTextSearchHit {
+    color: transparent;
+    background: rgba(255, 196, 0, 0.48);
+    border-radius: 1px;
+}
+
 .positionedTextBlock {
     position: absolute;
     display: block;

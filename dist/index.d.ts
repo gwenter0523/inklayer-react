@@ -597,6 +597,8 @@ export declare interface PdfAnnotatorProps extends PdfBaseProps {
      * as the single selectable text owner over the original PDF visuals.
      */
     positionedTextSource?: PdfPositionedTextSource;
+    /** Controlled active search hit for an external positioned text source. */
+    positionedTextSearchHit?: PdfPositionedTextSearchHit | null;
     /**
      * 当前用户信息，用于标注作者标识
      * @default: { id: 'null', name: 'unknown' }
@@ -876,6 +878,16 @@ export declare interface PdfPositionedTextPoint {
 export declare interface PdfPositionedTextRange {
     readonly start: number;
     readonly end: number;
+}
+
+/**
+ * Active current-document search hit in the same UTF-16 logical text space as
+ * the positioned text source. InkLayer renders only the intersecting text
+ * fragments and ignores hits for another source identity.
+ */
+export declare interface PdfPositionedTextSearchHit {
+    readonly sourceKey: string;
+    readonly range: PdfPositionedTextRange;
 }
 
 export declare interface PdfPositionedTextSelection {

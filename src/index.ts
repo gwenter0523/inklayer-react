@@ -23,6 +23,7 @@ export type {
   PdfPositionedTextPage,
   PdfPositionedTextSelection,
   PdfPositionedTextSelectionSegment,
+  PdfPositionedTextSearchHit,
   PdfPositionedTextSource,
 } from './extensions/annotator/types/annotator';
 export { PdfPositionedTextSelectionResolver } from './extensions/annotator/painter/pdf_positioned_text_selection';
